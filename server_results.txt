@@ -1,0 +1,1079 @@
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 41.84690833091736 for round 1
+Accumulated Time: 42.23872637748718 for round 2
+Accumulated Time: 42.66837406158447 for round 3
+Accumulated Time: 43.149572134017944 for round 4
+Accumulated Time: 43.674214601516724 for round 5
+Accumulated Time: 44.298022747039795 for round 6
+Accumulated Time: 44.86978316307068 for round 7
+Accumulated Time: 45.49366903305054 for round 8
+Accumulated Time: 46.15918231010437 for round 9
+Accumulated Time: 46.86618757247925 for round 10
+Accumulated Time: 47.615140199661255 for round 11
+Accumulated Time: 48.40454602241516 for round 12
+Accumulated Time: 49.2208092212677 for round 13
+Accumulated Time: 50.08906173706055 for round 14
+Accumulated Time: 50.97692394256592 for round 15
+Accumulated Time: 51.94744324684143 for round 16
+Accumulated Time: 52.95727491378784 for round 17
+Accumulated Time: 54.12848377227783 for round 18
+Accumulated Time: 55.3061363697052 for round 19
+Accumulated Time: 56.52084302902222 for round 20
+Accumulated Time: 57.71720600128174 for round 21
+Accumulated Time: 58.950488805770874 for round 22
+Accumulated Time: 60.20025038719177 for round 23
+Accumulated Time: 61.499738693237305 for round 24
+Accumulated Time: 62.83027911186218 for round 25
+Accumulated Time: 64.23541927337646 for round 26
+Accumulated Time: 65.65364122390747 for round 27
+Accumulated Time: 67.09144687652588 for round 28
+Accumulated Time: 68.59504199028015 for round 29
+Accumulated Time: 70.11206316947937 for round 30
+Accumulated Time: 71.79008936882019 for round 31
+Accumulated Time: 73.39033675193787 for round 32
+Accumulated Time: 75.04851913452148 for round 33
+Accumulated Time: 76.8199200630188 for round 34
+Accumulated Time: 78.57521510124207 for round 35
+Accumulated Time: 80.46181058883667 for round 36
+Accumulated Time: 82.31465935707092 for round 37
+Accumulated Time: 84.15550756454468 for round 38
+Accumulated Time: 86.11175203323364 for round 39
+Accumulated Time: 88.04938960075378 for round 40
+Accumulated Time: 90.02341175079346 for round 41
+Accumulated Time: 92.0303864479065 for round 42
+Accumulated Time: 94.11548471450806 for round 43
+Accumulated Time: 96.21047306060791 for round 44
+Accumulated Time: 98.42241549491882 for round 45
+Accumulated Time: 100.62798500061035 for round 46
+Accumulated Time: 102.87743854522705 for round 47
+Accumulated Time: 105.17416477203369 for round 48
+Accumulated Time: 107.61151218414307 for round 49
+Accumulated Time: 109.9381537437439 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 9.82302737236023 for round 1
+Accumulated Time: 10.209543704986572 for round 2
+Accumulated Time: 10.651814222335815 for round 3
+Accumulated Time: 11.143758535385132 for round 4
+Accumulated Time: 11.651517868041992 for round 5
+Accumulated Time: 12.210697412490845 for round 6
+Accumulated Time: 12.786122798919678 for round 7
+Accumulated Time: 13.419122457504272 for round 8
+Accumulated Time: 14.099625587463379 for round 9
+Accumulated Time: 14.821443557739258 for round 10
+Accumulated Time: 15.57948899269104 for round 11
+Accumulated Time: 16.371496438980103 for round 12
+Accumulated Time: 17.20577645301819 for round 13
+Accumulated Time: 18.109485149383545 for round 14
+Accumulated Time: 19.03778100013733 for round 15
+Accumulated Time: 20.0237033367157 for round 16
+Accumulated Time: 21.041243076324463 for round 17
+Accumulated Time: 22.0830819606781 for round 18
+Accumulated Time: 23.17713761329651 for round 19
+Accumulated Time: 24.316556215286255 for round 20
+Accumulated Time: 25.52256679534912 for round 21
+Accumulated Time: 26.81565523147583 for round 22
+Accumulated Time: 28.083734273910522 for round 23
+Accumulated Time: 29.398409843444824 for round 24
+Accumulated Time: 30.727388620376587 for round 25
+Accumulated Time: 32.13630771636963 for round 26
+Accumulated Time: 33.576586961746216 for round 27
+Accumulated Time: 35.05796456336975 for round 28
+Accumulated Time: 36.5772385597229 for round 29
+Accumulated Time: 38.10636901855469 for round 30
+Accumulated Time: 39.702242612838745 for round 31
+Accumulated Time: 41.384058713912964 for round 32
+Accumulated Time: 43.0427360534668 for round 33
+Accumulated Time: 44.72735333442688 for round 34
+Accumulated Time: 46.474316120147705 for round 35
+Accumulated Time: 48.246894121170044 for round 36
+Accumulated Time: 50.05576848983765 for round 37
+Accumulated Time: 51.90132021903992 for round 38
+Accumulated Time: 53.85325908660889 for round 39
+Accumulated Time: 55.78971314430237 for round 40
+Accumulated Time: 57.78595519065857 for round 41
+Accumulated Time: 59.81164860725403 for round 42
+Accumulated Time: 61.927743911743164 for round 43
+Accumulated Time: 64.0155770778656 for round 44
+Accumulated Time: 66.14403176307678 for round 45
+Accumulated Time: 68.32647609710693 for round 46
+Accumulated Time: 70.54955077171326 for round 47
+Accumulated Time: 72.80439519882202 for round 48
+Accumulated Time: 75.1589949131012 for round 49
+Accumulated Time: 77.48935222625732 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 9.483914852142334 for round 1
+Accumulated Time: 9.895307779312134 for round 2
+Accumulated Time: 10.334537267684937 for round 3
+Accumulated Time: 10.856244325637817 for round 4
+Accumulated Time: 11.365087747573853 for round 5
+Accumulated Time: 11.923863172531128 for round 6
+Accumulated Time: 12.510631322860718 for round 7
+Accumulated Time: 13.127837419509888 for round 8
+Accumulated Time: 13.807390451431274 for round 9
+Accumulated Time: 14.511899471282959 for round 10
+Accumulated Time: 15.277799367904663 for round 11
+Accumulated Time: 16.10427761077881 for round 12
+Accumulated Time: 17.00187611579895 for round 13
+Accumulated Time: 17.973026990890503 for round 14
+Accumulated Time: 18.97876262664795 for round 15
+Accumulated Time: 20.019554376602173 for round 16
+Accumulated Time: 21.112802267074585 for round 17
+Accumulated Time: 22.27796745300293 for round 18
+Accumulated Time: 23.525960683822632 for round 19
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 20.425033807754517 for round 1
+Accumulated Time: 20.853501319885254 for round 2
+Accumulated Time: 21.3508517742157 for round 3
+Accumulated Time: 21.901092767715454 for round 4
+Accumulated Time: 22.495214223861694 for round 5
+Accumulated Time: 23.14262557029724 for round 6
+Accumulated Time: 23.789225339889526 for round 7
+Accumulated Time: 24.536957263946533 for round 8
+Accumulated Time: 25.333282947540283 for round 9
+Accumulated Time: 26.210303783416748 for round 10
+Accumulated Time: 27.14525270462036 for round 11
+Accumulated Time: 28.04959487915039 for round 12
+Accumulated Time: 29.030191659927368 for round 13
+Accumulated Time: 30.104342699050903 for round 14
+Accumulated Time: 31.247528553009033 for round 15
+Accumulated Time: 32.42056751251221 for round 16
+Accumulated Time: 33.6340537071228 for round 17
+Accumulated Time: 34.89408802986145 for round 18
+Accumulated Time: 36.33778738975525 for round 19
+Accumulated Time: 37.714539527893066 for round 20
+Accumulated Time: 39.12042188644409 for round 21
+Accumulated Time: 40.599149227142334 for round 22
+Accumulated Time: 42.12439012527466 for round 23
+Accumulated Time: 43.68282103538513 for round 24
+Accumulated Time: 45.29642677307129 for round 25
+Accumulated Time: 46.962430477142334 for round 26
+Accumulated Time: 48.65944051742554 for round 27
+Accumulated Time: 50.43639254570007 for round 28
+Accumulated Time: 52.25544762611389 for round 29
+Accumulated Time: 54.196757793426514 for round 30
+Accumulated Time: 56.145431995391846 for round 31
+Accumulated Time: 58.13950490951538 for round 32
+Accumulated Time: 60.17374849319458 for round 33
+Accumulated Time: 62.24582099914551 for round 34
+Accumulated Time: 64.38566637039185 for round 35
+Accumulated Time: 66.56524014472961 for round 36
+Accumulated Time: 68.79846096038818 for round 37
+Accumulated Time: 71.13763427734375 for round 38
+Accumulated Time: 73.50787472724915 for round 39
+Accumulated Time: 75.86941337585449 for round 40
+Accumulated Time: 78.31331777572632 for round 41
+Accumulated Time: 80.79128360748291 for round 42
+Accumulated Time: 83.32876825332642 for round 43
+Accumulated Time: 85.97439861297607 for round 44
+Accumulated Time: 88.61059904098511 for round 45
+Accumulated Time: 91.32086515426636 for round 46
+Accumulated Time: 94.0495491027832 for round 47
+Accumulated Time: 96.84852933883667 for round 48
+Accumulated Time: 99.75605940818787 for round 49
+Accumulated Time: 102.65070629119873 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 17.78419303894043 for round 1
+Accumulated Time: 18.208072662353516 for round 2
+Accumulated Time: 18.67198657989502 for round 3
+Accumulated Time: 19.1991024017334 for round 4
+Accumulated Time: 19.77218008041382 for round 5
+Accumulated Time: 20.392337322235107 for round 6
+Accumulated Time: 21.04487442970276 for round 7
+Accumulated Time: 21.77372932434082 for round 8
+Accumulated Time: 22.51974129676819 for round 9
+Accumulated Time: 23.34060788154602 for round 10
+Accumulated Time: 24.222654104232788 for round 11
+Accumulated Time: 25.132442712783813 for round 12
+Accumulated Time: 26.12185263633728 for round 13
+Accumulated Time: 27.14719533920288 for round 14
+Accumulated Time: 28.356255054473877 for round 15
+Accumulated Time: 29.61052632331848 for round 16
+Accumulated Time: 30.83976125717163 for round 17
+Accumulated Time: 32.13417291641235 for round 18
+Accumulated Time: 33.500609397888184 for round 19
+Accumulated Time: 34.8995144367218 for round 20
+Accumulated Time: 36.33686375617981 for round 21
+Accumulated Time: 37.85316753387451 for round 22
+Accumulated Time: 39.37586736679077 for round 23
+Accumulated Time: 40.96717834472656 for round 24
+Accumulated Time: 42.65551948547363 for round 25
+Accumulated Time: 44.498454332351685 for round 26
+Accumulated Time: 46.25175595283508 for round 27
+Accumulated Time: 48.06920886039734 for round 28
+Accumulated Time: 49.91454744338989 for round 29
+Accumulated Time: 51.835644483566284 for round 30
+Accumulated Time: 53.80936598777771 for round 31
+Accumulated Time: 55.81921577453613 for round 32
+Accumulated Time: 57.97001099586487 for round 33
+Accumulated Time: 60.12229681015015 for round 34
+Accumulated Time: 62.3180787563324 for round 35
+Accumulated Time: 64.56914234161377 for round 36
+Accumulated Time: 66.9196424484253 for round 37
+Accumulated Time: 69.27655482292175 for round 38
+Accumulated Time: 71.69268012046814 for round 39
+Accumulated Time: 74.11565899848938 for round 40
+Accumulated Time: 76.66517758369446 for round 41
+Accumulated Time: 79.24663519859314 for round 42
+Accumulated Time: 81.86166262626648 for round 43
+Accumulated Time: 84.63216757774353 for round 44
+Accumulated Time: 87.27579641342163 for round 45
+Accumulated Time: 90.00736355781555 for round 46
+Accumulated Time: 92.75668668746948 for round 47
+Accumulated Time: 95.69458365440369 for round 48
+Accumulated Time: 98.66848373413086 for round 49
+Accumulated Time: 101.66704177856445 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 15.676923036575317 for round 1
+Accumulated Time: 16.10791039466858 for round 2
+Accumulated Time: 16.598040103912354 for round 3
+Accumulated Time: 17.151689052581787 for round 4
+Accumulated Time: 17.7509663105011 for round 5
+Accumulated Time: 18.374576091766357 for round 6
+Accumulated Time: 19.058584690093994 for round 7
+Accumulated Time: 19.775630474090576 for round 8
+Accumulated Time: 20.550153493881226 for round 9
+Accumulated Time: 21.417128801345825 for round 10
+Accumulated Time: 22.3202121257782 for round 11
+Accumulated Time: 23.29038166999817 for round 12
+Accumulated Time: 24.300365209579468 for round 13
+Accumulated Time: 25.352978706359863 for round 14
+Accumulated Time: 26.433330059051514 for round 15
+Accumulated Time: 27.618530750274658 for round 16
+Accumulated Time: 28.832470178604126 for round 17
+Accumulated Time: 30.095625162124634 for round 18
+Accumulated Time: 31.424851894378662 for round 19
+Accumulated Time: 32.86267352104187 for round 20
+Accumulated Time: 34.29633331298828 for round 21
+Accumulated Time: 35.773024559020996 for round 22
+Accumulated Time: 37.297831773757935 for round 23
+Accumulated Time: 38.839704275131226 for round 24
+Accumulated Time: 40.46246933937073 for round 25
+Accumulated Time: 42.129865884780884 for round 26
+Accumulated Time: 43.84773087501526 for round 27
+Accumulated Time: 45.6310076713562 for round 28
+Accumulated Time: 47.506150007247925 for round 29
+Accumulated Time: 49.45933437347412 for round 30
+Accumulated Time: 51.400217056274414 for round 31
+Accumulated Time: 53.39865708351135 for round 32
+Accumulated Time: 55.431649684906006 for round 33
+Accumulated Time: 57.507622718811035 for round 34
+Accumulated Time: 59.61057925224304 for round 35
+Accumulated Time: 61.79424214363098 for round 36
+Accumulated Time: 64.02909398078918 for round 37
+Accumulated Time: 66.4078996181488 for round 38
+Accumulated Time: 68.72566866874695 for round 39
+Accumulated Time: 71.12650442123413 for round 40
+Accumulated Time: 73.56517457962036 for round 41
+Accumulated Time: 76.03898882865906 for round 42
+Accumulated Time: 78.6616678237915 for round 43
+Accumulated Time: 81.2686140537262 for round 44
+Accumulated Time: 83.89363098144531 for round 45
+Accumulated Time: 86.57446789741516 for round 46
+Accumulated Time: 89.31217813491821 for round 47
+Accumulated Time: 92.20265889167786 for round 48
+Accumulated Time: 95.0589246749878 for round 49
+Accumulated Time: 98.0580894947052 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 18.606238842010498 for round 1
+Accumulated Time: 19.04363512992859 for round 2
+Accumulated Time: 19.521214485168457 for round 3
+Accumulated Time: 20.04586625099182 for round 4
+Accumulated Time: 20.648524045944214 for round 5
+Accumulated Time: 21.271530628204346 for round 6
+Accumulated Time: 21.977264642715454 for round 7
+Accumulated Time: 22.740560293197632 for round 8
+Accumulated Time: 23.575556993484497 for round 9
+Accumulated Time: 24.403563737869263 for round 10
+Accumulated Time: 25.28662109375 for round 11
+Accumulated Time: 26.20961618423462 for round 12
+Accumulated Time: 27.24976372718811 for round 13
+Accumulated Time: 28.266069650650024 for round 14
+Accumulated Time: 29.39349937438965 for round 15
+Accumulated Time: 30.57026505470276 for round 16
+Accumulated Time: 31.810237646102905 for round 17
+Accumulated Time: 33.09693956375122 for round 18
+Accumulated Time: 34.424675941467285 for round 19
+Accumulated Time: 35.849005937576294 for round 20
+Accumulated Time: 37.26452040672302 for round 21
+Accumulated Time: 38.754603147506714 for round 22
+Accumulated Time: 40.28714847564697 for round 23
+Accumulated Time: 41.85180425643921 for round 24
+Accumulated Time: 43.44428825378418 for round 25
+Accumulated Time: 45.11687707901001 for round 26
+Accumulated Time: 46.84252905845642 for round 27
+Accumulated Time: 48.624021768569946 for round 28
+Accumulated Time: 50.45511293411255 for round 29
+Accumulated Time: 52.41657114028931 for round 30
+Accumulated Time: 54.35022020339966 for round 31
+Accumulated Time: 56.32951521873474 for round 32
+Accumulated Time: 58.348060131073 for round 33
+Accumulated Time: 60.4304723739624 for round 34
+Accumulated Time: 62.545066118240356 for round 35
+Accumulated Time: 64.73054957389832 for round 36
+Accumulated Time: 67.04278230667114 for round 37
+Accumulated Time: 69.35099673271179 for round 38
+Accumulated Time: 71.68319177627563 for round 39
+Accumulated Time: 74.06999826431274 for round 40
+Accumulated Time: 76.51258373260498 for round 41
+Accumulated Time: 79.01133871078491 for round 42
+Accumulated Time: 81.64547061920166 for round 43
+Accumulated Time: 84.25495934486389 for round 44
+Accumulated Time: 86.98336696624756 for round 45
+Accumulated Time: 89.7872564792633 for round 46
+Accumulated Time: 92.6198205947876 for round 47
+Accumulated Time: 95.40404510498047 for round 48
+Accumulated Time: 98.2690360546112 for round 49
+Accumulated Time: 101.19897818565369 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 206.84198594093323 for round 1
+Accumulated Time: 207.27404475212097 for round 2
+Accumulated Time: 207.74648523330688 for round 3
+Accumulated Time: 208.27426838874817 for round 4
+Accumulated Time: 208.83783316612244 for round 5
+Accumulated Time: 209.44336771965027 for round 6
+Accumulated Time: 210.10321068763733 for round 7
+Accumulated Time: 210.8202052116394 for round 8
+Accumulated Time: 211.5996696949005 for round 9
+Accumulated Time: 212.42791771888733 for round 10
+Accumulated Time: 213.29537558555603 for round 11
+Accumulated Time: 214.2183427810669 for round 12
+Accumulated Time: 215.21275639533997 for round 13
+Accumulated Time: 216.27445006370544 for round 14
+Accumulated Time: 217.37310099601746 for round 15
+Accumulated Time: 218.53107523918152 for round 16
+Accumulated Time: 219.74630784988403 for round 17
+Accumulated Time: 221.0065257549286 for round 18
+Accumulated Time: 222.32656502723694 for round 19
+Accumulated Time: 223.76038026809692 for round 20
+Accumulated Time: 225.18809914588928 for round 21
+Accumulated Time: 226.65784454345703 for round 22
+Accumulated Time: 228.1725296974182 for round 23
+Accumulated Time: 229.7325460910797 for round 24
+Accumulated Time: 231.37380266189575 for round 25
+Accumulated Time: 233.04654359817505 for round 26
+Accumulated Time: 234.7438714504242 for round 27
+Accumulated Time: 236.50113558769226 for round 28
+Accumulated Time: 238.33061265945435 for round 29
+Accumulated Time: 240.24450087547302 for round 30
+Accumulated Time: 242.14706778526306 for round 31
+Accumulated Time: 244.12525343894958 for round 32
+Accumulated Time: 246.15376019477844 for round 33
+Accumulated Time: 248.21093916893005 for round 34
+Accumulated Time: 250.31505942344666 for round 35
+Accumulated Time: 252.49944829940796 for round 36
+Accumulated Time: 254.77625799179077 for round 37
+Accumulated Time: 257.04606533050537 for round 38
+Accumulated Time: 259.36373686790466 for round 39
+Accumulated Time: 261.72864174842834 for round 40
+Accumulated Time: 264.1699125766754 for round 41
+Accumulated Time: 266.7053349018097 for round 42
+Accumulated Time: 269.2368218898773 for round 43
+Accumulated Time: 271.8047790527344 for round 44
+Accumulated Time: 274.454060792923 for round 45
+Accumulated Time: 277.15816044807434 for round 46
+Accumulated Time: 279.971186876297 for round 47
+Accumulated Time: 282.74957823753357 for round 48
+Accumulated Time: 285.5919473171234 for round 49
+Accumulated Time: 288.5024378299713 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 143.64337253570557 for round 1
+Accumulated Time: 144.06162810325623 for round 2
+Accumulated Time: 144.53973150253296 for round 3
+Accumulated Time: 145.06566429138184 for round 4
+Accumulated Time: 145.6429271697998 for round 5
+Accumulated Time: 146.25765132904053 for round 6
+Accumulated Time: 146.91166591644287 for round 7
+Accumulated Time: 147.64009428024292 for round 8
+Accumulated Time: 148.42101168632507 for round 9
+Accumulated Time: 149.24203538894653 for round 10
+Accumulated Time: 150.1137204170227 for round 11
+Accumulated Time: 151.0827875137329 for round 12
+Accumulated Time: 152.09185218811035 for round 13
+Accumulated Time: 153.14899611473083 for round 14
+Accumulated Time: 154.27170252799988 for round 15
+Accumulated Time: 155.48223161697388 for round 16
+Accumulated Time: 156.84450268745422 for round 17
+Accumulated Time: 158.15009951591492 for round 18
+Accumulated Time: 159.4973657131195 for round 19
+Accumulated Time: 161.00224041938782 for round 20
+Accumulated Time: 162.47624039649963 for round 21
+Accumulated Time: 163.9956419467926 for round 22
+Accumulated Time: 165.59267926216125 for round 23
+Accumulated Time: 167.23647785186768 for round 24
+Accumulated Time: 168.89173793792725 for round 25
+Accumulated Time: 170.64248776435852 for round 26
+Accumulated Time: 172.4895887374878 for round 27
+Accumulated Time: 174.3713414669037 for round 28
+Accumulated Time: 176.34200358390808 for round 29
+Accumulated Time: 178.3618185520172 for round 30
+Accumulated Time: 180.447735786438 for round 31
+Accumulated Time: 182.58417916297913 for round 32
+Accumulated Time: 184.72497367858887 for round 33
+Accumulated Time: 186.84616780281067 for round 34
+Accumulated Time: 189.0176317691803 for round 35
+Accumulated Time: 191.24314427375793 for round 36
+Accumulated Time: 193.74977731704712 for round 37
+Accumulated Time: 196.2602424621582 for round 38
+Accumulated Time: 198.84930729866028 for round 39
+Accumulated Time: 201.3369128704071 for round 40
+Accumulated Time: 203.8633108139038 for round 41
+Accumulated Time: 206.46824026107788 for round 42
+Accumulated Time: 209.13611459732056 for round 43
+Accumulated Time: 212.02063131332397 for round 44
+Accumulated Time: 214.71447730064392 for round 45
+Accumulated Time: 217.4571340084076 for round 46
+Accumulated Time: 220.2454490661621 for round 47
+Accumulated Time: 223.07926058769226 for round 48
+Accumulated Time: 226.0510048866272 for round 49
+Accumulated Time: 229.02358770370483 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 25.975366353988647 for round 1
+Accumulated Time: 26.396839141845703 for round 2
+Accumulated Time: 26.868741273880005 for round 3
+Accumulated Time: 27.404258012771606 for round 4
+Accumulated Time: 27.977872610092163 for round 5
+Accumulated Time: 28.57768487930298 for round 6
+Accumulated Time: 29.242263078689575 for round 7
+Accumulated Time: 29.96601414680481 for round 8
+Accumulated Time: 30.764610290527344 for round 9
+Accumulated Time: 31.596513032913208 for round 10
+Accumulated Time: 32.4733190536499 for round 11
+Accumulated Time: 33.41047501564026 for round 12
+Accumulated Time: 34.37711143493652 for round 13
+Accumulated Time: 35.42707896232605 for round 14
+Accumulated Time: 36.49306535720825 for round 15
+Accumulated Time: 37.6765673160553 for round 16
+Accumulated Time: 38.89769220352173 for round 17
+Accumulated Time: 40.15061831474304 for round 18
+Accumulated Time: 41.451685190200806 for round 19
+Accumulated Time: 42.89283347129822 for round 20
+Accumulated Time: 44.31372427940369 for round 21
+Accumulated Time: 45.76668691635132 for round 22
+Accumulated Time: 47.27033543586731 for round 23
+Accumulated Time: 48.816354751586914 for round 24
+Accumulated Time: 50.411312103271484 for round 25
+Accumulated Time: 52.051453590393066 for round 26
+Accumulated Time: 53.73950147628784 for round 27
+Accumulated Time: 55.46693205833435 for round 28
+Accumulated Time: 57.26432538032532 for round 29
+Accumulated Time: 59.11085271835327 for round 30
+Accumulated Time: 61.05257844924927 for round 31
+Accumulated Time: 62.99924612045288 for round 32
+Accumulated Time: 64.98632621765137 for round 33
+Accumulated Time: 67.02872705459595 for round 34
+Accumulated Time: 69.15649628639221 for round 35
+Accumulated Time: 71.31573748588562 for round 36
+Accumulated Time: 73.58115267753601 for round 37
+Accumulated Time: 76.01880645751953 for round 38
+Accumulated Time: 78.44647526741028 for round 39
+Accumulated Time: 80.91044783592224 for round 40
+Accumulated Time: 83.47114729881287 for round 41
+Accumulated Time: 86.02357959747314 for round 42
+Accumulated Time: 88.62870740890503 for round 43
+Accumulated Time: 91.26459336280823 for round 44
+Accumulated Time: 94.00546026229858 for round 45
+Accumulated Time: 96.71923089027405 for round 46
+Accumulated Time: 99.48657178878784 for round 47
+Accumulated Time: 102.36348724365234 for round 48
+Accumulated Time: 105.23391604423523 for round 49
+Accumulated Time: 108.1779670715332 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 36.557456731796265 for round 1
+Accumulated Time: 36.9901556968689 for round 2
+Accumulated Time: 37.459195375442505 for round 3
+Accumulated Time: 37.9872145652771 for round 4
+Accumulated Time: 38.56678557395935 for round 5
+Accumulated Time: 39.1785728931427 for round 6
+Accumulated Time: 39.850361347198486 for round 7
+Accumulated Time: 40.58457922935486 for round 8
+Accumulated Time: 41.375025272369385 for round 9
+Accumulated Time: 42.233131885528564 for round 10
+Accumulated Time: 43.10596036911011 for round 11
+Accumulated Time: 44.05634665489197 for round 12
+Accumulated Time: 45.043936014175415 for round 13
+Accumulated Time: 46.148014068603516 for round 14
+Accumulated Time: 47.24528098106384 for round 15
+Accumulated Time: 48.418333530426025 for round 16
+Accumulated Time: 49.645455837249756 for round 17
+Accumulated Time: 50.918550968170166 for round 18
+Accumulated Time: 52.30692458152771 for round 19
+Accumulated Time: 53.68466305732727 for round 20
+Accumulated Time: 55.09878206253052 for round 21
+Accumulated Time: 56.54912281036377 for round 22
+Accumulated Time: 58.04046130180359 for round 23
+Accumulated Time: 59.63745474815369 for round 24
+Accumulated Time: 61.270694732666016 for round 25
+Accumulated Time: 62.9294490814209 for round 26
+Accumulated Time: 64.73215937614441 for round 27
+Accumulated Time: 66.59072542190552 for round 28
+Accumulated Time: 68.47412586212158 for round 29
+Accumulated Time: 70.42174577713013 for round 30
+Accumulated Time: 72.50126147270203 for round 31
+Accumulated Time: 74.57974886894226 for round 32
+Accumulated Time: 76.67349123954773 for round 33
+Accumulated Time: 78.7498574256897 for round 34
+Accumulated Time: 80.92817115783691 for round 35
+Accumulated Time: 83.09565544128418 for round 36
+Accumulated Time: 85.35370421409607 for round 37
+Accumulated Time: 87.72450137138367 for round 38
+Accumulated Time: 90.16465520858765 for round 39
+Accumulated Time: 92.53861951828003 for round 40
+Accumulated Time: 95.0412003993988 for round 41
+Accumulated Time: 97.53484535217285 for round 42
+Accumulated Time: 100.04841375350952 for round 43
+Accumulated Time: 102.88723111152649 for round 44
+Accumulated Time: 105.73857259750366 for round 45
+Accumulated Time: 108.56847214698792 for round 46
+Accumulated Time: 111.38154196739197 for round 47
+Accumulated Time: 114.3522424697876 for round 48
+Accumulated Time: 117.3127293586731 for round 49
+Accumulated Time: 120.26395630836487 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 105.18135333061218 for round 1
+Accumulated Time: 105.61451530456543 for round 2
+Accumulated Time: 106.09444189071655 for round 3
+Accumulated Time: 106.60533905029297 for round 4
+Accumulated Time: 107.1704273223877 for round 5
+Accumulated Time: 107.78948783874512 for round 6
+Accumulated Time: 108.45330929756165 for round 7
+Accumulated Time: 109.162770986557 for round 8
+Accumulated Time: 109.9291021823883 for round 9
+Accumulated Time: 110.77671766281128 for round 10
+Accumulated Time: 111.66907334327698 for round 11
+Accumulated Time: 112.61575388908386 for round 12
+Accumulated Time: 113.60334539413452 for round 13
+Accumulated Time: 114.65741777420044 for round 14
+Accumulated Time: 115.77067375183105 for round 15
+Accumulated Time: 116.92774271965027 for round 16
+Accumulated Time: 118.14332413673401 for round 17
+Accumulated Time: 119.4129638671875 for round 18
+Accumulated Time: 120.73948907852173 for round 19
+Accumulated Time: 122.0813684463501 for round 20
+Accumulated Time: 123.56784868240356 for round 21
+Accumulated Time: 125.0450963973999 for round 22
+Accumulated Time: 126.55097198486328 for round 23
+Accumulated Time: 128.11895966529846 for round 24
+Accumulated Time: 129.72670912742615 for round 25
+Accumulated Time: 131.37849736213684 for round 26
+Accumulated Time: 133.08357000350952 for round 27
+Accumulated Time: 134.86046767234802 for round 28
+Accumulated Time: 136.70533967018127 for round 29
+Accumulated Time: 138.56380677223206 for round 30
+Accumulated Time: 140.51806092262268 for round 31
+Accumulated Time: 142.5044505596161 for round 32
+Accumulated Time: 144.51165580749512 for round 33
+Accumulated Time: 146.5578465461731 for round 34
+Accumulated Time: 148.66099548339844 for round 35
+Accumulated Time: 150.85396242141724 for round 36
+Accumulated Time: 153.09563970565796 for round 37
+Accumulated Time: 155.35944771766663 for round 38
+Accumulated Time: 157.74481654167175 for round 39
+Accumulated Time: 160.11474204063416 for round 40
+Accumulated Time: 162.53553938865662 for round 41
+Accumulated Time: 164.99288487434387 for round 42
+Accumulated Time: 167.5413818359375 for round 43
+Accumulated Time: 170.11162185668945 for round 44
+Accumulated Time: 172.80510640144348 for round 45
+Accumulated Time: 175.49842166900635 for round 46
+Accumulated Time: 178.23972368240356 for round 47
+Accumulated Time: 181.03375887870789 for round 48
+Accumulated Time: 183.89445304870605 for round 49
+Accumulated Time: 186.88814997673035 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 18.005809783935547 for round 1
+Accumulated Time: 18.466855764389038 for round 2
+Accumulated Time: 18.98643708229065 for round 3
+Accumulated Time: 19.56434917449951 for round 4
+Accumulated Time: 20.232499599456787 for round 5
+Accumulated Time: 20.900766372680664 for round 6
+Accumulated Time: 21.60545563697815 for round 7
+Accumulated Time: 22.371974229812622 for round 8
+Accumulated Time: 23.214112281799316 for round 9
+Accumulated Time: 24.106125593185425 for round 10
+Accumulated Time: 25.043627738952637 for round 11
+Accumulated Time: 26.026176691055298 for round 12
+Accumulated Time: 27.012444496154785 for round 13
+Accumulated Time: 28.082658529281616 for round 14
+Accumulated Time: 29.18980884552002 for round 15
+Accumulated Time: 30.358914852142334 for round 16
+Accumulated Time: 31.580387592315674 for round 17
+Accumulated Time: 32.849342584609985 for round 18
+Accumulated Time: 34.24154329299927 for round 19
+Accumulated Time: 35.68642807006836 for round 20
+Accumulated Time: 37.15564799308777 for round 21
+Accumulated Time: 38.67279314994812 for round 22
+Accumulated Time: 40.22057104110718 for round 23
+Accumulated Time: 41.80250406265259 for round 24
+Accumulated Time: 43.44061326980591 for round 25
+Accumulated Time: 45.10922956466675 for round 26
+Accumulated Time: 46.82849478721619 for round 27
+Accumulated Time: 48.62568974494934 for round 28
+Accumulated Time: 50.461127519607544 for round 29
+Accumulated Time: 52.38696479797363 for round 30
+Accumulated Time: 54.5076003074646 for round 31
+Accumulated Time: 56.470677614212036 for round 32
+Accumulated Time: 58.48358631134033 for round 33
+Accumulated Time: 60.56379437446594 for round 34
+Accumulated Time: 62.70403575897217 for round 35
+Accumulated Time: 64.92596745491028 for round 36
+Accumulated Time: 67.14560389518738 for round 37
+Accumulated Time: 69.49208283424377 for round 38
+Accumulated Time: 71.8297746181488 for round 39
+Accumulated Time: 74.2016544342041 for round 40
+Accumulated Time: 76.65659952163696 for round 41
+Accumulated Time: 79.14248895645142 for round 42
+Accumulated Time: 81.75514125823975 for round 43
+Accumulated Time: 84.35536289215088 for round 44
+Accumulated Time: 86.98123621940613 for round 45
+Accumulated Time: 89.6909704208374 for round 46
+Accumulated Time: 92.4369580745697 for round 47
+Accumulated Time: 95.3208749294281 for round 48
+Accumulated Time: 98.14721941947937 for round 49
+Accumulated Time: 101.07093048095703 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 87.22787833213806 for round 1
+Accumulated Time: 87.6572117805481 for round 2
+Accumulated Time: 88.1279628276825 for round 3
+Accumulated Time: 88.6792345046997 for round 4
+Accumulated Time: 89.26400065422058 for round 5
+Accumulated Time: 89.88950610160828 for round 6
+Accumulated Time: 90.58628273010254 for round 7
+Accumulated Time: 91.31675982475281 for round 8
+Accumulated Time: 92.13978862762451 for round 9
+Accumulated Time: 92.97712659835815 for round 10
+Accumulated Time: 93.89907765388489 for round 11
+Accumulated Time: 94.85583519935608 for round 12
+Accumulated Time: 95.85272741317749 for round 13
+Accumulated Time: 96.89681243896484 for round 14
+Accumulated Time: 98.00698184967041 for round 15
+Accumulated Time: 99.1755166053772 for round 16
+Accumulated Time: 100.40673041343689 for round 17
+Accumulated Time: 101.68615937232971 for round 18
+Accumulated Time: 103.03988909721375 for round 19
+Accumulated Time: 104.4321961402893 for round 20
+Accumulated Time: 105.93374824523926 for round 21
+Accumulated Time: 107.42270851135254 for round 22
+Accumulated Time: 108.97591519355774 for round 23
+Accumulated Time: 110.56058073043823 for round 24
+Accumulated Time: 112.1658091545105 for round 25
+Accumulated Time: 113.85813999176025 for round 26
+Accumulated Time: 115.57908010482788 for round 27
+Accumulated Time: 117.37040376663208 for round 28
+Accumulated Time: 119.20977425575256 for round 29
+Accumulated Time: 121.0847532749176 for round 30
+Accumulated Time: 123.02747702598572 for round 31
+Accumulated Time: 125.05245304107666 for round 32
+Accumulated Time: 127.073805809021 for round 33
+Accumulated Time: 129.16269707679749 for round 34
+Accumulated Time: 131.31274104118347 for round 35
+Accumulated Time: 133.5696666240692 for round 36
+Accumulated Time: 135.83038115501404 for round 37
+Accumulated Time: 138.233948469162 for round 38
+Accumulated Time: 140.65366864204407 for round 39
+Accumulated Time: 143.07064533233643 for round 40
+Accumulated Time: 145.52189803123474 for round 41
+Accumulated Time: 148.03708410263062 for round 42
+Accumulated Time: 150.67704391479492 for round 43
+Accumulated Time: 153.2837553024292 for round 44
+Accumulated Time: 155.93642210960388 for round 45
+Accumulated Time: 158.65016984939575 for round 46
+Accumulated Time: 161.44546699523926 for round 47
+Accumulated Time: 164.32957887649536 for round 48
+Accumulated Time: 167.26470232009888 for round 49
+Accumulated Time: 170.2075605392456 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 14.546483039855957 for round 1
+Accumulated Time: 14.969604969024658 for round 2
+Accumulated Time: 15.439998865127563 for round 3
+Accumulated Time: 15.96826720237732 for round 4
+Accumulated Time: 16.55734372138977 for round 5
+Accumulated Time: 17.16820788383484 for round 6
+Accumulated Time: 17.839144945144653 for round 7
+Accumulated Time: 18.531676530838013 for round 8
+Accumulated Time: 19.317897081375122 for round 9
+Accumulated Time: 20.167787075042725 for round 10
+Accumulated Time: 21.047935009002686 for round 11
+Accumulated Time: 21.984387397766113 for round 12
+Accumulated Time: 22.956397533416748 for round 13
+Accumulated Time: 24.007610082626343 for round 14
+Accumulated Time: 25.21260094642639 for round 15
+Accumulated Time: 26.494041442871094 for round 16
+Accumulated Time: 27.784836530685425 for round 17
+Accumulated Time: 29.049084901809692 for round 18
+Accumulated Time: 30.38724184036255 for round 19
+Accumulated Time: 31.959083318710327 for round 20
+Accumulated Time: 33.43581771850586 for round 21
+Accumulated Time: 34.9536612033844 for round 22
+Accumulated Time: 36.57454538345337 for round 23
+Accumulated Time: 38.191704988479614 for round 24
+Accumulated Time: 39.88919425010681 for round 25
+Accumulated Time: 41.63602328300476 for round 26
+Accumulated Time: 43.40597629547119 for round 27
+Accumulated Time: 45.25606441497803 for round 28
+Accumulated Time: 47.13172698020935 for round 29
+Accumulated Time: 49.18823528289795 for round 30
+Accumulated Time: 51.13397216796875 for round 31
+Accumulated Time: 53.15653944015503 for round 32
+Accumulated Time: 55.2947154045105 for round 33
+Accumulated Time: 57.395264863967896 for round 34
+Accumulated Time: 59.529906034469604 for round 35
+Accumulated Time: 61.76389932632446 for round 36
+Accumulated Time: 64.19289588928223 for round 37
+Accumulated Time: 66.59005546569824 for round 38
+Accumulated Time: 69.05054473876953 for round 39
+Accumulated Time: 71.60625195503235 for round 40
+Accumulated Time: 74.09788012504578 for round 41
+Accumulated Time: 76.56567025184631 for round 42
+Accumulated Time: 79.1643967628479 for round 43
+Accumulated Time: 81.75930857658386 for round 44
+Accumulated Time: 84.37964272499084 for round 45
+Accumulated Time: 87.0769989490509 for round 46
+Accumulated Time: 89.8560266494751 for round 47
+Accumulated Time: 92.64597845077515 for round 48
+Accumulated Time: 95.47829675674438 for round 49
+Accumulated Time: 98.39541125297546 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 75.19414186477661 for round 1
+Accumulated Time: 75.62977051734924 for round 2
+Accumulated Time: 76.13911008834839 for round 3
+Accumulated Time: 76.68666625022888 for round 4
+Accumulated Time: 77.3027696609497 for round 5
+Accumulated Time: 77.954026222229 for round 6
+Accumulated Time: 78.64750218391418 for round 7
+Accumulated Time: 79.41450834274292 for round 8
+Accumulated Time: 80.2535309791565 for round 9
+Accumulated Time: 81.14211964607239 for round 10
+Accumulated Time: 82.11426091194153 for round 11
+Accumulated Time: 83.09081363677979 for round 12
+Accumulated Time: 84.09287858009338 for round 13
+Accumulated Time: 85.14881992340088 for round 14
+Accumulated Time: 86.32715082168579 for round 15
+Accumulated Time: 87.54498338699341 for round 16
+Accumulated Time: 88.7796413898468 for round 17
+Accumulated Time: 90.0944254398346 for round 18
+Accumulated Time: 91.46303224563599 for round 19
+Accumulated Time: 92.89000821113586 for round 20
+Accumulated Time: 94.34864330291748 for round 21
+Accumulated Time: 95.91445541381836 for round 22
+Accumulated Time: 97.4617817401886 for round 23
+Accumulated Time: 99.0419819355011 for round 24
+Accumulated Time: 100.66994261741638 for round 25
+Accumulated Time: 102.32930040359497 for round 26
+Accumulated Time: 104.02684020996094 for round 27
+Accumulated Time: 105.77950596809387 for round 28
+Accumulated Time: 107.62104558944702 for round 29
+Accumulated Time: 109.5144112110138 for round 30
+Accumulated Time: 111.46635365486145 for round 31
+Accumulated Time: 113.5408501625061 for round 32
+Accumulated Time: 115.60570049285889 for round 33
+Accumulated Time: 117.6903383731842 for round 34
+Accumulated Time: 119.82771873474121 for round 35
+Accumulated Time: 122.02237868309021 for round 36
+Accumulated Time: 124.28466176986694 for round 37
+Accumulated Time: 126.59643840789795 for round 38
+Accumulated Time: 128.94779515266418 for round 39
+Accumulated Time: 131.42168426513672 for round 40
+Accumulated Time: 133.90678453445435 for round 41
+Accumulated Time: 136.45200991630554 for round 42
+Accumulated Time: 139.0311987400055 for round 43
+Accumulated Time: 141.6654713153839 for round 44
+Accumulated Time: 144.32972979545593 for round 45
+Accumulated Time: 147.1162507534027 for round 46
+Accumulated Time: 149.92185282707214 for round 47
+Accumulated Time: 152.79616713523865 for round 48
+Accumulated Time: 155.69450855255127 for round 49
+Accumulated Time: 158.78035020828247 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 152.8994643688202 for round 1
+Accumulated Time: 153.33298063278198 for round 2
+Accumulated Time: 153.82779502868652 for round 3
+Accumulated Time: 154.37917590141296 for round 4
+Accumulated Time: 154.95941519737244 for round 5
+Accumulated Time: 155.59804344177246 for round 6
+Accumulated Time: 156.27925777435303 for round 7
+Accumulated Time: 156.9989492893219 for round 8
+Accumulated Time: 157.78403234481812 for round 9
+Accumulated Time: 158.62208700180054 for round 10
+Accumulated Time: 159.52409172058105 for round 11
+Accumulated Time: 160.4735279083252 for round 12
+Accumulated Time: 161.48580622673035 for round 13
+Accumulated Time: 162.5688624382019 for round 14
+Accumulated Time: 163.6562089920044 for round 15
+Accumulated Time: 164.85102319717407 for round 16
+Accumulated Time: 166.09708046913147 for round 17
+Accumulated Time: 167.3802251815796 for round 18
+Accumulated Time: 168.79245710372925 for round 19
+Accumulated Time: 170.1914768218994 for round 20
+Accumulated Time: 171.6248118877411 for round 21
+Accumulated Time: 173.111177444458 for round 22
+Accumulated Time: 174.6588819026947 for round 23
+Accumulated Time: 176.26446628570557 for round 24
+Accumulated Time: 177.86387252807617 for round 25
+Accumulated Time: 179.53888964653015 for round 26
+Accumulated Time: 181.28106927871704 for round 27
+Accumulated Time: 183.07738494873047 for round 28
+Accumulated Time: 184.90447068214417 for round 29
+Accumulated Time: 186.85547280311584 for round 30
+Accumulated Time: 188.79478096961975 for round 31
+Accumulated Time: 190.77757024765015 for round 32
+Accumulated Time: 192.81908202171326 for round 33
+Accumulated Time: 194.9193205833435 for round 34
+Accumulated Time: 197.07834434509277 for round 35
+Accumulated Time: 199.2629635334015 for round 36
+Accumulated Time: 201.58557057380676 for round 37
+Accumulated Time: 203.8943419456482 for round 38
+Accumulated Time: 206.26604437828064 for round 39
+Accumulated Time: 208.66434049606323 for round 40
+Accumulated Time: 211.1143171787262 for round 41
+Accumulated Time: 213.6068754196167 for round 42
+Accumulated Time: 216.28025317192078 for round 43
+Accumulated Time: 218.89917635917664 for round 44
+Accumulated Time: 221.55450820922852 for round 45
+Accumulated Time: 224.27785801887512 for round 46
+Accumulated Time: 227.0702736377716 for round 47
+Accumulated Time: 229.9926688671112 for round 48
+Accumulated Time: 232.88962078094482 for round 49
+Accumulated Time: 235.83953022956848 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 17.19023561477661 for round 1
+Accumulated Time: 17.623181343078613 for round 2
+Accumulated Time: 18.099728107452393 for round 3
+Accumulated Time: 18.64702296257019 for round 4
+Accumulated Time: 19.2802312374115 for round 5
+Accumulated Time: 19.969393014907837 for round 6
+Accumulated Time: 20.70290184020996 for round 7
+Accumulated Time: 21.432981491088867 for round 8
+Accumulated Time: 22.236046314239502 for round 9
+Accumulated Time: 23.099934577941895 for round 10
+Accumulated Time: 24.031747817993164 for round 11
+Accumulated Time: 25.128289699554443 for round 12
+Accumulated Time: 26.2365984916687 for round 13
+Accumulated Time: 27.42268991470337 for round 14
+Accumulated Time: 28.59481978416443 for round 15
+Accumulated Time: 29.801767349243164 for round 16
+Accumulated Time: 31.12660050392151 for round 17
+Accumulated Time: 32.48461413383484 for round 18
+Accumulated Time: 33.89350700378418 for round 19
+Accumulated Time: 35.31349515914917 for round 20
+Accumulated Time: 36.92963743209839 for round 21
+Accumulated Time: 38.51387691497803 for round 22
+Accumulated Time: 40.14418888092041 for round 23
+Accumulated Time: 41.7612943649292 for round 24
+Accumulated Time: 43.40391492843628 for round 25
+Accumulated Time: 45.099926710128784 for round 26
+Accumulated Time: 46.857722759246826 for round 27
+Accumulated Time: 48.68272280693054 for round 28
+Accumulated Time: 50.53538799285889 for round 29
+Accumulated Time: 52.4618034362793 for round 30
+Accumulated Time: 54.552088499069214 for round 31
+Accumulated Time: 56.616432189941406 for round 32
+Accumulated Time: 58.718254804611206 for round 33
+Accumulated Time: 60.809895277023315 for round 34
+Accumulated Time: 62.96501970291138 for round 35
+Accumulated Time: 65.16942000389099 for round 36
+Accumulated Time: 67.4388747215271 for round 37
+Accumulated Time: 69.83770942687988 for round 38
+Accumulated Time: 72.20087218284607 for round 39
+Accumulated Time: 74.73052334785461 for round 40
+Accumulated Time: 77.2023606300354 for round 41
+Accumulated Time: 79.77593874931335 for round 42
+Accumulated Time: 82.4510862827301 for round 43
+Accumulated Time: 85.09965968132019 for round 44
+Accumulated Time: 87.79611587524414 for round 45
+Accumulated Time: 90.51062178611755 for round 46
+Accumulated Time: 93.30491709709167 for round 47
+Accumulated Time: 96.21411275863647 for round 48
+Accumulated Time: 99.11198735237122 for round 49
+Accumulated Time: 102.04583477973938 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 33.28329110145569 for round 1
+Accumulated Time: 33.70544719696045 for round 2
+Accumulated Time: 34.178285121917725 for round 3
+Accumulated Time: 34.7083683013916 for round 4
+Accumulated Time: 35.27482533454895 for round 5
+Accumulated Time: 35.888479232788086 for round 6
+Accumulated Time: 36.56877112388611 for round 7
+Accumulated Time: 37.26688504219055 for round 8
+Accumulated Time: 38.02240872383118 for round 9
+Accumulated Time: 38.83436155319214 for round 10
+Accumulated Time: 39.720335960388184 for round 11
+Accumulated Time: 40.652541160583496 for round 12
+Accumulated Time: 41.6487820148468 for round 13
+Accumulated Time: 42.7036669254303 for round 14
+Accumulated Time: 43.830629110336304 for round 15
+Accumulated Time: 45.007041692733765 for round 16
+Accumulated Time: 46.21588206291199 for round 17
+Accumulated Time: 47.50229263305664 for round 18
+Accumulated Time: 48.818610191345215 for round 19
+Accumulated Time: 50.18836450576782 for round 20
+Accumulated Time: 51.71717953681946 for round 21
+Accumulated Time: 53.1869740486145 for round 22
+Accumulated Time: 54.72540760040283 for round 23
+Accumulated Time: 56.28704237937927 for round 24
+Accumulated Time: 57.916810035705566 for round 25
+Accumulated Time: 59.6238534450531 for round 26
+Accumulated Time: 61.334280490875244 for round 27
+Accumulated Time: 63.107126235961914 for round 28
+Accumulated Time: 64.93731331825256 for round 29
+Accumulated Time: 66.84578847885132 for round 30
+Accumulated Time: 68.83179235458374 for round 31
+Accumulated Time: 70.81335473060608 for round 32
+Accumulated Time: 72.8489773273468 for round 33
+Accumulated Time: 74.93859529495239 for round 34
+Accumulated Time: 77.07286405563354 for round 35
+Accumulated Time: 79.25160336494446 for round 36
+Accumulated Time: 81.47284126281738 for round 37
+Accumulated Time: 83.8162488937378 for round 38
+Accumulated Time: 86.14148926734924 for round 39
+Accumulated Time: 88.54485034942627 for round 40
+Accumulated Time: 90.97447538375854 for round 41
+Accumulated Time: 93.44430685043335 for round 42
+Accumulated Time: 96.00625562667847 for round 43
+Accumulated Time: 98.70214319229126 for round 44
+Accumulated Time: 101.3509452342987 for round 45
+Accumulated Time: 104.06510829925537 for round 46
+Accumulated Time: 106.83101320266724 for round 47
+Accumulated Time: 109.62090039253235 for round 48
+Accumulated Time: 112.54257345199585 for round 49
+Accumulated Time: 115.43527173995972 for round 50
+Name Model Random Forest:  
+Drop out Method: None 
+Drop out Method: 50 
+Smooth Method: None 
+Smooth Strenght: 0.5 
+Accumulated Time: 29.846835136413574 for round 1
+Accumulated Time: 30.301643133163452 for round 2
+Accumulated Time: 30.81142234802246 for round 3
+Accumulated Time: 31.375656127929688 for round 4
+Accumulated Time: 32.00353765487671 for round 5
+Accumulated Time: 32.672048568725586 for round 6
+Accumulated Time: 33.38336730003357 for round 7
+Accumulated Time: 34.14542841911316 for round 8
+Accumulated Time: 34.95973229408264 for round 9
+Accumulated Time: 35.81694674491882 for round 10
+Accumulated Time: 36.73485255241394 for round 11
+Accumulated Time: 37.6881844997406 for round 12
+Accumulated Time: 38.693997383117676 for round 13
+Accumulated Time: 39.795084714889526 for round 14
+Accumulated Time: 40.941622734069824 for round 15
+Accumulated Time: 42.17990756034851 for round 16
+Accumulated Time: 43.46879053115845 for round 17
+Accumulated Time: 44.80173873901367 for round 18
+Accumulated Time: 46.23686742782593 for round 19
+Accumulated Time: 47.77498817443848 for round 20
+Accumulated Time: 49.275134563446045 for round 21
+Accumulated Time: 50.8612539768219 for round 22
+Accumulated Time: 52.48480248451233 for round 23
+Accumulated Time: 54.152241945266724 for round 24
+Accumulated Time: 55.894644021987915 for round 25
+Accumulated Time: 57.66085362434387 for round 26
+Accumulated Time: 59.49469590187073 for round 27
+Accumulated Time: 61.40216088294983 for round 28
+Accumulated Time: 63.34223985671997 for round 29
+Accumulated Time: 65.30919098854065 for round 30
+Accumulated Time: 67.39324069023132 for round 31
+Accumulated Time: 69.49053287506104 for round 32
+Accumulated Time: 71.64971995353699 for round 33
+Accumulated Time: 73.88959217071533 for round 34
+Accumulated Time: 76.19758224487305 for round 35
+Accumulated Time: 78.59767031669617 for round 36
+Accumulated Time: 81.15102005004883 for round 37
+Accumulated Time: 83.62594509124756 for round 38
+Accumulated Time: 86.20887684822083 for round 39
+Accumulated Time: 88.8238160610199 for round 40
+Accumulated Time: 91.49619317054749 for round 41
+Accumulated Time: 94.21927452087402 for round 42
+Accumulated Time: 97.10498356819153 for round 43
+Accumulated Time: 100.01414585113525 for round 44
+Accumulated Time: 102.9066755771637 for round 45
+Accumulated Time: 105.85522627830505 for round 46
+Accumulated Time: 108.87086892127991 for round 47
+Accumulated Time: 112.16457200050354 for round 48
+Accumulated Time: 115.54037642478943 for round 49
+Accumulated Time: 118.88591122627258 for round 50

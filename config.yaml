@@ -33,7 +33,7 @@ train_size: 0.7
 # ****** * * * * * * *  *  *   *    *    *  *  * * * * * * * *******************
 
 ##############  Number of clients (data centers) to use for training
-num_clients: 1
+num_clients: 2
 
 ############## Model type
 # Possible values: logistic_regression, lsvc, elastic_net, random_forest, weighted_random_forest, xgb

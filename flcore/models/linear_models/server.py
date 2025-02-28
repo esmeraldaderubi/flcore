@@ -73,7 +73,7 @@ def evaluate_held_out(
     loss = log_loss(y_test, y_pred)
     metrics = calculate_metrics(y_test, y_pred)
     n_samples = len(y_test)
-    metrics['n samples'] = n_samples
+    metrics['n_samples'] = n_samples
     metrics['client_id'] = client_id
 
     # Train personalized model
