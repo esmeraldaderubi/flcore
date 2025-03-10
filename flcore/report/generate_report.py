@@ -162,7 +162,7 @@ def generate_report(experiment_path: str):
 
     }
 
-    pdfkit.from_file(f'{experiment_path}/report.html', f'{experiment_path}/report.pdf', options = options)
+    #pdfkit.from_file(f'{experiment_path}/report.html', f'{experiment_path}/report.pdf', options = options)
 
 # main
 
