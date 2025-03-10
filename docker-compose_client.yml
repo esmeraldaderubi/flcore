@@ -1,0 +1,27 @@
+
+services:
+  flcore:
+    build: ./
+    container_name: flcore
+    volumes:
+      - .:/flcore  # Mount the entire project folder to /flcore in the container
+      - ./logs:/logs  # Mount logs directory from the host to the container
+      - ${DATA_PATH}:/dataset:ro  # Mount dataset as read-only from host to container
+      - ${SANDBOX_PATH}:/sandbox:shared  # Shared sandbox directory from host to container
+      - ${FLOWER_SSL_CACERT}:/certificates  # Mount the certificates directory into the container
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DATA_PATH=${DATA_PATH}  # Pass the DATA_PATH environment variable
+      - SANDBOX_PATH=${SANDBOX_PATH}  # Pass the SANDBOX_PATH environment variable
+      - FLOWER_CENTRAL_SERVER_IP=${FLOWER_CENTRAL_SERVER_IP}  # Flower server IP
+      - FLOWER_CENTRAL_SERVER_PORT=${FLOWER_CENTRAL_SERVER_PORT}  # Flower server port
+      - FLOWER_SSL_CACERT=${FLOWER_SSL_CACERT}  # SSL certificates path
+      - NODE_NAME=${NODE_NAME}  # Node name
+    ports:
+      - "4433:4433"  # Expose the server port
+    restart: always  # Restart the service if it crashes
+    command: python3 client.py 1
+
+    
+
+

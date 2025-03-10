@@ -18,6 +18,12 @@ from sklearn.feature_selection import SelectKBest, f_classif
 
 
 from flcore.models.xgb.utils import TreeDataset, do_fl_partitioning, get_dataloader
+from sklearn.impute import KNNImputer, SimpleImputer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.compose import make_column_selector as selector
+from imblearn.pipeline import Pipeline as imbPipeline
 
 XY = Tuple[np.ndarray, np.ndarray]
 Dataset = Tuple[XY, XY]
@@ -144,6 +150,101 @@ def load_cvd(data_path, center_id=None) -> Dataset:
     # print(train_max_acc)
     # print(test_max_acc)
 
+    return (X_train, y_train), (X_test, y_test)
+
+
+#It makes the imputer+ scaling in continous
+#It makes the imputer in categorical
+#Please use data separated by training and testing separately
+#and make sure to define the cat and cont initially
+def pre_processingyouthgemts(data):
+    cat_features = data.select_dtypes(include='category').columns
+    length_cats = cat_features.shape[0]
+    print(data.shape)
+    print(length_cats)
+    
+    imputer_cat = SimpleImputer(missing_values = np.nan, strategy='most_frequent')
+    imputer_cont = KNNImputer(n_neighbors=4, weights="uniform")
+
+    numeric_transformer = Pipeline(
+        steps=[("imputer", imputer_cont), ("scaler", StandardScaler())]
+    )
+
+    categorical_transformer = Pipeline(
+        steps=[
+            ("imputer", imputer_cat)
+        ]
+    )
+    
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", numeric_transformer, selector(dtype_exclude="category")),
+            ("cat", categorical_transformer, selector(dtype_include="category")),
+        ]
+    )
+    pipeline = imbPipeline([("preprocessor", preprocessor)]).set_output(transform="pandas")
+    pipeline.fit(data)
+
+    data = pipeline.transform(data)
+    #remove the prefix added by the transformer NUM___ and CAT___
+    data.columns = [s[5:] for s in data.columns]
+
+    #add the categorical again
+    for col in data.columns:
+        if col in cat_features:
+            data[col] = data[col].astype('category',copy=False)
+        
+
+    return data
+
+def load_youthgems(config, center_id=None) -> Dataset:
+    data_path = config["data_path"]
+    continuous_variable_names = config["continuous_variable_names"]
+
+    #read the tabular data
+    if center_id == 1:
+        file_name = data_path+'UKpopulationMentalHealthIssues.csv'
+    else:
+        file_name = data_path+'WalespopulationMentalHealthIssues.csv'
+
+
+    #remove unknown columns
+    code_id = "MCSID"
+    code_id2 = "ACNUM00"
+    code_outcome = "Eval"
+
+    data = pd.read_csv(file_name)
+    X_data = data.drop([code_id,code_id2, code_outcome], axis=1)
+    y_data = data[code_outcome]
+
+    
+    #f_eid = data[code_id]
+
+    # get column names of data frame in a list
+    col_names = list(X_data)
+    
+    # loop to change each column to category type
+    for col in col_names:
+        if col not in continuous_variable_names:
+            X_data[col] = X_data[col].astype('category',copy=False)
+
+
+    # Split the data
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+    train_index, test_index = next(sss.split(X_data, y_data))
+    X_test = X_data.iloc[test_index, :]
+    X_train = X_data.iloc[train_index, :]
+    y_test, y_train = y_data.iloc[test_index], y_data.iloc[train_index]
+    # We save the names
+    #f_eid.iloc[test_index]
+    #f_eid.iloc[train_index]
+
+    #impute and standarize the data
+    X_train = pre_processingyouthgemts(X_train)
+    X_test = pre_processingyouthgemts(X_test)
+    
+    print(X_train.shape)
+    print(X_test.shape)
     return (X_train, y_train), (X_test, y_test)
 
 def load_ukbb_cvd(data_path, center_id, config) -> Dataset:
@@ -702,6 +803,8 @@ def load_dataset(config, id=None):
         return load_libsvm(config, id)
     elif config["dataset"] == "dt4h_format":
         return load_dt4h(config, id)
+    elif config["dataset"] == "youthgems_format":
+        return load_youthgems(config, id)
     else:
         raise ValueError("Invalid dataset name")
 

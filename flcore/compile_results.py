@@ -47,7 +47,8 @@ def compile_results(experiment_dir: str):
             # Read history.yaml
             history = yaml.safe_load(open(os.path.join(fold_dir, "history.yaml"), "r"))
             
-            selection_metric = 'val '+ config['checkpoint_selection_metric']
+            #selection_metric = 'val '+ config['checkpoint_selection_metric']
+            selection_metric = config['checkpoint_selection_metric']
             best_round= int(np.argmax(history['metrics_distributed'][selection_metric]))
             # client_order = history['metrics_distributed']['per client client_id'][best_round]
             client_order = history['metrics_distributed']['per client n samples'][best_round]
@@ -133,18 +134,19 @@ def compile_results(experiment_dir: str):
         if metric not in execution_stats:
             writer.write(f"{metric:<30}: {mean:<6.3f}  ±{std:<6.3f}  \t\t\t|| Per client {metric} {per_client_mean}  ({per_client_std})\n".replace("\n", "")+"\n")
         for i, _ in enumerate(per_client_mean):
-            center = int(per_client_metrics['client_id'][0, i])
-            center = center_names[center]
-            if center not in csv_dict:
-                csv_dict[center] = {}
-            csv_dict[center][metric] = per_client_mean[i]
-            csv_dict[center][metric+'_std'] = per_client_std[i]
+            #center = int(per_client_metrics['client_id'][0, i])
+            #center = center_names[center]
+            #if center not in csv_dict:
+            #    csv_dict[center] = {}
+            csv_dict[metric] = per_client_mean[i]
+            csv_dict[metric+'_std'] = per_client_std[i]
 
 
     # print execution stats
     writer.write(f"\n{'Execution stats:'} \n")
     per_client_metrics.update(fit_metrics)
-    for metric in execution_stats:
+    #for metric in execution_stats:
+    for metric in per_client_metrics:
         mean = np.average(per_client_metrics[metric])
         std = np.std(np.mean(per_client_metrics[metric], axis=1))
         per_client_mean = np.around(np.mean(per_client_metrics[metric], axis=0), 3)
@@ -185,8 +187,8 @@ def compile_results(experiment_dir: str):
 
 
     # Create dataframe from dict
-    df = pd.DataFrame(csv_dict)
-    df = df.T
+    df = pd.DataFrame([csv_dict])
+    #df = df.T
     df = df.rename(columns={"index": "center"})
     # Add column with train size
     df['train n samples'] = 5 * df['n samples'] - 1

@@ -50,9 +50,9 @@ if __name__ == "__main__":
         central_ip = os.getenv("FLOWER_CENTRAL_SERVER_IP")
         central_port = os.getenv("FLOWER_CENTRAL_SERVER_PORT")
         certificates = (
-            Path('.cache/certificates/rootCA_cert.pem').read_bytes(),
-            Path('.cache/certificates/server_cert.pem').read_bytes(),
-            Path('.cache/certificates/server_key.pem').read_bytes(),
+            Path('certificates/ca.crt').read_bytes(),
+            Path('certificates/server.pem').read_bytes(),
+            Path('certificates/server.key').read_bytes(),
         )
     else:
         data_path = config["data_path"]
@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     data = (X_train, y_train), (X_test, y_test)
 
-    server, strategy = get_model_server_and_strategy(config, data)
+    server, strategy = get_model_server_and_strategy(config)
 
     # Start Flower server for three rounds of federated learning
     history = fl.server.start_server(
