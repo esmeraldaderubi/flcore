@@ -20,6 +20,8 @@ if __name__ == "__main__":
     model = config["model"]
 
     if config["production_mode"]:
+        from dotenv import load_dotenv
+        status = load_dotenv('client.env', override=True)
         node_name = os.getenv("NODE_NAME")
         num_client = int(node_name.split("_")[-1])
         data_path = os.getenv("DATA_PATH")
