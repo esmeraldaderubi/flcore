@@ -230,7 +230,7 @@ def load_youthgems(config, center_id=None) -> Dataset:
 
 
     # Split the data
-    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=config["seed"])
     train_index, test_index = next(sss.split(X_data, y_data))
     X_test = X_data.iloc[test_index, :]
     X_train = X_data.iloc[train_index, :]
