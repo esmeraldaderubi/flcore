@@ -9,6 +9,7 @@ import yaml
 import flcore.datasets as datasets
 from flcore.server_selector import get_model_server_and_strategy
 from flcore.compile_results import compile_results
+from params import get_parser, validate_model_specific_args,generate_config_dict
 
 warnings.filterwarnings("ignore")
 
@@ -32,18 +33,28 @@ def check_config(config):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) == 2:
-        config_path = sys.argv[1]
-    else:
-        config_path = "config.yaml"
+    #if len(sys.argv) == 2:
+    #    config_path = sys.argv[1]
+    #else:
+    #    config_path = "config.yaml"
 
     # Read the config file
 
-    with open(config_path, "r") as f:
-        config = yaml.safe_load(f)
+    #with open(config_path, "r") as f:
+    #    config = yaml.safe_load(f)
+
+    #Instead of using the config.yaml use the parameters
+    config_path = "config.yaml"
+    parser = get_parser()
+    args = parser.parse_args()
+    validate_model_specific_args(args)
+    config = generate_config_dict(args)
 
     #Check the config file
     check_config(config)
+
+    with open(config_path, "w") as f:
+        yaml.dump(config, f)
 
     if config["production_mode"]:
         data_path = os.getenv("DATA_PATH")
