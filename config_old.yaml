@@ -10,7 +10,7 @@
 ################################################################################
 
 ##############  Dataset type to use
-# Possible values: , kaggle_hf, mnist, dt4h_format
+# Possible values: youthgems_format, kaggle_hf, mnist, dt4h_format
 dataset: youthgems_format
 #custom
 #libsvm
