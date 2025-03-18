@@ -159,9 +159,9 @@ def load_cvd(data_path, center_id=None) -> Dataset:
 #and make sure to define the cat and cont initially
 def pre_processingyouthgemts(data):
     cat_features = data.select_dtypes(include='category').columns
-    length_cats = cat_features.shape[0]
-    print(data.shape)
-    print(length_cats)
+    length_cats = len(cat_features)
+    print("Data size:",data.shape)
+    print("Number of categorical:", length_cats)
     
     imputer_cat = SimpleImputer(missing_values = np.nan, strategy='most_frequent')
     imputer_cont = KNNImputer(n_neighbors=4, weights="uniform")
@@ -239,6 +239,8 @@ def load_youthgems(config, center_id=None) -> Dataset:
     code_id = "MCSID"
     code_id2 = "ACNUM00"
     code_outcome = config["outcome"]
+    print("outcome")
+    print(code_outcome)
 
     data = pd.read_csv(file_name)
 

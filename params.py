@@ -80,6 +80,10 @@ def generate_config_dict(args):
         "outcome" : args.outcome
     }
 
+    # If only a subset of features is defined
+    if hasattr(args, "feature_subset") and args.feature_subset is not None:
+        config_dict["feature_subset"] = args.feature_subset
+
     # Add model-specific fields
     if args.model in ["logistic_regression", "lsvc", "elastic_net"] and args.n_features is not None:
         config_dict["linear_models"] = {"n_features": args.n_features}
