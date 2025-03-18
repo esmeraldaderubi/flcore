@@ -1,4 +1,6 @@
+import json
 import numpy as np
+import shap
 import torch
 from torch import Tensor
 from torchmetrics import MetricCollection
@@ -75,6 +77,7 @@ def calculate_metrics(y_true, y_pred, task_type="binary"):
     return metrics
 
 def metrics_aggregation_fn(distributed_metrics):
+    #choose the metrics that are located in the second position of the dictionary that it is a dictionary as well
     print(distributed_metrics[0][1].keys())
     keys_names = distributed_metrics[0][1].keys()
     keys_names = list(keys_names)
@@ -82,11 +85,52 @@ def metrics_aggregation_fn(distributed_metrics):
     metrics ={}
 
     for kn in keys_names:
-        results = [ evaluate_res[kn] for _, evaluate_res in distributed_metrics]
-        metrics[kn] = np.mean(results)
-        metrics['per client ' + kn] = results
-        #print(f"Metric {kn} in aggregation evaluate: {metrics[kn]}\n")
+        #For visualization purposes, we will have some metrics for plots
+        if kn in ["y_true", "y_pred_prob", "y_pred","shap_values","shap_feature_names","shap_base_value"]:
+            deserialized = [json.loads(evaluate_res[kn]) for _, evaluate_res in distributed_metrics] 
+            metrics['per client ' + kn] = deserialized  
+        else:
+            results = [ evaluate_res[kn] for _, evaluate_res in distributed_metrics]
+            metrics[kn] = np.mean(results)
+            metrics['per client ' + kn] = results
+            #print(f"Metric {kn} in aggregation evaluate: {metrics[kn]}\n")
 
     metrics['per client n samples'] = [res[0] for res in distributed_metrics]
 
     return metrics
+
+def visualization_metrics_server_report(metrics,y_pred_prob,y_pred,y_test,model,X_test ):
+    #To create the visualization plots in the server
+    metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,0].tolist())  
+    metrics["y_pred"] = json.dumps(y_pred.tolist())  
+    metrics["y_true"] = json.dumps(y_test.tolist())
+
+    
+    # ---- SHAP values ----
+    try:
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(X_test)
+
+        if isinstance(shap_values, list) and len(shap_values) == 2:
+            shap_vals = shap_values[1]  # For binary classification
+        else:
+            shap_vals = shap_values
+
+        # Convert SHAP matrix to list of lists (for JSON serialization)
+        shap_matrix = shap_vals.tolist()
+
+        # Feature names
+        feature_names = X_test.columns.tolist()
+       
+        # SHAP base values (expected value of model output)
+        base_value = explainer.expected_value[1] if isinstance(explainer.expected_value, (list, np.ndarray)) else explainer.expected_value
+
+        metrics["shap_values"] = json.dumps(shap_matrix)
+        metrics["shap_feature_names"] = json.dumps(feature_names)
+        metrics["shap_base_value"] = json.dumps([float(base_value)])
+
+    except Exception as e:
+        print(f"SHAP calculation failed: {e}")
+        metrics["shap_values"] = json.dumps([])
+        metrics["shap_feature_names"] = json.dumps([])
+        metrics["shap_base_value"] = None

@@ -1,3 +1,4 @@
+import json
 import warnings
 
 import flwr as fl
@@ -7,7 +8,7 @@ import flcore.datasets as datasets
 from flcore.serialization_funs import serialize_RF, deserialize_RF
 import flcore.models.random_forest.utils as utils
 from flcore.performance import measurements_metrics
-from flcore.metrics import calculate_metrics
+from flcore.metrics import calculate_metrics, visualization_metrics_server_report
 from flwr.common import (
     Code,
     EvaluateIns,
@@ -49,10 +50,10 @@ class MnistClient(fl.client.Client):
         )
 
     def fit(self, ins: FitIns):  # , parameters, config type: ignore
-        parameters = ins.parameters
-        #Deserialize to get the real parameters
-        parameters = deserialize_RF(parameters)
-        utils.set_model_params(self.model, parameters)
+        #parameters = ins.parameters
+        ##Deserialize to get the real parameters
+        #parameters = deserialize_RF(parameters)
+        #utils.set_model_params(self.model, parameters)
         # Ignore convergence failure due to low local epochs
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -87,6 +88,8 @@ class MnistClient(fl.client.Client):
         params = utils.get_model_parameters(self.model)
         parameters_updated = serialize_RF(params)
 
+        #print(f"Number of trees in the Random Forest: {len(self.model)}")
+
         # Build and return response
         status = Status(code=Code.OK, message="Success")
         return FitRes(
@@ -115,6 +118,9 @@ class MnistClient(fl.client.Client):
         # print(f"precision in evaluate:  {precision}")
         # print(f"F1_score in evaluate:  {F1_score}")
 
+        visualization_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test )
+      
+
         # Serialize to send it to the server
         #params = get_model_parameters(model)
         #parameters_updated = serialize_RF(params)
@@ -124,7 +130,7 @@ class MnistClient(fl.client.Client):
             status=status,
             loss=float(loss),
             num_examples=len(self.X_test),
-            metrics=metrics,
+            metrics=metrics
         )
 
 
