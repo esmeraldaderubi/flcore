@@ -197,9 +197,36 @@ def pre_processingyouthgemts(data):
 
     return data
 
+
+#The continous values are obtained from the json that has the description of each
+#variable
+def get_continous_variables(config) -> Dataset:
+    data_path = config["data_path"]
+    file_name = data_path+"dataset_description.json"
+
+    with open(file_name, "r") as f:
+        data = json.load(f)
+
+    # Extract names of variables where type is continuous
+    continuous_vars = [item["name"] for item in data if item.get("type") == "continuous"]
+
+    print("Continuous variables:")
+    print(continuous_vars)
+    return continuous_vars
+
+
+def select_feature_subsets(df, config) -> Dataset:
+    # Check if feature_subset is defined and not None
+    if "feature_subset" in config:
+        # Only use columns that exist in df to avoid KeyError
+        safe_cols = [col for col in config["feature_subset"] if col in df.columns]
+        df = df[safe_cols]
+    return df
+    
 def load_youthgems(config, center_id=None) -> Dataset:
     data_path = config["data_path"]
-    continuous_variable_names = config["continuous_variable_names"]
+    #continuous_variable_names = config["continuous_variable_names"]
+    continuous_variable_names = get_continous_variables(config) 
 
     #read the tabular data
     if center_id == 1:
@@ -214,7 +241,10 @@ def load_youthgems(config, center_id=None) -> Dataset:
     code_outcome = "Eval"
 
     data = pd.read_csv(file_name)
+
     X_data = data.drop([code_id,code_id2, code_outcome], axis=1)
+    #If we define a subset of features remove the non-specified ones
+    X_data = select_feature_subsets(X_data, config)
     y_data = data[code_outcome]
 
     
