@@ -62,16 +62,9 @@ def validate_model_specific_args(args):
 def generate_config_dict(args):
     config_dict = {
         "dataset": args.dataset,
-        "continuous_variable_names": args.continuous_variable_names,
         "num_clients": args.num_clients,
         "model": args.model,
         "num_rounds": args.num_rounds,
-        "checkpoint_selection_metric": args.checkpoint_selection_metric,
-        "experiment": {
-            "name": args.experiment_name,
-            "log_path": args.experiment_log_path,
-            "debug": args.experiment_debug
-        },
         "dropout_method": args.dropout_method,
         "dropout": {
             "percentage_drop": args.percentage_drop
@@ -80,11 +73,11 @@ def generate_config_dict(args):
         "smoothWeights": {
             "smoothing_strenght": args.smoothing_strenght
         },
-        "held_out_center_id": args.held_out_center_id,
         "seed": args.seed,
         "local_port": args.local_port,
         "data_path": args.data_path,
-        "production_mode": args.production_mode
+        "production_mode": args.production_mode,
+        "outcome" : args.outcome
     }
 
     # Add model-specific fields
