@@ -238,7 +238,7 @@ def load_youthgems(config, center_id=None) -> Dataset:
     #remove unknown columns
     code_id = "MCSID"
     code_id2 = "ACNUM00"
-    code_outcome = "Eval"
+    code_outcome = config["outcome"]
 
     data = pd.read_csv(file_name)
 
