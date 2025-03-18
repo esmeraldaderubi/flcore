@@ -63,8 +63,8 @@ if __name__ == "__main__":
         central_port = os.getenv("FLOWER_CENTRAL_SERVER_PORT")
         certificates = (
             Path(os.getenv("FLOWER_SSL_CACERT")).read_bytes(),
-            #Path('certificates/server.pem').read_bytes(),
-            #Path('certificates/server.key').read_bytes(),
+            Path('certificates/server.pem').read_bytes(),
+            Path('certificates/server.key').read_bytes(),
         )
     else:
         data_path = config["data_path"]

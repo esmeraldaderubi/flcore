@@ -14,3 +14,4 @@ tqdm==4.65.0
 xgboost==1.7.5
 pdfkit==1.0.0
 dotenv
+shap==0.46.0
