@@ -39,7 +39,7 @@ def get_model_parameters(model: RandomForestClassifier) -> RFRegParams:
 def set_model_params(
     model: RandomForestClassifier, params: RFRegParams
 ) -> RandomForestClassifier:
-    """Sets the parameters of a sklean LogisticRegression model."""
+    """Sets the parameters """
     model.n_classes_ =2
     model.estimators_ = params[0]
     model.classes_ = np.array([i for i in range(model.n_classes_)])

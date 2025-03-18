@@ -120,7 +120,7 @@ def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strengh
     rfa= get_model(bal_RF)
     numberTreesperclient = int(len(rfs[0][0][0]))
     number_Clients = len(rfs)
-    random_select =int(numberTreesperclient/number_Clients)
+    #random_select =int(numberTreesperclient/number_Clients)
     list_classifiers = []
     weights_classifiers = [] 
     if(smoothing_method!= 'None'):
@@ -135,6 +135,7 @@ def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strengh
         weights_classifiers = np.concatenate(((weights_classifiers),([weights_smooth]*len(rfs[i][0][0]))))
 
     weights_classifiers = weights_classifiers / sum(weights_classifiers )
+    np.random.seed(42)  # Set seed for reproducibility
     client_indices = np.random.choice([j for j in range(len(list_classifiers))], numberTreesperclient, p=weights_classifiers)
     
     selectedTrees = list_classifiers[client_indices]

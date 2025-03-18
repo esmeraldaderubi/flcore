@@ -6,16 +6,18 @@ def get_parser():
     # General arguments
     # Possible values: youthgems_format, kaggle_hf, mnist, dt4h_format
     parser.add_argument("--dataset", required=True)
-    parser.add_argument("--continuous_variable_names", nargs="+", required=True)
+    #parser.add_argument("--continuous_variable_names", nargs="+")
     parser.add_argument("--num_clients", type=int, default=1)
     parser.add_argument("--model", choices=["logistic_regression", "lsvc", "elastic_net", "random_forest", "weighted_random_forest", "xgb"], required=True)
     parser.add_argument("--num_rounds", type=int, default=50)
-    parser.add_argument("--checkpoint_selection_metric", choices=["accuracy", "balanced_accuracy", "f1", "precision", "recall"], required=True)
+    #parser.add_argument("--checkpoint_selection_metric", choices=["accuracy", "balanced_accuracy", "f1", "precision", "recall"], required=True)
+    parser.add_argument("--outcome", default="Eval")
+    parser.add_argument("--feature_subset", nargs="+")
 
     # Experiment
-    parser.add_argument("--experiment_name", default="experiment_1")
-    parser.add_argument("--experiment_log_path", default="logs")
-    parser.add_argument("--experiment_debug", type=bool, default=True)
+    #parser.add_argument("--experiment_name", default="experiment_1")
+    #parser.add_argument("--experiment_log_path", default="logs")
+    #parser.add_argument("--experiment_debug", type=bool, default=True)
 
     # Dropout and smoothing
     parser.add_argument("--dropout_method", default="None")
@@ -33,7 +35,7 @@ def get_parser():
     parser.add_argument("--tree_num", type=int)
 
     # Other config
-    parser.add_argument("--held_out_center_id", type=int, default=-1)
+    #parser.add_argument("--held_out_center_id", type=int, default=-1)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--local_port", type=int, default=8081)
     parser.add_argument("--data_path", default="dataset/")

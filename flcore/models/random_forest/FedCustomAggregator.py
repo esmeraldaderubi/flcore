@@ -154,12 +154,12 @@ class FedCustom(fl.server.strategy.FedAvg):
         print(f"Elapsed time: {elapsed_time} for round {server_round}")
         metrics_aggregated['training_time [s]'] = self.accum_time
         
-        filename = 'server_results.txt'
-        with open(
-        filename,
-        "a",
-        ) as f:
-            f.write(f"Accumulated Time: {self.accum_time} for round {server_round}\n")
+        #filename = 'server_results.txt'
+        #with open(
+        #filename,
+        #"a",
+        #) as f:
+        #    f.write(f"Accumulated Time: {self.accum_time} for round {server_round}\n")
 
         return parameters_aggregated, metrics_aggregated
     

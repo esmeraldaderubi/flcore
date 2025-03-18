@@ -1,0 +1,4464 @@
+[
+    {
+        "name": "Eval",
+        "description": "Parent-reported SDQ score to assess mental health difficulties in youth, threshold >=17 ",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Negative",
+            "1.0": "Positive"
+
+        },
+        "scope": "Outcome Variables"
+    },
+    {
+        "name": "Sex",
+        "description": "Sex of the children",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Male",
+            "1.0": "Female"
+
+        },
+        "scope": "Outcome Variables"
+    },
+    {
+        "name": "Ethnicity",
+        "description": "Ethinicty",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Non White",
+            "1.0": "White"
+
+        },
+        "scope": "Outcome Variables"
+    },
+    {
+        "name": "ACGIVE00",
+        "description": "Development: gives toy",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACGRAB00",
+        "description": "Development: grabs objects",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACHAND00",
+        "description": "Development: hands together",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACNODS00",
+        "description": "Development: nods for yes",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACPICK00",
+        "description": "Development: holds small objects",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACPTOY00",
+        "description": "Development: passes a toy",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACSITU00",
+        "description": "Development: sits up",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACSMIL00",
+        "description": "Development: smiles",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACSTAN00",
+        "description": "Development: stands up holding on",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ACWAVE00",
+        "description": "Development: waves bye-bye",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Often",
+            "2.0": "Sometimes",
+            "3.0": "Not yet"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "ADBWGT00",
+        "description": "DV Cohort Member birth weight in kilos",
+        "type": "continuous",
+        "categories": {
+            "-8.0": "Dont Know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "APDEWM0A",
+        "description": "Type of delivery MC1",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Dont Know",
+            "-1.0": "Not applicable",
+            "1.0": "... a normal delivery,",
+            "2.0": "assisted with forceps,",
+            "3.0": "assisted vacuum extraction,",
+            "4.0": "assisted breach,",
+            "5.0": "a planned Caesarian,",
+            "6.0": "an emergency Caesarian,",
+            "51.0": "Other/Other assisted delivery",
+            "52.0": "Other/Water birth",
+            "85.0": "Other answer (not codeable)",
+            "86.0": "Irrelevant response",
+            "95.0": "or, another type of delivery?"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "APDROF00",
+        "description": "Frequency of alcohol consumption during pregnancy?",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Don't Know",
+            "-1.0": "Not applicable",
+            "1.0": "Every day",
+            "2.0": "5-6 times per week",
+            "3.0": "3-4 times per week",
+            "4.0": "1-2 times per week",
+            "5.0": "1-2 times per month",
+            "6.0": "Less than once a month",
+            "7.0": "Never"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "APILPR00",
+        "description": "Any illnesses or problems during pregnancy",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Dont Know",
+            "-1.0": "Not applicable",
+            "1.0": "Yes",
+            "2.0": "No"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "APWRBM0AR",
+        "description": "Problems at birth or in first week MC1 recoded",
+        "type": "categorical",
+        "categories": {
+            "-9.0": "Refusal",
+            "-8.0": "Dont Know",
+            "-1.0": "Not applicable",
+            "1.0": "No problems",
+            "2.0": "Delay in breathing at birth",
+            "3.0": "Breathing difficulty or distress in first week",
+            "4.0": "Jaundice requiring hospital treatment",
+            "5.0": "Infection or suspected infection",
+            "51.0": "Other/Low body temperature",
+            "52.0": "Other/Low blood sugar level",
+            "53.0": "Other/Cord around neck",
+            "54.0": "Other/Birth injury",
+            "55.0": "Other/Meconium, mucus or fluid aspiration, heart rate or oth",
+            "56.0": "Other/Failure to thrive, excess loss of weight",
+            "57.0": "Other/Mention of intensive care, special care unit, incubator",
+            "58.0": "Other/Tube fed, nasogastric feeds",
+            "59.0": "Other/Other feeding problems, vomiting",
+            "60.0": "Other/Other major procedures, transfusion, operation, ventilator",
+            "61.0": "Other/Maternal problem without mention of baby",
+            "62.0": "Other/Born early, premature, low birth weight",
+            "63.0": "Other/Convulsions, fits, jittery",
+            "70.0": "Other/Congenital heart disease, definite",
+            "71.0": "Other/Congenital heart disease, not yet definite",
+            "72.0": "Other/Congenital dislocation of hip, definite",
+            "73.0": "Other/Congenital dislocation of hip, not yet definite",
+            "74.0": "Other/Clubfoot (Talipes equinovarus), definite",
+            "75.0": "Other/Talipes, not yet definite",
+            "76.0": "Other/Specified skeletal abnormalities",
+            "77.0": "Other/Urogenital abnormalities",
+            "78.0": "Other/Gastrointestinal abnormalities",
+            "79.0": "Other/Harelip/cleft palate",
+            "80.0": "Other/Skin abnormalities",
+            "81.0": "Other/Chromosomal or genetic abnormalities",
+            "82.0": "Other/Brain, central nervous, spinal cord or special sense a",
+            "83.0": "Other/Other congenital abnormalities major",
+            "84.0": "Other/Other congenital abnormalities minor",
+            "85.0": "Other answer (not codeable 1-5, 51-63,",
+            "86.0": "Irrelevant response",
+            "94.0": "Other problems in first week",
+            "95.0": "Other problems at birth",
+            "99.0": "Recoded - see SecureAccess data"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "BPSPLM0A",
+        "description": "Concerns about CM speech/language (A) [No concerns about speech]",
+        "type": "categorical",
+        "categories": {
+            "-1.0": "Not applicable",
+            "0.0": "No",
+            "1.0": "Yes"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "BPWOHD00",
+        "description": "Other concerns about health/development",
+        "type": "categorical",
+        "categories": {
+            "-1.0": "Not applicable",
+            "1.0": "Yes",
+            "2.0": "No"
+        },
+        "scope": "Development and birth variables"
+    },
+    {
+        "name": "KesslerHistory",
+        "description": "Kessler history of main caregivers. Calculated (OR Binary >=13 for each BDKESS00, CDKESS00, DDKESSLER)",
+        "type": "categorical",
+        "categories": {
+            "-1.0": "Not applicable",
+            "0.0": "Yes",
+            "1.0": "No"
+        },
+        "scope": "Previous health history before baseline (11 years old)"
+    },
+    {
+        "name": "LongstandingchildrenHistory",
+        "description": "Longstanding illness -children history",
+        "type": "categorical",
+        "categories": {
+            "-1.0": "Not applicable",
+            "0.0": "Yes",
+            "1.0": "No"
+        },
+        "scope": "Previous health history before baseline (11 years old)"
+    },
+    {
+        "name": "LongstandingparentsHistory",
+        "description": "Longstanding illness -caregivers history",
+        "type": "categorical",
+        "categories": {
+            "-1.0": "Not applicable",
+            "0.0": "Yes",
+            "1.0": "No"
+        },
+        "scope": "Previous health history before baseline (11 years old)"
+    },
+    {
+        "name": "EPLOIL00",
+        "description": "Whether respondent (caregiver) has longstanding illness",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "3.0": "Refused",
+            "4.0": "Don't know",
+            "-9.0": "Refusal",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Parent\u00b4s health"
+    },
+    {
+        "name": "EPALDR00",
+        "description": "Frequency of alcohol consumption",
+        "type": "categorical",
+        "categories": {
+            "1.0": "4 or more times a week",
+            "2.0": "2-3 times a week",
+            "3.0": "2-4 times per month",
+            "4.0": "Monthly or less",
+            "5.0": "Never",
+            "6.0": "Don't know/don't wish to answer",
+            "-9.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Parent\u00b4s health"
+    },
+    {
+        "name": "FDKESSL",
+        "description": "S6 DV Kessler K6 Scale",
+        "type": "continuous",
+        "categories": {
+            "1.0": "4 or more times a week",
+            "2.0": "2-3 times a week",
+            "3.0": "2-4 times per month",
+            "4.0": "Monthly or less",
+            "5.0": "Never",
+            "6.0": "Don't know/don't wish to answer",
+            "-9.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Parent\u00b4s health"
+    },
+    {
+        "name": "FPDRUG00",
+        "description": "Used recreational drugs in past 12 months",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Occasionally",
+            "2.0": "Regularly",
+            "3.0": "Never",
+            "4.0": "Dont know/Dont wish to answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Parent\u00b4s health"
+    },
+    {
+        "name": "FPLOIL00",
+        "description": "Whether respondent has longstanding illness",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Refused",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Parent\u00b4s health"
+    },
+    {
+        "name": "FPSMUS0A",
+        "description": "Current smoking MC [No, does not smoke or use tobacco]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-9.0": "Refused",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Parent\u00b4s health"
+    },
+    {
+        "name": "FCCSEX00",
+        "description": "[Recoded:0: female 1:male]",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Male",
+            "2.0": "Female",
+            "-9.0": "Refused",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Sociodemographic data"
+    },
+    {
+        "name": "ADC06E00",
+        "description": "Ethnicity Calculated (binary: white versus non-white)",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-9.0": "Refused",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Sociodemographic data"
+    },
+    {
+        "name": "EOEDP000",
+        "description": "S5 DV OECD Below 60% median indicator",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Above 60% median",
+            "1.0": "Below 60% median",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Sociodemographic data"
+    },
+    {
+        "name": "FOEDP000",
+        "description": "S6 DV OECD Below 60% median indicator",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Above 60% median",
+            "1.0": "Below 60% median",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Sociodemographic data"
+    },
+    {
+        "name": "poverty_sweepsHistory",
+        "description": "Calculated (OR ADOEDP00, BDOEDP00, CDOEDP00, DDOEDP00)",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Above 60% median",
+            "1.0": "Below 60% median",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Sociodemographic data"
+    },
+    {
+        "name": "ECWTCMA0",
+        "description": "Weight in kilos",
+        "type": "continuous",
+        "categories": {
+            "-7.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "EMCS5AGE",
+        "description": "Age at interview to nearest 10th of year",
+        "type": "continuous",
+        "categories": {
+            "-7.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "EOBFLAG5",
+        "description": "MCS Obesity flag",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not overweight (including underweight)",
+            "1.0": "Overweight",
+            "2.0": "Obese",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "EBMIN5",
+        "description": "Body Mass Index calculated (CLS)",
+        "type": "continuous",
+        "categories": {
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECBFPC00",
+        "description": "Body Fat measurement displayed on scales",
+        "type": "continuous",
+        "categories": {
+            "-7.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECHTCMA0",
+        "description": "Height in cms",
+        "type": "continuous",
+        "categories": {
+            "-7.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ01X00",
+        "description": "How often do you listen to or play music, not at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ02X00",
+        "description": "How often do you draw, paint or make things, not at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ03X00",
+        "description": "How often do you play sports or active games inside or outside?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ04X00",
+        "description": "How often do you read for enjoyment, not for school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ05X00",
+        "description": "How often do you play games on a computer or games console?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ06X00",
+        "description": "How often do you use the internet, not at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ07X00",
+        "description": "How often do you use the internet for homework?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ08X00",
+        "description": "How often do you exchange messages with friends on the internet?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ09X00",
+        "description": "How often do you visit a social networking website on the internet?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ10A00",
+        "description": "Your school work - Happiness",
+        "type": "continuous",
+        "categories": {
+            "1.0": "1 Completely happy",
+            "2.0": "2",
+            "3.0": "3",
+            "4.0": "4",
+            "5.0": "5",
+            "6.0": "6",
+            "7.0": "7 Not at all happy",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ10B00",
+        "description": "The way you look - Happiness",
+        "type": "continuous",
+        "categories": {
+            "1.0": "1 Completely happy",
+            "2.0": "2",
+            "3.0": "3",
+            "4.0": "4",
+            "5.0": "5",
+            "6.0": "6",
+            "7.0": "7 Not at all happy",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ10C00",
+        "description": "Your family - Happiness",
+        "type": "continuous",
+        "categories": {
+            "1.0": "1 Completely happy",
+            "2.0": "2",
+            "3.0": "3",
+            "4.0": "4",
+            "5.0": "5",
+            "6.0": "6",
+            "7.0": "7 Not at all happy",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ10D00",
+        "description": "Your friends - Happiness",
+        "type": "continuous",
+        "categories": {
+            "1.0": "1 Completely happy",
+            "2.0": "2",
+            "3.0": "3",
+            "4.0": "4",
+            "5.0": "5",
+            "6.0": "6",
+            "7.0": "7 Not at all happy",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ10E00",
+        "description": "The school you go to - Happiness",
+        "type": "continuous",
+        "categories": {
+            "1.0": "1 Completely happy",
+            "2.0": "2",
+            "3.0": "3",
+            "4.0": "4",
+            "5.0": "5",
+            "6.0": "6",
+            "7.0": "7 Not at all happy",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ10F00",
+        "description": "Your life as a whole - Happiness",
+        "type": "continuous",
+        "categories": {
+            "1.0": "1 Completely happy",
+            "2.0": "2",
+            "3.0": "3",
+            "4.0": "4",
+            "5.0": "5",
+            "6.0": "6",
+            "7.0": "7 Not at all happy",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ11A00",
+        "description": "On the whole, I am satisfied with myself",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ11B00",
+        "description": "I feel that I have a number of good qualities",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ11C00",
+        "description": "I am able to do things as well as most other people",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ11D00",
+        "description": "I am a person of value",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ11E00",
+        "description": "I feel good about myself",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ12X00",
+        "description": "How many of your friends live in the same area as you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of them",
+            "2.0": "Most of them",
+            "3.0": "Some of them",
+            "4.0": "None of them",
+            "5.0": "Dont have any friends",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ13X00",
+        "description": "How many of your friends go to a different school than you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of them",
+            "2.0": "Most of them",
+            "3.0": "Some of them",
+            "4.0": "None of them",
+            "5.0": "Dont have any friends",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ14X00",
+        "description": "Are your friends mostly boys, mostly girls or a mixture?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Mostly boys",
+            "2.0": "Mostly girls",
+            "3.0": "A mixture of boys and girls",
+            "4.0": "Dont have any friends",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ15X00",
+        "description": "How many of your friends are from the same ethnic group as you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of them",
+            "2.0": "Most of them",
+            "3.0": "Some of them",
+            "4.0": "None of them",
+            "5.0": "Dont have any friends",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ16X00",
+        "description": "How often do you argue or fall out with your friends?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "6.0": "Dont have any friends",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ17X00",
+        "description": "When not at school, how often do you spend time with your friends?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "6.0": "Dont have any friends",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ18X00",
+        "description": "At the weekend how often do you spend time with your friends?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most weekends",
+            "2.0": "At least once a month",
+            "3.0": "Less often than once a month",
+            "4.0": "Never",
+            "5.0": "Dont have any friends",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ19X00",
+        "description": "In the afternoon after school how often do you spend time with your friends?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "6.0": "Dont have any friends",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ20X00",
+        "description": "Do you get pocket money regularly?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ21X00",
+        "description": "Compared to your friends, is your family richer, poorer or the same?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Richer",
+            "2.0": "Poorer",
+            "3.0": "About the same",
+            "4.0": "Dont know",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ22A00",
+        "description": "I wish my family could afford to buy me more of what I want",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ22B00",
+        "description": "I like clothing with popular labels",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ22C00",
+        "description": "It bothers me if my friends have things I dont",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ23X00",
+        "description": "How safe is it to walk, play or hang out in this area during the day?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very safe",
+            "2.0": "Safe",
+            "3.0": "Not very safe",
+            "4.0": "Not at all safe",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ24X00",
+        "description": "Are there any parks in this area where children your age can play?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ25X00",
+        "description": "Have you ever been noisy or rude in a public place?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ26X00",
+        "description": "Have you ever taken something from a shop without paying for it?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ27X00",
+        "description": "Have you ever written things or sprayed paint on a building?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ28X00",
+        "description": "Have you ever on purpose damaged anything in a public place?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ29X00",
+        "description": "How much do you like school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "A lot",
+            "2.0": "A bit",
+            "3.0": "Not at all",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ35X00",
+        "description": "How often do you try your best at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ36X00",
+        "description": "How often do you find school interesting?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ37X00",
+        "description": "How often do you feel unhappy at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ38X00",
+        "description": "How often do you get tired at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ39X00",
+        "description": "How often do you feel school is a waste of time?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ40X00",
+        "description": "How often do you misbehave or cause trouble in class?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ41X00",
+        "description": "How often do other children misbehave or cause trouble in class?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ42X00",
+        "description": "How often do your parents take an interest in your school work?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ43X00",
+        "description": "How much do you like your class teacher?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "A lot",
+            "2.0": "A bit",
+            "3.0": "Not at all",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ44X00",
+        "description": "How often do you think your class teacher is getting at you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ45X00",
+        "description": "Have you ever missed school without your parents permission?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ47X00",
+        "description": "How much are you looking forward to going to secondary school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "A lot",
+            "2.0": "A bit",
+            "3.0": "Not at all",
+            "4.0": "Already at secondary school",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ48X00",
+        "description": "How many of your friends are going to the same secondary school as you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of them",
+            "2.0": "Most of them",
+            "3.0": "Some of them",
+            "4.0": "None of them",
+            "5.0": "Dont have any friends",
+            "6.0": "Already at secondary school",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ49X00",
+        "description": "How wrong it is for someone your age to start a fight?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very wrong",
+            "2.0": "A bit wrong",
+            "3.0": "Not wrong",
+            "4.0": "Dont know",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ50X00",
+        "description": "How wrong it is for someone your age to graffiti?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very wrong",
+            "2.0": "A bit wrong",
+            "3.0": "Not wrong",
+            "4.0": "Dont know",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ51X00",
+        "description": "How wrong it is for someone your age to take some thing?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very wrong",
+            "2.0": "A bit wrong",
+            "3.0": "Not wrong",
+            "4.0": "Dont know",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ52X00",
+        "description": "How wrong it is to copy or download music?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very wrong",
+            "2.0": "A bit wrong",
+            "3.0": "Not wrong",
+            "4.0": "Dont know",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ53A00",
+        "description": "Men and women should do the same jobs around the house",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ53B00",
+        "description": "It is less important for women to go out to work than it is for men",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ54X00",
+        "description": "How often do your brothers or sisters hurt you or pick on you on purpose",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "7.0": "Dont have brothers or sisters",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ55X00",
+        "description": "How often do you hurt or pick on your brothers or sisters on purpose?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "7.0": "Dont have brothers or sisters",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ56X00",
+        "description": "How often do other children hurt you or pick on you on purpose?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ57X00",
+        "description": "How often do you hurt or pick on other children on purpose?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ58X00",
+        "description": "How many of your friends smoke cigarettes?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None of them",
+            "2.0": "Some of them",
+            "3.0": "Most of them",
+            "4.0": "All of them",
+            "5.0": "Dont know",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ59X00",
+        "description": "Have you ever tried a cigarette, even if it was only a single puff?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ60X00",
+        "description": "How many of your friends drink alcohol?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None of them",
+            "2.0": "Some of them",
+            "3.0": "Most of them",
+            "4.0": "All of them",
+            "5.0": "Dont know",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ61X00",
+        "description": "Have you ever had an alcoholic drink? That is more than a few sips.",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ70A00",
+        "description": "Drinking beer, wine is a way to make friends with other people",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ70B00",
+        "description": "Drinking alcohol makes people worry less",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ70C00",
+        "description": "It is easier to open up and talk about ones feelings after a few drinks",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ70D00",
+        "description": "Drinking alcohol gets in the way of school work",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ70E00",
+        "description": "Drinking alcohol makes people happier with themselves",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ70F00",
+        "description": "Drinking alcohol makes it hard to get along with friends",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ70G00",
+        "description": "If I drank alcohol without my parents permission I would be caught",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ71X00",
+        "description": "How much people risk harming themselves if they try one or two drinks",
+        "type": "categorical",
+        "categories": {
+            "1.0": "No risk",
+            "2.0": "Slight risk",
+            "3.0": "Some risk",
+            "4.0": "Great risk",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ72X00",
+        "description": "How much people risk harming themselves by drinking one or two per day",
+        "type": "categorical",
+        "categories": {
+            "1.0": "No risk",
+            "2.0": "Slight risk",
+            "3.0": "Some risk",
+            "4.0": "Great risk",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ73X00",
+        "description": "How much people risk harming themselves by drinking four or five per day",
+        "type": "categorical",
+        "categories": {
+            "1.0": "No risk",
+            "2.0": "Slight risk",
+            "3.0": "Some risk",
+            "4.0": "Great risk",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ74X00",
+        "description": "In the last 4 weeks, how often did you feel happy?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Almost never",
+            "3.0": "Sometimes",
+            "4.0": "Often",
+            "5.0": "Almost always",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ75X00",
+        "description": "In the last 4 weeks, how often worried about what would happen",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Almost never",
+            "3.0": "Sometimes",
+            "4.0": "Often",
+            "5.0": "Almost always",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ76X00",
+        "description": "In the last 4 weeks, how often did you feel sad?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Almost never",
+            "3.0": "Sometimes",
+            "4.0": "Often",
+            "5.0": "Almost always",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ77X00",
+        "description": "In the last 4 weeks, how often did you feel afraid or scared?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Almost never",
+            "3.0": "Sometimes",
+            "4.0": "Often",
+            "5.0": "Almost always",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ78X00",
+        "description": "In the last 4 weeks, how often did you laugh?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Almost never",
+            "3.0": "Sometimes",
+            "4.0": "Often",
+            "5.0": "Almost always",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ79X00",
+        "description": "In the last 4 weeks, how often did you get angry?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Almost never",
+            "3.0": "Sometimes",
+            "4.0": "Often",
+            "5.0": "Almost always",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ80X0A",
+        "description": "What do you do if you are worried about something? MC1",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Keep it to myself)",
+            "1.0": "Keep it to myself",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ80X0B",
+        "description": "What do you do if you are worried about something? MC2",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Tell a friend)",
+            "1.0": "Tell a friend",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ80X0C",
+        "description": "What do you do if you are worried about something? MC3",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Tell someone at home)",
+            "1.0": "Tell someone at home",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ80X0D",
+        "description": "What do you do if you are worried about something? MC4",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Tell a teacher)",
+            "1.0": "Tell a teacher",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ80X0E",
+        "description": "What do you do if you are worried about something? MC5",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Tell someone else)",
+            "1.0": "Tell someone else",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ81A00",
+        "description": "I care about how well I do at school",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not at all true",
+            "2.0": "Somewhat true",
+            "3.0": "Very true",
+            "4.0": "Definitely true",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ81B00",
+        "description": "I feel bad or guilty when I Have done something wrong",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not at all true",
+            "2.0": "Somewhat true",
+            "3.0": "Very true",
+            "4.0": "Definitely true",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ81C00",
+        "description": "I do not show my emotions to others",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not at all true",
+            "2.0": "Somewhat true",
+            "3.0": "Very true",
+            "4.0": "Definitely true",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ81D00",
+        "description": "I am concerned about the feelings of others",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not at all true",
+            "2.0": "Somewhat true",
+            "3.0": "Very true",
+            "4.0": "Definitely true",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ82X00",
+        "description": "Do you want to stay on at school or college full-time when you are 16?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "3.0": "Don't know",
+            "-8.0": "No answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ84X0A",
+        "description": "By 30, which of the following would you most like to have achieved MC1",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Owning your own home)",
+            "1.0": "Owning your own home",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ84X0B",
+        "description": "By 30, which of the following would you most like to have achieved MC2",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Having a good car)",
+            "1.0": "Having a good car",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ84X0C",
+        "description": "By 30, which of the following would you most like to have achieved MC3",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Earning a lot of money)",
+            "1.0": "Earning a lot of money",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ84X0D",
+        "description": "By 30, which of the following would you most like to have achieved MC4",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Having a worthwhile job)",
+            "1.0": "Having a worthwhile job",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ84X0E",
+        "description": "By 30, which of the following would you most like to have achieved MC5",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Having children)",
+            "1.0": "Having children",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ84X0F",
+        "description": "By 30, which of the following would you most like to have achieved MC6",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Having a partner, being married)",
+            "1.0": "Having a partner, being married",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ84X0G",
+        "description": "By 30, which of the following would you most like to have achieved MC7",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Being famous)",
+            "1.0": "Being famous",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "ECQ84X0H",
+        "description": "By 30, which of the following would you most like to have achieved MC8",
+        "type": "categorical",
+        "categories": {
+            "0.0": "Not (Having a personal achievement in sport etc)",
+            "1.0": "Having a personal achievement in sport",
+            "-8.0": "Not answered",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "EPICWO00",
+        "description": "Child appears underweight, average or over weight",
+        "type": "categorical",
+        "categories": {
+            "1.0": "A little/a lot underweight",
+            "2.0": "Neither underweight nor overweight",
+            "3.0": "A little/a lot overweight",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 11 years old"
+    },
+    {
+        "name": "FCBFPC00",
+        "description": "Body fat percentage",
+        "type": "continuous",
+        "categories": {
+            "-5.0": "UNABLE TO OBTAIN HEIGHT MEASUREMENT",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHTCM00",
+        "description": "Height in centimeters",
+        "type": "continuous",
+        "categories": {
+            "-5.0": "UNABLE TO OBTAIN HEIGHT MEASUREMENT",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWTCM00",
+        "description": "Weight in kilos",
+        "type": "continuous",
+        "categories": {
+            "-5.0": "UNABLE TO OBTAIN HEIGHT MEASUREMENT",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCALCD00",
+        "description": "Has CM ever had an alcoholic drink",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCARES00",
+        "description": "Has CM ever been arrested",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCASWD00",
+        "description": "How often does CM drink artifically sweetened drinks",
+        "type": "categorical",
+        "categories": {
+            "1.0": "More than once a day",
+            "2.0": "Once a day",
+            "3.0": "3-6 days a week",
+            "4.0": "1-2 days a week",
+            "5.0": "Less often but at least once a month",
+            "6.0": "Less than once a month",
+            "7.0": "Hardly ever or never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCATQL00",
+        "description": "Needs qualifications to get a job worth having",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "5.0": "Dont know/Dont wish to answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCAWNT00",
+        "description": "Past 12months:freq of CM staying out without Parent knowing",
+        "type": "categorical",
+        "categories": {
+            "1.0": "No never",
+            "2.0": "Yes, once or a few times",
+            "3.0": "Yes, lots of times",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCBAND00",
+        "description": "ActivGrid: Sing in a choir or play in a band or orchestra?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Several times a year",
+            "5.0": "Once a year or less",
+            "6.0": "Never or almost never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCBFCK00",
+        "description": "CM is fitted with a pacemaker",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Young person has no pacemaker",
+            "2.0": "Young person has a pacemaker",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCBGFR00",
+        "description": "Does CM have a boyfriend/girlfriend",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCBRKN00",
+        "description": "Days per week CM eats breakfast",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Some days, but not all days",
+            "3.0": "Every day",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCBTNG00",
+        "description": "ConsumAttGrid: It bothers me if my friends have things I dont",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCBULB00",
+        "description": "How often brothers or sisters hurt or pick on CM",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "7.0": "Dont have brothers or sisters",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCBULP00",
+        "description": "How often CM hurts or picks on brothers or sisters",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "7.0": "Dont have brothers or sisters",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCANB00",
+        "description": "DruGrid: Cannabis (also known as weed, marijuana, dope, hash or skunk)?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCAUT00",
+        "description": "Has CM ever been given a formal warning or caution from police",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCDDL00",
+        "description": "(last 12 months) has CM cuddled with another young person?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCGHE00",
+        "description": "CMs general level of health",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Excellent",
+            "2.0": "Very good",
+            "3.0": "Good",
+            "4.0": "Fair",
+            "5.0": "Poor",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCINE00",
+        "description": "ActivGrid: Go to the cinema?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Several times a year",
+            "5.0": "Once a year or less",
+            "6.0": "Never or almost never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCMEX00",
+        "description": "Does CM have computer of their own",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCOMH00",
+        "description": "Hours per WEEKDAY spent playing electronic games",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None",
+            "2.0": "Less than half an hour",
+            "3.0": "Half an hour to less than 1 hour",
+            "4.0": "1 hour to less than 2 hours",
+            "5.0": "2 hours to less than 3 hours",
+            "6.0": "3 hours to less than 5 hours",
+            "7.0": "5 hours to less than 7 hours",
+            "8.0": "7 hours or more",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCOPY00",
+        "description": "Wrong to download music/films/games without paying",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very wrong",
+            "2.0": "A bit wrong",
+            "3.0": "Not wrong",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCYBO00",
+        "description": "How often CM bullied other children online",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCYBU00",
+        "description": "How often other children bullied CM online",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCYCF00",
+        "description": "How often does CM use a bicycle",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Every day or almost every day",
+            "2.0": "Several times a week",
+            "3.0": "Once or twice a week",
+            "4.0": "At least once a month",
+            "5.0": "Every few months",
+            "6.0": "At least once a year",
+            "7.0": "Less often or never",
+            "8.0": "Do not use a bicycle",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCCYCT00",
+        "description": "Has CM has any formal cycle training",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCDAMG00",
+        "description": "Past 12 months: has CM damaged something that didnt belong to them",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCDISG00",
+        "description": "DisciplineGrid: Ground you, stop you going out or from seeing your friends?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCDISP00",
+        "description": "DisciplineGrid: Punish you in some other way?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCDIST00",
+        "description": "DisciplineGrid: Tell you off or shout at you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCDOWL00",
+        "description": "RosenbergGrid: I am able to do things as well as most other people",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCDRFN00",
+        "description": "How many of CMs friends drink alcohol",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None of them",
+            "2.0": "Some of them",
+            "3.0": "Most of them",
+            "4.0": "All of them",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCDRFR00",
+        "description": "Do CMs friends take any illegal drugs",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None of them",
+            "2.0": "Some of them",
+            "3.0": "Most of them",
+            "4.0": "All of them",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCECIG00",
+        "description": "How often CM smokes e-cigarettes",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Ive never used or tried electronic cigarettes (e-cigarettes)",
+            "2.0": "I have used e-cigarettes but dont at at all now",
+            "3.0": "I now smoke e-cigarettes occasionally but not every day",
+            "4.0": "I smoke e-cigarettes every day",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCETLS00",
+        "description": "Has CM ever eaten less to lose weight",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCEXWT00",
+        "description": "Has CM ever exercised to lose weight",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCFGHT00",
+        "description": "Wrong to start a fight",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very wrong",
+            "2.0": "A bit wrong",
+            "3.0": "Not wrong",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCFMLY00",
+        "description": "WellbeingGrid: How happy is CM with family",
+        "type": "continuous",
+        "categories": {
+            "1.0": "Completely happy",
+            "7.0": "Not at all happy",
+            "-8.0": "Don't know",
+            "-9.0": "Don't want to answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCFRNS00",
+        "description": "WellbeingGrid: How happy is CM with friends",
+        "type": "continuous",
+        "categories": {
+            "1.0": "Completely happy",
+            "7.0": "Not at all happy",
+            "-8.0": "Don't know",
+            "-9.0": "Don't want to answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCFRSM00",
+        "description": "How many of your close friends live in the same area as you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of them",
+            "2.0": "Most of them",
+            "3.0": "Some of them",
+            "4.0": "None of them",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCFRSS00",
+        "description": "How many of your close friends go to the same school as you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of them",
+            "2.0": "Most of them",
+            "3.0": "Some of them",
+            "4.0": "None of them",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCFRUT00",
+        "description": "How often CM eats at least 2 portions of fruit",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Some days, but not all days",
+            "3.0": "Every day",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCGAEM00",
+        "description": "GamblinGrid: Placing a bet @ betting shop, eg football or horseracing?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCGAMA00",
+        "description": "GamblinGrid: Fruit machines?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCGAMJ00",
+        "description": "GamblinGrid: Any other gambling?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCGANG00",
+        "description": "Is CM a member of a street gang",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "3.0": "I used to be a member but am not any more",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCGDQL00",
+        "description": "RosenbergGrid: I feel I have a number of good qualities",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCGDSF00",
+        "description": "RosenbergGrid: I feel good about myself",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCGMBL00",
+        "description": "GamblinGrid: Placing a private bet for money (e.g. with friends)?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCGRSE00",
+        "description": "How often do you see any of your grandparents?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Every day or almost every day",
+            "2.0": "Several times a week",
+            "3.0": "Once or twice a week",
+            "4.0": "Once or twice a month",
+            "5.0": "Less often than once a month",
+            "6.0": "Not at all",
+            "7.0": "No grandparents alive/ None living else",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHACK00",
+        "description": "Past 12 months: has CM hacked into smn elses computer/online account",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHARM00",
+        "description": "In the past year has CM self-harmed",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHEAR00",
+        "description": "Does CM have difficulty hearing",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHHND00",
+        "description": "(last 12 months) has CM held hands with another young person?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHITT00",
+        "description": "ASBOgrid: CM Pushed or shoved/hit/slapped/punched someone?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHLPC00",
+        "description": "How often does anyone at home help with CMs homework",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Always",
+            "2.0": "Usually",
+            "3.0": "Sometimes",
+            "4.0": "Never or almost never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHURT00",
+        "description": "How often other children hurt or pick on CM",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCHWKM00",
+        "description": "typical week term-time, how long cm spends doing homework?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None",
+            "2.0": "1 hour to less than 3 hours",
+            "3.0": "3 hours to less than 5 hours",
+            "4.0": "5 hours to less than 10 hours",
+            "5.0": "10 or more hours",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCIMWK00",
+        "description": "GenderRolesGrid: It is less important for women to work than it is for men",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCINTH00",
+        "description": "Does CM ever use the internet at home",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None",
+            "2.0": "Less than half an hour",
+            "3.0": "Half an hour to less than 1 hour",
+            "4.0": "1 hour to less than 2 hours",
+            "5.0": "2 hours to less than 3 hours",
+            "6.0": "3 hours to less than 5 hours",
+            "7.0": "5 hours to less than 7 hours",
+            "8.0": "7 hours or more",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCKISS00",
+        "description": "(last 12 months) has CM kissed another young person?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCKNIF00",
+        "description": "Has CM ever carried a knife or other weapon",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCLIFE00",
+        "description": "WellbeingGrid: How happy is CM with life as a whole",
+        "type": "continuous",
+        "categories": {
+            "1.0": "Completely happy",
+            "7.0": "Not at all happy",
+            "-8.0": "Don't know",
+            "-9.0": "Don't want to answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCLSWT00",
+        "description": "What CM is trying to do about their weight",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Lose weight",
+            "2.0": "Gain weight",
+            "3.0": "Stay the same weight",
+            "4.0": "I am not trying to do anything about my",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMAAB00",
+        "description": "Does your natural mother live with you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSA00",
+        "description": "FeelingsGrid: I felt miserable or unhappy",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSB00",
+        "description": "FeelingsGrid: I didnt enjoy anything at all",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSC00",
+        "description": "FeelingsGrid: I felt so tired I just sat around and did nothing",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSD00",
+        "description": "FeelingsGrid: I was very restless",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSE00",
+        "description": "FeelingsGrid: I felt I was no good any more",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSF00",
+        "description": "FeelingsGrid: I cried a lot",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSG00",
+        "description": "FeelingsGrid: I found it hard to think properly or concentrate",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSH00",
+        "description": "FeelingsGrid: I hated myself",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSI00",
+        "description": "FeelingsGrid: I was a bad person",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSJ00",
+        "description": "FeelingsGrid: I felt lonely",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSK00",
+        "description": "FeelingsGrid: I thought nobody really loved me",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSL00",
+        "description": "FeelingsGrid: I thought I could never be as good as other kids",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMDSM00",
+        "description": "FeelingsGrid: I did everything wrong",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not true",
+            "2.0": "Sometimes",
+            "3.0": "True",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMISB00",
+        "description": "How often does CM misbehave in lessons",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMISO00",
+        "description": "How often do other pupils misbehave in lessons",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMNWO00",
+        "description": "EducMotGrid: How often difficult to keep mind on work at school? [NCDS, BCS]",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCMUSM00",
+        "description": "ActivGrid: Go to museums/galleries, visit historic place/stately home?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Several times a year",
+            "5.0": "Once a year or less",
+            "6.0": "Never or almost never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCNCLS00",
+        "description": "SocSupGrid: There is no one I feel close to.",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very true",
+            "2.0": "Partly true",
+            "3.0": "Not true at all",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCNUFR00",
+        "description": "Do you have any close friends? (friends = other young people)",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCORGA00",
+        "description": "ActivGrid: Go to youth clubs/scouts/girlguides or oth organised activities?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Several times a year",
+            "5.0": "Once a year or less",
+            "6.0": "Never or almost never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCOTDR00",
+        "description": "DruGrid: Any other illegal drug (such as ecstasy, cocaine, speed)?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCOTWD00",
+        "description": "When CM goes out, how often do parents know what CM does?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Always",
+            "2.0": "Usually",
+            "3.0": "Sometimes",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCOTWI00",
+        "description": "When CM goes out, how often do parents know who with?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Always",
+            "2.0": "Usually",
+            "3.0": "Sometimes",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCOUTW00",
+        "description": "When CM goes out, how often do parents know where?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Always",
+            "2.0": "Usually",
+            "3.0": "Sometimes",
+            "4.0": "Never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPAAB00",
+        "description": "Does your natural father live with you?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPCKP00",
+        "description": "How often CM hurts or picks on other children",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "About once a week",
+            "3.0": "About once a month",
+            "4.0": "Every few months",
+            "5.0": "Less often",
+            "6.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPETR00",
+        "description": "How many of your close friends get into a lot of trouble at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of them",
+            "2.0": "Most of them",
+            "3.0": "Some of them",
+            "4.0": "None of them",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPHEX00",
+        "description": "Days last week spent doing moderate to vigorous physical activity",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Every day",
+            "2.0": "5-6 days",
+            "3.0": "3-4 days",
+            "4.0": "1-2 days",
+            "5.0": "Not at all",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPLAB00",
+        "description": "ConsumAttGrid: I like clothing with popular labels",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPLWE00",
+        "description": "Do you allow unsupervised time outside home with frds (on weekends)",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most weekends",
+            "2.0": "At least once a month",
+            "3.0": "Less often than once a month",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPLWK00",
+        "description": "Do you allow unsupervised time outside home with frds (afternoon after school)",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPOLS00",
+        "description": "Has CM been stopped or questioned by police",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPTNT00",
+        "description": "How patient is CM",
+        "type": "continuous",
+        "categories": {
+            "0.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "10.0": "Always",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCPUHG00",
+        "description": "CM growth spurt",
+        "type": "categorical",
+        "categories": {
+            "1.0": "My growth spurt has not yet begun",
+            "2.0": "My growth spurt has barely started",
+            "3.0": "My growth spurt has definitely started",
+            "4.0": "My growth spurt seems completed",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCQTRM00",
+        "description": "Quiet area where CM is able to do homework",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCQUAF00",
+        "description": "How often does CM argue with father",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "More than once a week",
+            "3.0": "Less than once a week",
+            "4.0": "Hardly ever",
+            "5.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCQUAM00",
+        "description": "How often does CM argue with mother",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "More than once a week",
+            "3.0": "Less than once a week",
+            "4.0": "Hardly ever",
+            "5.0": "Never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCRISK00",
+        "description": "How willing is CM to take risks",
+        "type": "continuous",
+        "categories": {
+            "0.0": "Never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "10.0": "Always",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCRJOY00",
+        "description": "ActivGrid: Read for enjoyment (not for school)?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Several times a year",
+            "5.0": "Once a year or less",
+            "6.0": "Never or almost never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCRLQF00",
+        "description": "How close is CM with father",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not very close",
+            "2.0": "Fairly close",
+            "3.0": "Very close",
+            "4.0": "Extremely close",
+            "5.0": "I don\u2019t have a father/I am not in contact my father",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCRLQM00",
+        "description": "How close is CM with mother",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Not very close",
+            "2.0": "Fairly close",
+            "3.0": "Very close",
+            "4.0": "Extremely close",
+            "5.0": "I don\u2019t have a mother/I am not in contact with my mother",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCRLSV00",
+        "description": "ActivGrid: Attend a religious service?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Several times a year",
+            "5.0": "Once a year or less",
+            "6.0": "Never or almost never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCROBH00",
+        "description": "Has CM ever entered someones home to steal or damage something",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCROLE00",
+        "description": "GenderRolesGrid: Men and women should do the same jobs around the house",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCROMB00",
+        "description": "Has CM ever been attracted to a male",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCROMG00",
+        "description": "Has CM ever been attracted to a female",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCRUDE00",
+        "description": "Past 12 months: freq of CM been complained for rude/noisy in public?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSAFD00",
+        "description": "Area safety: safe for CM to walk/play etc within a mile/20 min from home",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very safe",
+            "2.0": "Safe",
+            "3.0": "Not very safe",
+            "4.0": "Not at all safe",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSAFF00",
+        "description": "SocSupGrid: I have family and friends who help me feel safe, secure and happy.",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very true",
+            "2.0": "Partly true",
+            "3.0": "Not true at all",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSATI00",
+        "description": "RosenbergGrid: On the whole, I am satisfied with myself",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSCBE00",
+        "description": "EducMotGrid: How often do you try your best at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSCHL00",
+        "description": "WellbeingGrid: How happy is CM with school",
+        "type": "continuous",
+        "categories": {
+            "1.0": "Completely happy",
+            "7.0": "Not at all happy",
+            "-8.0": "Don't know",
+            "-9.0": "Don't want to answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSCWA00",
+        "description": "EducMotGrid: How often do you feel school is a waste of time?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSCWK00",
+        "description": "WellbeingGrid: How happy is CM with school work",
+        "type": "continuous",
+        "categories": {
+            "1.0": "Completely happy",
+            "7.0": "Not at all happy",
+            "-8.0": "Dont know",
+            "-9.0": "Dont want to answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSINT00",
+        "description": "EducMotGrid: How often do you find school interesting?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSLLN00",
+        "description": "During the last 4 weeks how long does going to sleep usually take",
+        "type": "categorical",
+        "categories": {
+            "1.0": "0-15 minutes",
+            "2.0": "16-30 minutes",
+            "3.0": "31-45 minutes",
+            "4.0": "46-60 minutes",
+            "5.0": "More than 60 minutes",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSLTR00",
+        "description": "During the last 4 weeks how often did CM awaken during sleep",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "A good bit of the time",
+            "4.0": "Some of the time",
+            "5.0": "A little of the time",
+            "6.0": "None of the time",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSLWE00",
+        "description": "Time CM goes to sleep when there is no school the next day",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Before 9pm",
+            "2.0": "9 - 9:59pm",
+            "3.0": "10 - 10:59pm",
+            "4.0": "11 - midnight",
+            "5.0": "After midnight",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSLWK00",
+        "description": "Time CM goes to sleep on a school night",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Before 9pm",
+            "2.0": "9 - 9:59pm",
+            "3.0": "10 - 10:59pm",
+            "4.0": "11 - midnight",
+            "5.0": "After midnight",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSMFR00",
+        "description": "How often CMs friends smoke cigarettes",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None of them",
+            "2.0": "Some of them",
+            "3.0": "Most of them",
+            "4.0": "All of them",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSMOK00",
+        "description": "How often CM smokes cigarettes",
+        "type": "categorical",
+        "categories": {
+            "1.0": "I have never smoked cigarettes",
+            "2.0": "I have only ever tried smoking cigarettes once",
+            "3.0": "I used to smoke sometimes but I never smoke a cigarette now",
+            "4.0": "I sometimes smoke cigarettes now but I don\u2019t smoke as many as one a week",
+            "5.0": "I usually smoke between one and six cigarettes a week",
+            "6.0": "I usually smoke more than six cigarettes a week",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSOME00",
+        "description": "Hours per week spent on social networking sites",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None",
+            "2.0": "Less than half an hour",
+            "3.0": "Half an hour to less than 1 hour",
+            "4.0": "1 hour to less than 2 hours",
+            "5.0": "2 hours to less than 3 hours",
+            "6.0": "3 hours to less than 5 hours",
+            "7.0": "5 hours to less than 7 hours",
+            "8.0": "7 hours or more",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSPNT00",
+        "description": "Wrong to write or spray paint on building/fence etc",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very wrong",
+            "2.0": "A bit wrong",
+            "3.0": "Not wrong",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSPOR00",
+        "description": "ActivGrid: Go to watch live sport?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once a month",
+            "4.0": "Several times a year",
+            "5.0": "Once a year or less",
+            "6.0": "Never or almost never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSPRY00",
+        "description": "Past 12 months: has CM written/spray painted somewhere they shouldnt",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSTEL00",
+        "description": "Wrong to take things without paying",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very wrong",
+            "2.0": "A bit wrong",
+            "3.0": "Not wrong",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSTFR0A",
+        "description": "When not at school, how often do you spend time with your close friends?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Most days",
+            "2.0": "At least once a week",
+            "3.0": "At least once month",
+            "4.0": "Less often than once a month",
+            "5.0": "Never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSTIR00",
+        "description": "EducMotGrid: How often do you get tired at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSTLN00",
+        "description": "ASBOgrid: CM stolen something from someone eg mobile phone, money",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSTNT00",
+        "description": "Past month: freq of CM staying out (9pm+) without Parent knowing",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "1-2 times",
+            "3.0": "3-9 times",
+            "4.0": "10 or more times",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSTOL00",
+        "description": "Past 12months: freq of CM taken something from a shop without paying",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSTYU00",
+        "description": "How likely is it CM will go to university? (Scale 0-100%)",
+        "type": "continuous",
+        "categories": {
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable",
+            "-9.0": "Don't want to answer"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSTYY00",
+        "description": "How likely is it CM will remain in education at the end of year 11?",
+        "type": "continuous",
+        "categories": {
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable",
+            "-9.0": "Dont want to answer"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCSUNH00",
+        "description": "EducMotGrid: How often do you feel unhappy at school?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "All of the time",
+            "2.0": "Most of the time",
+            "3.0": "Some of the time",
+            "4.0": "Never",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCTKWY00",
+        "description": "How often does CM eat fast food",
+        "type": "categorical",
+        "categories": {
+            "1.0": "More than once a day",
+            "2.0": "Once a day",
+            "3.0": "3-6 days a week",
+            "4.0": "1-2 days a week",
+            "5.0": "Less often but at least once a month",
+            "6.0": "Less than once a month",
+            "7.0": "Never",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCTRSS00",
+        "description": "SocSupGrid: There is someone I trust whom I would turn to if I had problems",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very true",
+            "2.0": "Partly true",
+            "3.0": "Not true at all",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCTRST0A",
+        "description": "How much does CM trust others",
+        "type": "continuous",
+        "categories": {
+            "0.0": "Not at all",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "10.0": "Completely",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCTRUA00",
+        "description": "Has CM missed school without parents permission",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCTVHO00",
+        "description": "Hours per WEEKDAY spent watching TV or videos on computer",
+        "type": "categorical",
+        "categories": {
+            "1.0": "None",
+            "2.0": "Less than half an hour",
+            "3.0": "Half an hour to less than 1 hour",
+            "4.0": "1 hour to less than 2 hours",
+            "5.0": "2 hours to less than 3 hours",
+            "6.0": "3 hours to less than 5 hours",
+            "7.0": "5 hours to less than 7 hours",
+            "8.0": "7 hours or more",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCVALU00",
+        "description": "RosenbergGrid: I am a person of value",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Strongly agree",
+            "2.0": "Agree",
+            "3.0": "Disagree",
+            "4.0": "Strongly disagree",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCVEGI00",
+        "description": "How often CM eats at least 2 portions of vegetables",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Never",
+            "2.0": "Some days, but not all days",
+            "3.0": "Every day",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCVICA00",
+        "description": "VictimisGrid: been physically violent towards CM",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCVICC00",
+        "description": "VictimisGrid: hit or used a weapon against CM",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCVICE00",
+        "description": "VictimisGrid: stolen something from CM",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCVICF0A",
+        "description": "VictimisGrid: sexually assaulted CM",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCVICG00",
+        "description": "VictimisGrid: CM insulted, threatened, shouted at",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCVIRS00",
+        "description": "Past 12 months: has CM sent viruses to damage/infect other computers",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWEGT00",
+        "description": "CMs perception of their weight",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Underweight",
+            "2.0": "About the right weight",
+            "3.0": "Slightly overweight",
+            "4.0": "Very overweight",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWELK00",
+        "description": "MoralAttGrid: How important is it to you to be well liked?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very important",
+            "2.0": "Quite important",
+            "3.0": "Not very important",
+            "4.0": "Not at all important",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWEPN00",
+        "description": "ASBOgrid: CM Used or hit someone with a weapon?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Yes",
+            "2.0": "No",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWHRD00",
+        "description": "MoralAttGrid: How important is it to you to work hard?",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Very important",
+            "2.0": "Quite important",
+            "3.0": "Not very important",
+            "4.0": "Not at all important",
+            "-9.0": "Don't want to answer",
+            "-8.0": "Don't know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0A",
+        "description": "Where CM gets spending money from MC (A) [Regular pocket money/allowance]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0B",
+        "description": "Where CM gets spending money from MC (A) [Chores/babysitting]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0C",
+        "description": "Where CM gets spending money from MC (A) [Working in the family business]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0D",
+        "description": "Where CM gets spending money from MC (A) [Paid job]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0E",
+        "description": "Where CM gets spending money from MC (A) [Parents given when CM needs]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0F",
+        "description": "Where CM gets spending money from MC (A) [Other]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0G",
+        "description": "Where CM gets spending money from MC (A) [Never get any money to spend]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0L",
+        "description": "Where CM gets spending money from MC (A) [Money from friends/relatives]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0M",
+        "description": "Where CM gets spending money from MC (A) [Money frm spcl occasins BirthD/Xmas]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0N",
+        "description": "Where CM gets spending money from MC (A) [Reward for good behaviour/grades]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0O",
+        "description": "Where CM gets spending money from MC (A) [Money for school]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0P",
+        "description": "Where CM gets spending money from MC (A) [From selling items]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0Q",
+        "description": "Where CM gets spending money from MC (A) [Saving]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWMON0R",
+        "description": "Where CM gets spending money from MC (A) [Other earnings]",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWRRY0A",
+        "description": "What do you do if you are worried about something? (Keep it to myself)",
+        "type": "categorical",
+        "categories": {
+            "0.0": "No",
+            "1.0": "Yes",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWUWE00",
+        "description": "Time CM wakes up when there is no school",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Before 8am",
+            "2.0": "8 - 8:59am",
+            "3.0": "9 - 9:59am",
+            "4.0": "10 - 10:59am",
+            "5.0": "11 - 11:59am",
+            "6.0": "After Midday",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWUWK00",
+        "description": "Time CM wakes up on a school day",
+        "type": "categorical",
+        "categories": {
+            "1.0": "Before 6am",
+            "2.0": "6 - 6:59am",
+            "3.0": "7 - 7:59am",
+            "4.0": "8 - 8:59am",
+            "5.0": "After 9am",
+            "-9.0": "Dont want to answer",
+            "-8.0": "Dont know",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    },
+    {
+        "name": "FCWYLK00",
+        "description": "WellbeingGrid: How happy is CM with the way they look",
+        "type": "continuous",
+        "categories": {
+            "1.0": "Completely happy",
+            "7.0": "Not at all happy",
+            "-8.0": "Don't know",
+            "-9.0": "Don't want to answer",
+            "-1.0": "Not applicable"
+        },
+        "scope": "Self-report and measurements at 14 years old"
+    }
+]
