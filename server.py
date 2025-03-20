@@ -46,10 +46,10 @@ if __name__ == "__main__":
 
     #Instead of using the config.yaml use the parameters
     config_path = "config.yaml"
-    parser = get_parser()
+    parser = get_parser(True)
     args = parser.parse_args()
     validate_model_specific_args(args)
-    config = generate_config_dict(args)
+    config = generate_config_dict(args,True)
 
     #Check the config file
     check_config(config)
