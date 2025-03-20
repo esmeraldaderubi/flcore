@@ -143,6 +143,9 @@ class FedCustom(fl.server.strategy.FedAvg):
         # Aggregate custom metrics if aggregation fn was provided
         metrics_aggregated = {}
         if self.fit_metrics_aggregation_fn:
+            # Sort by client ID (IMPORTANT as clients are ordered by arrival as in the history of flower)
+            #results = sorted(results, key=lambda x: (x[0].cid)) 
+            results = sorted(results, key=lambda x: x[1].metrics.get("client_name", ""))
             fit_metrics = [(res.num_examples, res.metrics) for _, res in results]
             metrics_aggregated = self.fit_metrics_aggregation_fn(fit_metrics)
         elif server_round == 1:  # Only log this warning once
@@ -189,6 +192,9 @@ class FedCustom(fl.server.strategy.FedAvg):
         # Aggregate custom metrics if aggregation fn was provided
         metrics_aggregated = {}
         if self.evaluate_metrics_aggregation_fn:
+            # Sort by client ID (IMPORTANT as clients are ordered by arrival as in the history of flower)
+            #results = sorted(results, key=lambda x: (x[0].cid)) 
+            results = sorted(results, key=lambda x: x[1].metrics.get("client_name", ""))
             eval_metrics = [(res.num_examples, res.metrics) for _, res in results]
             metrics_aggregated = self.evaluate_metrics_aggregation_fn(eval_metrics)
         elif server_round == 1:  # Only log this warning once

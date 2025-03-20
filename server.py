@@ -106,5 +106,5 @@ if __name__ == "__main__":
     # joblib.dump(model, filename)
     # Save the history as a yaml file
     print(history)
-    results = history_to_dict(history.metrics_distributed,experiment_dir,config["model"],config["dataset"],config["num_clients"])
+    results = history_to_dict(history.metrics_distributed_fit, history.metrics_distributed,experiment_dir,config["model"],config["dataset"],config["num_clients"])
     0==0
