@@ -1,14 +1,11 @@
-import json
 import warnings
 
 import flwr as fl
-import numpy as np
 from sklearn.metrics import log_loss
 import flcore.datasets as datasets
 from flcore.serialization_funs import serialize_RF, deserialize_RF
 import flcore.models.random_forest.utils as utils
-from flcore.performance import measurements_metrics
-from flcore.metrics import calculate_metrics, visualization_metrics_server_report
+from flcore.metrics import calculate_metrics, fit_metrics_server_report, visualization_distributed_metrics_server_report
 from flwr.common import (
     Code,
     EvaluateIns,
@@ -70,15 +67,9 @@ class MnistClient(fl.client.Client):
             # measurements_metrics(self.model,X_val, y_val)
             y_pred = self.model.predict(X_val)
             metrics = calculate_metrics(y_val, y_pred)
-            # print(f"Accuracy client in fit:  {accuracy}")
-            # print(f"Sensitivity client in fit:  {sensitivity}")
-            # print(f"Specificity client in fit:  {specificity}")
-            # print(f"Balanced_accuracy in fit:  {balanced_accuracy}")
-            # print(f"precision in fit:  {precision}")
-            # print(f"F1_score in fit:  {F1_score}")
     
             elapsed_time = (time.time() - start_time)
-            metrics["running_time"] = elapsed_time
+            fit_metrics_server_report(metrics,self.model,self.X_test,self.y_test,elapsed_time,self.client_id)
 
             print(f"num_client {self.client_id} has an elapsed time {elapsed_time}")
             
@@ -118,7 +109,7 @@ class MnistClient(fl.client.Client):
         # print(f"precision in evaluate:  {precision}")
         # print(f"F1_score in evaluate:  {F1_score}")
 
-        visualization_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test )
+        visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test,self.client_id )
       
 
         # Serialize to send it to the server

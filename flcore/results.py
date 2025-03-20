@@ -37,9 +37,35 @@ def safe_round(val, digits=4):
 
 # This function converts Flower's distributed metrics format into a clean dictionary
 # grouped by round number, with separate entries for global and per-client metrics.
-def history_to_dict(metrics_distributed,experiment_dir,model, dataset, num_clients):
+def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,model, dataset, num_clients):
     history = {}
 
+    # Simulate centralized training by copying round 1 metrics into in metrics_distributed_fit into round 0
+    # Ensure entry for round 0 exists
+    if 0 not in history:
+        history[0] = {}
+    if "per_client" not in history[0]:
+        history[0]["per_client"] = {}
+
+    # List of specific metrics to copy
+    metrics_to_copy = ["per client y_pred_prob", "per client y_true"]
+
+    for metric in metrics_to_copy:
+        entries = metrics_centralized_type.get(metric, [])
+        
+        # Get the value from round 1
+        val = next((v for r, v in entries if r == 1), None)
+        
+        if val is not None:
+            # Remove the "per client " prefix to get the base name
+            clean_metric = metric.replace("per client ", "")
+            
+            # Store the rounded value under round 0
+            history[0]["per_client"][clean_metric] = safe_round(val)
+
+
+
+    # Now obtain the ensemble of the results from each client on the server for each round
     # Iterate over each metric name and its associated list of (round_num, value) pairs
     for metric, values in metrics_distributed.items():
         # Check if this is a "per client" metric
@@ -73,8 +99,8 @@ def history_to_dict(metrics_distributed,experiment_dir,model, dataset, num_clien
 
     # Ensure experiment_dir is a Path object
     experiment_dir = Path(experiment_dir)
-    with open(experiment_dir / "history.yaml", "w") as f:
-        yaml.dump(output_file, f,sort_keys=False, default_flow_style=True)
+    #with open(experiment_dir / "history.yaml", "w") as f:
+    #    yaml.dump(output_file, f,sort_keys=False, default_flow_style=True)
 
     with open(experiment_dir / "history.json", "w") as f:
         json.dump(output_file, f,sort_keys=False,  indent=4)

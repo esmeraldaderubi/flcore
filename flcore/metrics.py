@@ -86,7 +86,7 @@ def metrics_aggregation_fn(distributed_metrics):
 
     for kn in keys_names:
         #For visualization purposes, we will have some metrics for plots
-        if kn in ["y_true", "y_pred_prob", "y_pred","shap_values","shap_feature_names","shap_base_value"]:
+        if kn in ["y_true", "y_pred_prob", "y_pred","shap_values","shap_feature_names","shap_base_value","client_name"]:
             deserialized = [json.loads(evaluate_res[kn]) for _, evaluate_res in distributed_metrics] 
             metrics['per client ' + kn] = deserialized  
         else:
@@ -99,38 +99,51 @@ def metrics_aggregation_fn(distributed_metrics):
 
     return metrics
 
-def visualization_metrics_server_report(metrics,y_pred_prob,y_pred,y_test,model,X_test ):
+
+
+def fit_metrics_server_report(metrics,model,X_test,y_test,elapsed_time,client_id):
+    metrics["running_time"] = elapsed_time
+    #To create the visualization plots in the server to simulate the centralized 
+    y_pred_prob = model.predict_proba(X_test)
+    metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,1].tolist())  
+    metrics["y_true"] = json.dumps(y_test.tolist())
+    metrics["client_name"] = json.dumps(client_id)
+
+
+
+
+def visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,y_test,model,X_test,client_id ):
     #To create the visualization plots in the server
-    metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,0].tolist())  
+    metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,1].tolist())  
     metrics["y_pred"] = json.dumps(y_pred.tolist())  
     metrics["y_true"] = json.dumps(y_test.tolist())
-
+    metrics["client_name"] = json.dumps(client_id)
     
     # ---- SHAP values ----
-    try:
-        explainer = shap.TreeExplainer(model)
-        shap_values = explainer.shap_values(X_test)
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(X_test)
 
-        if isinstance(shap_values, list) and len(shap_values) == 2:
-            shap_vals = shap_values[1]  # For binary classification
-        else:
-            shap_vals = shap_values
+    if isinstance(shap_values, list) and len(shap_values) == 2:
+        shap_vals = shap_values[1]  # For binary classification
+    else:
+        shap_vals = shap_values
 
-        # Convert SHAP matrix to list of lists (for JSON serialization)
-        shap_matrix = shap_vals.tolist()
+    # Compute mean SHAP values per feature
+    mean_shap_values = np.mean(shap_vals, axis=0).tolist()
 
-        # Feature names
-        feature_names = X_test.columns.tolist()
-       
-        # SHAP base values (expected value of model output)
-        base_value = explainer.expected_value[1] if isinstance(explainer.expected_value, (list, np.ndarray)) else explainer.expected_value
+    # Feature names
+    feature_names = X_test.columns.tolist()
 
-        metrics["shap_values"] = json.dumps(shap_matrix)
-        metrics["shap_feature_names"] = json.dumps(feature_names)
-        metrics["shap_base_value"] = json.dumps([float(base_value)])
+    # SHAP base value (expected value of model output)
+    base_value = (
+        explainer.expected_value[1]
+        if isinstance(explainer.expected_value, (list, np.ndarray))
+        else explainer.expected_value
+    )
 
-    except Exception as e:
-        print(f"SHAP calculation failed: {e}")
-        metrics["shap_values"] = json.dumps([])
-        metrics["shap_feature_names"] = json.dumps([])
-        metrics["shap_base_value"] = None
+    # Store mean SHAP values and metadata
+    metrics["shap_values"] = json.dumps(mean_shap_values)  # Mean per feature
+    metrics["shap_feature_names"] = json.dumps(feature_names)
+    metrics["shap_base_value"] = json.dumps([float(base_value)])
+
+

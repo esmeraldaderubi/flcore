@@ -47,6 +47,7 @@ def get_server_and_strategy(config):
         #enable evaluate_fn  if we have data to evaluate in the server
         #evaluate_fn           = utils_RF.get_evaluate_fn( model ), #no data in server
         evaluate_metrics_aggregation_fn = metrics_aggregation_fn,
+        fit_metrics_aggregation_fn=metrics_aggregation_fn,
         on_fit_config_fn      = fit_round      
     )
     #Select normal RF or Balanced RF from config

@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
 data = (X_train, y_train), (X_test, y_test)
 
-client = get_model_client(config, data, num_client)
+client = get_model_client(config, data, config["name_client"])
 
 if isinstance(client, fl.client.NumPyClient):
     fl.client.start_numpy_client(
