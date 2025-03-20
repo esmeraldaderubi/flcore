@@ -10,6 +10,7 @@ def get_parser(isserver):
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--local_port", type=int, default=8081)
     parser.add_argument("--production_mode", type=bool, default=True)
+    parser.add_argument("--num_rounds", type=int, default=50)
     #Model arguments
     parser.add_argument("--model", choices=["logistic_regression", "lsvc", "elastic_net", "random_forest", "weighted_random_forest", "xgb"], required=True)
     parser.add_argument("--data_path", default="dataset/")
@@ -30,7 +31,6 @@ def get_parser(isserver):
     #specific variables for client and server 
     if(isserver == True): #server
         parser.add_argument("--num_clients", type=int, default=1)
-        parser.add_argument("--num_rounds", type=int, default=50)
         #parser.add_argument("--checkpoint_selection_metric", choices=["accuracy", "balanced_accuracy", "f1", "precision", "recall"], required=True)
         # Dropout and smoothing
         parser.add_argument("--dropout_method", default="None")
@@ -67,7 +67,8 @@ def generate_config_dict(args, isserver):
         "local_port": args.local_port,
         "data_path": args.data_path,
         "production_mode": args.production_mode,
-        "outcome" : args.outcome
+        "outcome" : args.outcome,
+        "num_rounds" :  args.num_rounds
     }
 
 
@@ -77,10 +78,9 @@ def generate_config_dict(args, isserver):
 
     if(isserver):
         config_dict["num_clients"] = args.num_clients
-        config_dict["num_rounds"] =  args.num_rounds
         config_dict["dropout_method"] =  args.dropout_method
         config_dict["dropout"] = {"percentage_drop" : args.percentage_drop}
-        config_dict["smooth_method"] =  args.smooth_method,
+        config_dict["smooth_method"] =  args.smooth_method
         config_dict["smoothWeights"] = {"smoothing_strenght" : args.smoothing_strenght}
     else:
         config_dict["name_client"] = args.name_client    
