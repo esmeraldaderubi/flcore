@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
 
     #Instead of using the config.yaml use the parameters
-    parser = get_parser(False)
+    parser = get_parser(isserver=False)
     args = parser.parse_args()
     validate_model_specific_args(args)
     config = generate_config_dict(args,False)

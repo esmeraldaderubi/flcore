@@ -15,3 +15,6 @@ xgboost==1.7.5
 pdfkit==1.0.0
 dotenv
 shap==0.46.0
+aif360==0.6.1
+tensorflow==2.13
+fairlearn==0.8.0

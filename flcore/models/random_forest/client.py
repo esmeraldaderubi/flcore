@@ -30,6 +30,7 @@ class MnistClient(fl.client.Client):
         (self.X_train, self.y_train), (self.X_test, self.y_test) = data
         #If fairness is defined enable fairness save the features of X_test 
         #as we need to compute the metrics and drop them from X_train and X_test
+        self.enabled_fairness = config["enabled_fairness"]
         if('fairness_attribs' in config):
             self.enabled_fairness = True
             fairness_attribs_names = config["fairness_attribs"]
