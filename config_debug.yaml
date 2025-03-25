@@ -4,6 +4,8 @@ SANDBOX_PATH: ./sandbox
 data_file: 3362-2045-1944.parquet
 data_path: dataset/
 dataset: youthgems_format
+drop_fairness_attribs: 1
+value_privileged_attrib: 1
 dropout:
   percentage_drop: 50
 dropout_method: None
@@ -11,43 +13,16 @@ experiment:
   debug: true
   log_path: logs
   name: experiment_1
-feature_subset:
-- ADBWGT00
-- FCSTYY00
-- ECHTCMA0
-- ECWTCMA0
-- ECBFPC00
-- EMCS5AGE
-- EBMIN5
-- FDKESSL
-- FCWTCM00
-- FCBFPC00
-- FCHTCM00
-- FCSTYU00
-- FCPTNT00
-- FCSCWK00
-- FCWYLK00
-- FCFMLY00
-- FCFRNS00
-- FCSCHL00
-- FCLIFE00
-- FCRISK00
-- FCTRST0A
-- ECQ10A00
-- ECQ10B00
-- ECQ10C00
-- ECQ10D00
-- ECQ10E00
-- ECQ10F00
-- MCSID
-- ACNUM00
-- Eval
+fairness_attribs:
+- Sex
+- Ethnicity
 held_out_center_id: -1
 linear_models:
   n_features: 9
 local_port: 8081
 metadata_file: metadata.json
 model: random_forest
+name_client: client1
 normalization_method: IQR
 num_clients: 2
 num_rounds: 3
@@ -59,9 +34,8 @@ seed: 42
 smoothWeights:
   smoothing_strenght: 0.5
 smooth_method: None
-target_label:
-- Eval
 train_size: 0.7
+
 weighted_random_forest:
   balanced_rf: true
   levelOfDetail: DecisionTree
@@ -70,3 +44,4 @@ xgb:
   num_iterations: 100
   task_type: BINARY
   tree_num: 500
+
