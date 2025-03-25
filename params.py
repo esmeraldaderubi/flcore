@@ -40,9 +40,9 @@ def get_parser(isserver):
     
     else:     
         parser.add_argument("--name_client", default=os.getenv("NODE_NAME"))
-        parser.add_arguments("--fairness_atribs", nargs="+")
-        parser.add_arguments("--priviledged_values", type=int, default=1)
-        parser.add_arguments("--drop_fairness_attribs", type=int, default=1)
+        parser.add_argument("--fairness_attribs", nargs="+")
+        parser.add_argument("--value_privileged_attrib", type=int, default=1)
+        parser.add_argument("--drop_fairness_attribs", type=int, default=1)
 
     return parser
 
@@ -88,16 +88,16 @@ def generate_config_dict(args, isserver):
     else:
         config_dict["name_client"] = args.name_client    
         # If fairness is defined
-        if hasattr(args, "fairness_atribs") and args.fairness_atribs is not None:
-            config_dict["fairness_atribs"] = args.fairness_atribs
-            config_dict["enabledFairness"] = True
-        #This version all the protected variables have the same privileged value
-        if hasattr(args, "value_privileged_attrib") and args.value_privileged_attrib is not None:
+        if hasattr(args, "fairness_attribs") and args.fairness_attribs is not None:
+            config_dict["fairness_attribs"] = args.fairness_attribs
+            config_dict["enabled_fairness"] = True
+            #This version all the protected variables have the same privileged value
             config_dict["value_privileged_attrib"] = args.value_privileged_attrib
-        #drop the protected variables for the training or not
-        if hasattr(args, "drop_fairness_attribs") and args.drop_fairness_attribs is not None:
+            #drop the protected variables for the training or not
             config_dict["drop_fairness_attribs"] = args.drop_fairness_attribs
-            
+
+        else:
+            config_dict["enabled_fairness"] = False            
 
     # Add model-specific fields
     if args.model in ["logistic_regression", "lsvc", "elastic_net"] and args.n_features is not None:
