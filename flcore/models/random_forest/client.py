@@ -1,11 +1,12 @@
 import warnings
 
 import flwr as fl
+import pandas as pd
 from sklearn.metrics import log_loss
 import flcore.datasets as datasets
 from flcore.serialization_funs import serialize_RF, deserialize_RF
 import flcore.models.random_forest.utils as utils
-from flcore.metrics import calculate_metrics, fit_metrics_server_report, visualization_distributed_metrics_server_report
+from flcore.metrics import calculate_metrics, fit_metrics_server_report, getFairnessResults, visualization_distributed_metrics_server_report
 from flwr.common import (
     Code,
     EvaluateIns,
@@ -24,14 +25,34 @@ class MnistClient(fl.client.Client):
     def __init__(self, data,client_id,config):
         self.client_id = client_id
         n_folds_out= config['num_rounds']
-        seed=42
+        seed= config['seed']
         # Load data
         (self.X_train, self.y_train), (self.X_test, self.y_test) = data
+        #If fairness is defined enable fairness save the features of X_test 
+        #as we need to compute the metrics and drop them from X_train and X_test
+        if('fairness_attribs' in config):
+            self.enabled_fairness = True
+            fairness_attribs_names = config["fairness_attribs"]
+            self.value_privileged_attrib = config["value_privileged_attrib"]
+            self.fairness_attribs =  [col for col in fairness_attribs_names if col in self.X_test.columns]
+            # Save the columns if they exist in X_test to make the fairness metrics
+            self.fairness_columns_test_values = self.X_test[self.fairness_attribs].copy()
+            #drop fairness attributes if you do not want to use them in the training
+            if(config["drop_fairness_attribs"]):
+                self.X_train = self.X_train.drop(columns= self.fairness_attribs)
+                self.X_test = self.X_test.drop(columns= self.fairness_attribs)
+            print("Fairness enabled:")
+            print("Existing fairness attributes in the tabular data: ", self.fairness_attribs)
+            print("The priviledged value for all the fairness attributes is: ", self.value_privileged_attrib)
+            print("The dropping of the attributes in the training is enabled or not (1 drops and 0 does not): ", config["drop_fairness_attribs"])
         self.splits_nested  = datasets.split_partitions(n_folds_out,0.2, seed, self.X_train, self.y_train)
+        print("The outcome is: ", self.y_test.name)
         self.bal_RF = config['random_forest']['balanced_rf']
         self.model = utils.get_model(self.bal_RF) 
         # Setting initial parameters, akin to model.compile for keras models
         utils.set_initial_params_client(self.model,self.X_train, self.y_train)
+
+
     def get_parameters(self, ins: GetParametersIns):  # , config type: ignore
         params = utils.get_model_parameters(self.model)
 
@@ -110,7 +131,9 @@ class MnistClient(fl.client.Client):
         # print(f"F1_score in evaluate:  {F1_score}")
 
         visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test,self.client_id )
-      
+        if self.enabled_fairness:
+            getFairnessResults(metrics,self.y_test.name, y_pred,self.fairness_attribs,self.value_privileged_attrib,\
+                    pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
 
         # Serialize to send it to the server
         #params = get_model_parameters(model)
