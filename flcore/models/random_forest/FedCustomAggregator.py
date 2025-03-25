@@ -113,6 +113,9 @@ class FedCustom(fl.server.strategy.FedAvg):
         # Do not aggregate if there are failures and failures are not accepted
         if not self.accept_failures and failures:
             return None, {}
+        
+        #order the results by client name
+        results = sorted(results, key=lambda x: x[1].metrics.get("client_name", ""))
 
         # Convert results
         weights_results = [
@@ -179,7 +182,9 @@ class FedCustom(fl.server.strategy.FedAvg):
         # Do not aggregate if there are failures and failures are not accepted
         if not self.accept_failures and failures:
             return None, {}
-
+        
+        #order the results by client name
+        results = sorted(results, key=lambda x: x[1].metrics.get("client_name", ""))
         # Aggregate loss
         loss_aggregated = fedav.weighted_loss_avg(
             [
