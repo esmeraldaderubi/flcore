@@ -102,7 +102,6 @@ def calculate_metrics(y_true, y_pred, task_type="binary"):
 #for visualization for the final history used for the server report 
 def metrics_aggregation_fn(distributed_metrics):
     #choose the metrics that are located in the second position of the dictionary that it is a dictionary as well
-    print(distributed_metrics[0][1].keys())
     keys_names = distributed_metrics[0][1].keys()
     keys_names = list(keys_names)
 

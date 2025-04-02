@@ -1,4 +1,5 @@
 import bz2
+import glob
 import os
 import shutil
 import urllib.request
@@ -223,18 +224,33 @@ def select_feature_subsets(df, config) -> Dataset:
         df = df[safe_cols]
     return df
     
-def load_youthgems(config, center_id=None) -> Dataset:
+def load_youthgems(config, center_id=0) -> Dataset:
     data_path = config["data_path"]
-    #continuous_variable_names = config["continuous_variable_names"]
     continuous_variable_names = get_continous_variables(config) 
 
     #read the tabular data
-    if center_id == 1:
-        file_name = data_path+'UKpopulationMentalHealthIssues.csv'
-    else:
-        file_name = data_path+'WalespopulationMentalHealthIssues.csv'
+    #if center_id == 1:
+    #    file_name = data_path+'UKpopulationMentalHealthIssues.csv'
+    #else:
+    #    file_name = data_path+'WalespopulationMentalHealthIssues.csv'
 
+    try:
+        # Check if the folder exists
+        if not os.path.exists(data_path):
+            raise FileNotFoundError(f"Folder '{data_path}' does not exist.")
+        
+        # Get all files in the folder
+        files = sorted(glob.glob(os.path.join(data_path, "*")))
+        
+        # If no files found, raise an error
+        if not files:
+            raise FileNotFoundError(f"No files found in folder '{data_path}'.")
 
+    except FileNotFoundError as e:
+        print("Error:", e)
+        return None  # Return None to indicate failure
+
+    file_name = files[center_id] # the first file found
     #remove unknown columns
     code_id = "MCSID"
     code_id2 = "ACNUM00"
@@ -822,7 +838,7 @@ def convert_dataset(config):
         raise ValueError("Invalid dataset name")
 """
 
-def load_dataset(config, id=None):
+def load_dataset(config, id=0):
     if config["dataset"] == "mnist":
         return load_mnist(id, config["num_clients"])
     elif config["dataset"] == "cvd":

@@ -78,7 +78,7 @@ class MnistClient(fl.client.NumPyClient):
             
 
         print(f"Training finished for round {config['server_round']}")
-
+        #To simulate centralized with more iterations as federated only performs one single iteration
         if self.first_round:
             local_model = utils.get_model(self.model_name, local=True)
             utils.set_initial_params(local_model,self.n_features)

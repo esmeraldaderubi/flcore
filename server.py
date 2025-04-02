@@ -75,7 +75,10 @@ if __name__ == "__main__":
     # Create experiment directory
     #experiment_dir = Path(os.path.join(config["experiment"]["log_path"], config["experiment"]["name"]))
     #experiment_dir.mkdir(parents=True, exist_ok=True)
+    #from dotenv import load_dotenv
+    #load_dotenv()
     experiment_dir = os.getenv("SANDBOX_PATH")
+
 
     # Checkpoint directory for saving the model
     #checkpoint_dir = experiment_dir / "checkpoints"
@@ -92,7 +95,8 @@ if __name__ == "__main__":
     #data = (X_train, y_train), (X_test, y_test)
 
     server, strategy = get_model_server_and_strategy(config)
-
+    strategy.experiment_dir = experiment_dir
+    
     # Start Flower server for three rounds of federated learning
     history = fl.server.start_server(
         server_address=f"{central_ip}:{central_port}",
@@ -101,10 +105,11 @@ if __name__ == "__main__":
         strategy=strategy,
         certificates = certificates,
     )
+    
     # # Save the model and the history
     # filename = os.path.join( checkpoint_dir, 'final_model.pt' )
     # joblib.dump(model, filename)
     # Save the history as a yaml file
-    print(history)
-    results = history_to_dict(history.metrics_distributed_fit, history.metrics_distributed,experiment_dir,config["model"],config["dataset"],config["num_clients"])
+    #print(history)
+    results = history_to_dict(history.metrics_distributed_fit, history.metrics_distributed,experiment_dir,config["model"],config["dataset"],config["num_clients"],config['internal_fs']>0)
     0==0
