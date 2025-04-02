@@ -11,6 +11,7 @@ def get_parser(isserver):
     parser.add_argument("--local_port", type=int, default=8081)
     parser.add_argument("--production_mode", type=bool, default=True)
     parser.add_argument("--num_rounds", type=int, default=50)
+    parser.add_argument("--internal_fs", type=int, default=0)
     #Model arguments
     parser.add_argument("--model", choices=["logistic_regression", "lsvc", "elastic_net", "random_forest", "weighted_random_forest", "xgb"], required=True)
     parser.add_argument("--data_path", default="dataset/")
@@ -25,6 +26,7 @@ def get_parser(isserver):
     parser.add_argument("--num_iterations", type=int)
     parser.add_argument("--task_type")
     parser.add_argument("--tree_num", type=int)  
+    
     # Other config
     #parser.add_argument("--held_out_center_id", type=int, default=-1)
     
@@ -43,7 +45,7 @@ def get_parser(isserver):
         parser.add_argument("--fairness_attribs", nargs="+")
         parser.add_argument("--value_privileged_attrib", type=int, default=1)
         parser.add_argument("--drop_fairness_attribs", type=int, default=1)
-
+        
     return parser
 
 def validate_model_specific_args(args):
@@ -71,7 +73,8 @@ def generate_config_dict(args, isserver):
         "data_path": args.data_path,
         "production_mode": args.production_mode,
         "outcome" : args.outcome,
-        "num_rounds" :  args.num_rounds
+        "num_rounds" :  args.num_rounds,
+        "internal_fs": args.internal_fs
     }
 
 
