@@ -27,15 +27,17 @@ from flcore.metrics import metrics_aggregation_fn
 
 warnings.filterwarnings( 'ignore' )
 
-def fit_round( server_round: int ) -> Dict:
+def fit_round( server_round: int, enabled_fs = False) -> Dict:
+    if(enabled_fs==True):
+        server_round = server_round-1
     """Send round number to client."""
     return { 'server_round': server_round }
 
 
 def get_server_and_strategy(config):
-    bal_RF = config['random_forest']['balanced_rf']
-    model = get_model(bal_RF) 
-    utils.set_initial_params_server( model)
+    #bal_RF = config['random_forest']['balanced_rf']
+    #model = get_model(bal_RF) 
+    #utils.set_initial_params_server( model)
 
     # Pass parameters to the Strategy for server-side parameter initialization
     #strategy = fl.server.strategy.FedAvg(
@@ -46,6 +48,7 @@ def get_server_and_strategy(config):
         min_evaluate_clients = config['num_clients'],
         #enable evaluate_fn  if we have data to evaluate in the server
         #evaluate_fn           = utils_RF.get_evaluate_fn( model ), #no data in server
+        on_evaluate_config_fn = fit_round,      
         evaluate_metrics_aggregation_fn = metrics_aggregation_fn,
         fit_metrics_aggregation_fn=metrics_aggregation_fn,
         on_fit_config_fn      = fit_round      
@@ -56,17 +59,20 @@ def get_server_and_strategy(config):
     strategy.percentage_drop = config['dropout']['percentage_drop']
     strategy.smoothing_method = config['smooth_method']
     strategy.smoothing_strenght = config['smoothWeights']['smoothing_strenght']
+    strategy.seed = config['seed']
+    
+    #If feature selection is enabled turn on the flag
+    #Increase the number of rounds as we will use round 1 renamed as round 0 for feature selection and
+    #the training will start in the following rounds renamed as by default (1..N) but internally
+    #cannot be changed so we will need one round more: 1--> 0=fs; 2-->1; 3-->2;
+    if "internal_fs" in config and config["internal_fs"] > 0:
+        print(f"Enabled feature selection with internal_fs value: {config['internal_fs']}")
+        strategy.enabled_fs = True
+        strategy.number_features = config['internal_fs']
+        config['num_rounds'] = config['num_rounds']+1
+    else:
+        strategy.enabled_fs = False
 
-    #filename = 'server_results.txt'
-    #with open(
-    #filename,
-    #"a",
-    #) as f:
-    #    f.write(f"Name Model Random Forest:  \n")
-    #    f.write(f"Drop out Method: {strategy.dropout_method} \n")
-    #    f.write(f"Drop out Method: {strategy.percentage_drop} \n")
-    #    f.write(f"Smooth Method: {strategy.smoothing_method} \n")
-    #    f.write(f"Smooth Strenght: {strategy.smoothing_strenght } \n")
 
     return None, strategy
 

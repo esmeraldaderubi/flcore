@@ -18,7 +18,7 @@ from flwr.common import (
     Status,
 )
 import time
-
+import flcore.featureselection as fs
 
 # Define Flower client
 class MnistClient(fl.client.Client):
@@ -26,8 +26,11 @@ class MnistClient(fl.client.Client):
         self.client_id = client_id
         n_folds_out= config['num_rounds']
         seed= config['seed']
+
         # Load data
         (self.X_train, self.y_train), (self.X_test, self.y_test) = data
+
+
         #If fairness is defined enable fairness save the features of X_test 
         #as we need to compute the metrics and drop them from X_train and X_test
         self.enabled_fairness = config["enabled_fairness"]
@@ -46,17 +49,29 @@ class MnistClient(fl.client.Client):
             print("Existing fairness attributes in the tabular data: ", self.fairness_attribs)
             print("The priviledged value for all the fairness attributes is: ", self.value_privileged_attrib)
             print("The dropping of the attributes in the training is enabled or not (1 drops and 0 does not): ", config["drop_fairness_attribs"])
+
+
+
+        #If feature selection enable the flag otherwise disable and select all features
+        #Important the order to be after fairness just in case there is drop of protected attributes
+        if('internal_fs' in config and config['internal_fs'] >0):
+            self.num_features = config['internal_fs']
+            self.enabled_fs = True
+        else:
+            self.enabled_fs = False
+            self.selected_features_names = self.X_train.columns
+
         self.splits_nested  = datasets.split_partitions(n_folds_out,0.2, seed, self.X_train, self.y_train)
         print("The outcome is: ", self.y_test.name)
         self.bal_RF = config['random_forest']['balanced_rf']
-        self.model = utils.get_model(self.bal_RF) 
+        self.model = utils.get_model(self.bal_RF,seed) 
         # Setting initial parameters, akin to model.compile for keras models
-        utils.set_initial_params_client(self.model,self.X_train, self.y_train)
+        #utils.set_initial_params_client(self.model,self.X_train, self.y_train)
 
-
+    #To initialize the server (one random client is used to start)
     def get_parameters(self, ins: GetParametersIns):  # , config type: ignore
-        params = utils.get_model_parameters(self.model)
-
+        #use whatever paramater to send to the server to start communication
+        params = [None] #utils.get_model_parameters(self.model)
         #Serialize to send it to server
         #It is forced to send an bytesIO
         parameters_to_ndarrays_final = serialize_RF(params)
@@ -74,6 +89,26 @@ class MnistClient(fl.client.Client):
         #parameters = deserialize_RF(parameters)
         #utils.set_model_params(self.model, parameters)
         # Ignore convergence failure due to low local epochs
+
+        ###############################################################################################
+        #If it is enabled feature selection select the best features for the current client in round 0
+        if(ins.config['server_round']==0):
+            print("Feature selection is enable:")
+            print("Feature selection is sending the top best of the client only")
+            fs_topnames = fs.selectKBestfeatures(self.X_train, self.y_train,self.num_features)
+            parameters_updated = serialize_RF(fs_topnames)
+
+            # Build and return response with the top N features
+            status = Status(code=Code.OK, message="Success")
+            return FitRes(
+                status=status,
+                parameters=parameters_updated,
+                num_examples=0,
+                metrics={}
+            )
+
+        #################################################################################################
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             train_idx, val_idx = next(self.splits_nested)
@@ -83,15 +118,15 @@ class MnistClient(fl.client.Client):
             y_val = self.y_train.iloc[val_idx]
             #To implement the center dropout, we need the execution time
             start_time = time.time()
-            self.model.fit(X_train_2, y_train_2)
+            self.model.fit(X_train_2[self.selected_features_names], y_train_2)
             #accuracy = model.score( X_test, y_test )
             # accuracy,specificity,sensitivity,balanced_accuracy, precision, F1_score = \
             # measurements_metrics(self.model,X_val, y_val)
-            y_pred = self.model.predict(X_val)
+            y_pred = self.model.predict(X_val[self.selected_features_names])
             metrics = calculate_metrics(y_val, y_pred)
     
             elapsed_time = (time.time() - start_time)
-            fit_metrics_server_report(metrics,self.model,self.X_test,self.y_test,elapsed_time,self.client_id)
+            fit_metrics_server_report(metrics,self.model,self.X_test[self.selected_features_names],self.y_test,elapsed_time,self.client_id)
 
             print(f"num_client {self.client_id} has an elapsed time {elapsed_time}")
             
@@ -117,12 +152,37 @@ class MnistClient(fl.client.Client):
         parameters = ins.parameters
         #Deserialize to get the real parameters
         parameters = deserialize_RF(parameters)
+
+        ####################################################################
+        #If it is enabled feature selection
+        if(ins.config["server_round"]==0):
+            print("Feature selection is enable:")
+            print("Feature selection is aggregted in the evaluate of the client")
+            #here we already have the aggregation of the most important features of all clients and we will
+            #select those ones in the dataset
+            self.feature_importance = parameters
+                        
+            # Extract the feature names 
+            self.selected_features_names  = [param[0] for param in parameters]
+
+            status = Status(code=Code.OK, message="Success")
+            return EvaluateRes(
+                status=status,
+                loss=0,
+                num_examples=0,
+                metrics= {}
+            )
+        
+        ####################################################################
+
+
+
         utils.set_model_params(self.model, parameters)
-        y_pred_prob = self.model.predict_proba(self.X_test)
+        y_pred_prob = self.model.predict_proba(self.X_test[self.selected_features_names])
         loss = log_loss(self.y_test, y_pred_prob)
         # accuracy,specificity,sensitivity,balanced_accuracy, precision, F1_score = \
         # measurements_metrics(self.model,self.X_test, self.y_test)
-        y_pred = self.model.predict(self.X_test)
+        y_pred = self.model.predict(self.X_test[self.selected_features_names])
         metrics = calculate_metrics(self.y_test, y_pred)
         # print(f"Accuracy client in evaluate:  {accuracy}")
         # print(f"Sensitivity client in evaluate:  {sensitivity}")
@@ -131,7 +191,7 @@ class MnistClient(fl.client.Client):
         # print(f"precision in evaluate:  {precision}")
         # print(f"F1_score in evaluate:  {F1_score}")
 
-        visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test,self.client_id )
+        visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test[self.selected_features_names],self.client_id )
         if self.enabled_fairness:
             getFairnessResults(metrics,self.y_test.name, y_pred,self.fairness_attribs,self.value_privileged_attrib,\
                     pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
