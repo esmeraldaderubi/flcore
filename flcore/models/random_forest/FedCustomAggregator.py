@@ -14,19 +14,22 @@
 
 
 from logging import WARNING
+import os
 from typing import  Dict, List,Callable, Optional,Tuple,Union
 #from dropout import Fast_at_odd_rounds
 
-from flwr.common import  FitIns, FitRes,EvaluateRes, MetricsAggregationFn, NDArrays, Parameters,  Scalar
+from flwr.common import  FitIns, FitRes,EvaluateRes,EvaluateIns, MetricsAggregationFn, NDArrays, Parameters,  Scalar
 from flwr.common.logger import log
 from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 import flwr as fl
+import joblib
+from flcore.featureselection import federated_top_features
 from flcore.models.random_forest.aggregatorRF import aggregateRFwithSizeCenterProbs, aggregateRFwithSizeCenterProbs_withprevious
 from flcore.serialization_funs import serialize_RF, deserialize_RF
 
 import numpy as np
-from flcore.models.random_forest.utils import get_model
+from flcore.models.random_forest.utils import get_model, save_model
 import random
 import time
 import flwr.server.strategy.fedavg as fedav
@@ -55,6 +58,8 @@ class FedCustom(fl.server.strategy.FedAvg):
     accum_time = 0
     # pylint: disable=too-many-arguments,too-many-instance-attributes,line-too-long
     
+    #Before starting the fit in client make the configuraton
+    #Here we choose the clients in each round according to drop out if it is enabled
     def configure_fit(
         self, server_round: int, parameters: Parameters, client_manager: ClientManager
     ) -> List[Tuple[ClientProxy, FitIns]]:
@@ -62,7 +67,8 @@ class FedCustom(fl.server.strategy.FedAvg):
         config = {}
         if self.on_fit_config_fn is not None:
             # Custom fit config function provided
-            config = self.on_fit_config_fn(server_round)
+            # If feature selection is enabled round 1 will become round 0 and so on
+            config = self.on_fit_config_fn(server_round,self.enabled_fs)
         fit_ins = FitIns(parameters, config)
 
         # Sample clients
@@ -85,7 +91,36 @@ class FedCustom(fl.server.strategy.FedAvg):
         # Return client/config pairs
         return [(client, fit_ins) for client in clients]
 
+    def configure_evaluate(
+        self, server_round: int, parameters: Parameters, client_manager: ClientManager
+    ) -> List[Tuple[ClientProxy, EvaluateIns]]:
+        """Configure the next round of evaluation."""
+        # Do not configure federated evaluation if fraction eval is 0.
+        if self.fraction_evaluate == 0.0:
+            return []
+
+        # Parameters and config
+        config = {}
+
+        if self.on_evaluate_config_fn is not None:
+            # Custom evaluation config function provided
+            # If feature selection is enabled round 1 will become round 0 and so on
+            config = self.on_evaluate_config_fn(server_round,self.enabled_fs)
+        evaluate_ins = EvaluateIns(parameters, config)
+
+        # Sample clients
+        sample_size, min_num_clients = self.num_evaluation_clients(
+            client_manager.num_available()
+        )
+        clients = client_manager.sample(
+            num_clients=sample_size, min_num_clients=min_num_clients
+        )
+
+        # Return client/config pairs
+        return [(client, evaluate_ins) for client in clients]
     
+    #Not used if we do not have data in the server and define evaluate_fn
+    #If there is no data we do not need to add evaluate_fn and it returns None all the time
     def evaluate(
         self, server_round: int, parameters: Parameters
     ) -> Optional[Tuple[float, Dict[str, Scalar]]]:
@@ -107,6 +142,11 @@ class FedCustom(fl.server.strategy.FedAvg):
         results: List[Tuple[ClientProxy, FitRes]],
         failures: List[Union[Tuple[ClientProxy, FitRes], BaseException]],
     ) -> Tuple[Optional[Parameters], Dict[str, Scalar]]:
+        
+        #If feature selection is enabled round 1 becomes 0 and so on
+        if(self.enabled_fs==True):
+            server_round = server_round-1
+            
         """Aggregate fit results using weighted average."""
         if not results:
             return None, {}
@@ -114,6 +154,9 @@ class FedCustom(fl.server.strategy.FedAvg):
         if not self.accept_failures and failures:
             return None, {}
         
+        
+        #Sort by client ID (IMPORTANT as clients are ordered by arrival as in the history of flower)
+        #results = sorted(results, key=lambda x: (x[0].cid)) 
         #order the results by client name
         results = sorted(results, key=lambda x: x[1].metrics.get("client_name", ""))
 
@@ -123,12 +166,29 @@ class FedCustom(fl.server.strategy.FedAvg):
             for _, fit_res in results
         ]
 
+        #If we are in server_round 0 means that we have feature selection
+        #so we aggregate here the features and we return them to the client
+        if(server_round==0):
+            aggregation_result = federated_top_features(weights_results, top_k=self.number_features)
+            parameters_aggregated = serialize_RF(aggregation_result)
+            return parameters_aggregated, {}
+
         if(server_round == 1):
-            aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght)
+            #save the local model before aggregation
+            client_ids = [x[1].metrics["client_name"] for x in results]
+            #The model saved is only for predictions as only estimators (decision trees) are shared
+            #The feature importance is not kept in the parameters so it can be different
+            save_model(weights_results, self.experiment_dir,client_ids,self.bal_RF,self.seed)
+            aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed)
             #aggregation_result,self.server_estimators = aggregateRF(weights_results,self.bal_RF)
         else:
-            aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght)
+            aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed)
             #aggregation_result,self.server_estimators = aggregateRF_withprevious(weights_results,self.server_estimators,self.bal_RF)
+
+
+        #Save the model for each aggregation
+        filename = os.path.join( self.experiment_dir, 'final_model'+str(server_round)+'.pkl' )
+        joblib.dump(aggregation_result[0], filename)
 
         #ndarrays_to_parameters necessary to send the message
         parameters_aggregated = serialize_RF(aggregation_result)
@@ -146,9 +206,7 @@ class FedCustom(fl.server.strategy.FedAvg):
         # Aggregate custom metrics if aggregation fn was provided
         metrics_aggregated = {}
         if self.fit_metrics_aggregation_fn:
-            # Sort by client ID (IMPORTANT as clients are ordered by arrival as in the history of flower)
-            #results = sorted(results, key=lambda x: (x[0].cid)) 
-            results = sorted(results, key=lambda x: x[1].metrics.get("client_name", ""))
+            
             fit_metrics = [(res.num_examples, res.metrics) for _, res in results]
             metrics_aggregated = self.fit_metrics_aggregation_fn(fit_metrics)
         elif server_round == 1:  # Only log this warning once
@@ -160,12 +218,6 @@ class FedCustom(fl.server.strategy.FedAvg):
         print(f"Elapsed time: {elapsed_time} for round {server_round}")
         metrics_aggregated['training_time [s]'] = self.accum_time
         
-        #filename = 'server_results.txt'
-        #with open(
-        #filename,
-        #"a",
-        #) as f:
-        #    f.write(f"Accumulated Time: {self.accum_time} for round {server_round}\n")
 
         return parameters_aggregated, metrics_aggregated
     
@@ -183,8 +235,21 @@ class FedCustom(fl.server.strategy.FedAvg):
         if not self.accept_failures and failures:
             return None, {}
         
+        #If feature selection is enabled round 1 becomes 0 and so on
+        if(self.enabled_fs==True):
+            server_round = server_round-1
+
+        #If we are in server_round 0 means that we have feature selection
+        #so we do not have to aggregate any evaluation metrics
+        if(server_round==0):
+            return None, {}
+
+
         #order the results by client name
+        # Sort by client ID (IMPORTANT as clients are ordered by arrival as in the history of flower)
+        #results = sorted(results, key=lambda x: (x[0].cid)) 
         results = sorted(results, key=lambda x: x[1].metrics.get("client_name", ""))
+
         # Aggregate loss
         loss_aggregated = fedav.weighted_loss_avg(
             [
@@ -197,22 +262,11 @@ class FedCustom(fl.server.strategy.FedAvg):
         # Aggregate custom metrics if aggregation fn was provided
         metrics_aggregated = {}
         if self.evaluate_metrics_aggregation_fn:
-            # Sort by client ID (IMPORTANT as clients are ordered by arrival as in the history of flower)
-            #results = sorted(results, key=lambda x: (x[0].cid)) 
-            results = sorted(results, key=lambda x: x[1].metrics.get("client_name", ""))
             eval_metrics = [(res.num_examples, res.metrics) for _, res in results]
             metrics_aggregated = self.evaluate_metrics_aggregation_fn(eval_metrics)
         elif server_round == 1:  # Only log this warning once
             log(WARNING, "No evaluate_metrics_aggregation_fn provided")
 
-        # filename = 'server_results.txt'
-        # with open(
-        # filename,
-        # "a",
-        # ) as f:
-        #     f.write(f"Accuracy: {metrics_aggregated['accuracy']} \n")
-        #     f.write(f"Sensitivity: {metrics_aggregated['sensitivity']} \n")
-        #     f.write(f"Specificity: {metrics_aggregated['specificity']} \n")
 
         return loss_aggregated, metrics_aggregated
 

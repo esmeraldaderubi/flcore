@@ -37,7 +37,7 @@ def safe_round(val, digits=4):
 
 # This function converts Flower's distributed metrics format into a clean dictionary
 # grouped by round number, with separate entries for global and per-client metrics.
-def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,model, dataset, num_clients):
+def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,model, dataset, num_clients,enabled_fs):
     history = {}
 
     # Simulate centralized training by copying round 1 metrics into in metrics_distributed_fit into round 0
@@ -52,9 +52,13 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
 
     for metric in metrics_to_copy:
         entries = metrics_centralized_type.get(metric, [])
-        
+        #If feature selection is enabled the training starts in round 2 internally otherwise round 1 by default
+        if(enabled_fs == True):
+            first_entry = 2
+        else:
+            first_entry = 1
         # Get the value from round 1
-        val = next((v for r, v in entries if r == 1), None)
+        val = next((v for r, v in entries if r == first_entry), None)
         
         if val is not None:
             # Remove the "per client " prefix to get the base name
@@ -75,6 +79,9 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
 
         # Loop over each recorded round and its value(s) for this metric
         for round_num, val in values:
+            #If feature selection is enabled the training starts in round 2 internally otherwise round 1 by default
+            if(enabled_fs == True):
+                round_num = round_num-1
             # Initialize the history for this round if not already present
             if round_num not in history:
                 history[round_num] = {}

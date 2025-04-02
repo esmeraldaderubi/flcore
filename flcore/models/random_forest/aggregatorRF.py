@@ -116,8 +116,8 @@ def aggregateRF_withprevious(rfs,previous_estimators,bal_RF):
 #In this version of aggregation we weight according to smoothing
 #weigth, we transform into probability /sum(weights)
 #and random choice select according to probability distribution
-def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght):
-    rfa= get_model(bal_RF)
+def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed):
+    rfa= get_model(bal_RF,seed)
     numberTreesperclient = int(len(rfs[0][0][0]))
     number_Clients = len(rfs)
     #random_select =int(numberTreesperclient/number_Clients)
@@ -135,7 +135,7 @@ def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strengh
         weights_classifiers = np.concatenate(((weights_classifiers),([weights_smooth]*len(rfs[i][0][0]))))
 
     weights_classifiers = weights_classifiers / sum(weights_classifiers )
-    np.random.seed(42)  # Set seed for reproducibility
+    np.random.seed(seed)  # Set seed for reproducibility
     client_indices = np.random.choice([j for j in range(len(list_classifiers))], numberTreesperclient, p=weights_classifiers)
     
     selectedTrees = list_classifiers[client_indices]
@@ -147,13 +147,13 @@ def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strengh
 
     return [rfa],rfa.estimators_,weights_selectedTrees
 
-def aggregateRFwithSizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght):
-            [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght)
+def aggregateRFwithSizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed)
 
-            rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
-            rfa.estimators_=np.array(rfa.estimators_)
-            rfa.n_estimators = len(rfa.estimators_)
+    rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
+    rfa.estimators_=np.array(rfa.estimators_)
+    rfa.n_estimators = len(rfa.estimators_)
 
-            weights_selectedTrees = np.concatenate(((previous_estimator_weights),(weights_selectedTrees)))
+    weights_selectedTrees = np.concatenate(((previous_estimator_weights),(weights_selectedTrees)))
 
-            return [rfa],rfa.estimators_,weights_selectedTrees
+    return [rfa],rfa.estimators_,weights_selectedTrees
