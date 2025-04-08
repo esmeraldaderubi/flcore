@@ -11,7 +11,7 @@ def get_parser(isserver):
     parser.add_argument("--local_port", type=int, default=8081)
     parser.add_argument("--production_mode", type=bool, default=True)
     parser.add_argument("--num_rounds", type=int, default=50)
-    parser.add_argument("--internal_fs", type=int, default=0)
+ 
     #Model arguments
     parser.add_argument("--model", choices=["logistic_regression", "lsvc", "elastic_net", "random_forest", "weighted_random_forest", "xgb"], required=True)
     parser.add_argument("--data_path", default="dataset/")
@@ -45,6 +45,7 @@ def get_parser(isserver):
         parser.add_argument("--fairness_attribs", nargs="+")
         parser.add_argument("--value_privileged_attrib", type=int, default=1)
         parser.add_argument("--drop_fairness_attribs", type=int, default=1)
+        parser.add_argument("--internal_fs", type=int, default=0)
         
     return parser
 
@@ -74,7 +75,7 @@ def generate_config_dict(args, isserver):
         "production_mode": args.production_mode,
         "outcome" : args.outcome,
         "num_rounds" :  args.num_rounds,
-        "internal_fs": args.internal_fs
+        
     }
 
 
@@ -90,6 +91,7 @@ def generate_config_dict(args, isserver):
         config_dict["smoothWeights"] = {"smoothing_strenght" : args.smoothing_strenght}
     else:
         config_dict["name_client"] = args.name_client    
+        config_dict["internal_fs"] = args.internal_fs
         # If fairness is defined
         if hasattr(args, "fairness_attribs") and args.fairness_attribs is not None:
             config_dict["fairness_attribs"] = args.fairness_attribs

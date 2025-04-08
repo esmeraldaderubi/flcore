@@ -52,11 +52,9 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
 
     for metric in metrics_to_copy:
         entries = metrics_centralized_type.get(metric, [])
-        #If feature selection is enabled the training starts in round 2 internally otherwise round 1 by default
-        if(enabled_fs == True):
-            first_entry = 2
-        else:
-            first_entry = 1
+        #feature selection is always reserved in round 0
+        first_entry = 2
+        
         # Get the value from round 1
         val = next((v for r, v in entries if r == first_entry), None)
         
@@ -79,9 +77,8 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
 
         # Loop over each recorded round and its value(s) for this metric
         for round_num, val in values:
-            #If feature selection is enabled the training starts in round 2 internally otherwise round 1 by default
-            if(enabled_fs == True):
-                round_num = round_num-1
+            #feature selection is always reserved in round 0
+            round_num = round_num-1
             # Initialize the history for this round if not already present
             if round_num not in history:
                 history[round_num] = {}

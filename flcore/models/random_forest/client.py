@@ -92,20 +92,36 @@ class MnistClient(fl.client.Client):
 
         ###############################################################################################
         #If it is enabled feature selection select the best features for the current client in round 0
+        #otherwise return an empty array
+        #We do it like this otherwise we need to add param in server and be consequent in the following client new calls
         if(ins.config['server_round']==0):
-            print("Feature selection is enable:")
-            print("Feature selection is sending the top best of the client only")
-            fs_topnames = fs.selectKBestfeatures(self.X_train, self.y_train,self.num_features)
-            parameters_updated = serialize_RF(fs_topnames)
+            if(self.enabled_fs == True):
+                print("Feature selection is enable:")
+                print("Feature selection is sending the top best of the client only")
+                fs_topnames = fs.selectKBestfeatures(self.X_train, self.y_train,self.num_features)
+                parameters_updated = serialize_RF(fs_topnames)
 
-            # Build and return response with the top N features
-            status = Status(code=Code.OK, message="Success")
-            return FitRes(
-                status=status,
-                parameters=parameters_updated,
-                num_examples=0,
-                metrics={}
-            )
+                # Build and return response with the top N features
+                status = Status(code=Code.OK, message="Success")
+                return FitRes(
+                    status=status,
+                    parameters=parameters_updated,
+                    num_examples=0,
+                    metrics={}
+                )
+            else:
+                print("Feature selection is NOT enabled")
+                parameters_updated = serialize_RF({})
+                # Build and return response that no feature selection is performed
+                status = Status(code=Code.OK, message="Success")
+                return FitRes(
+                    status=status,
+                    parameters=parameters_updated,
+                    num_examples=0,
+                    metrics={}
+                )
+
+                
 
         #################################################################################################
 
@@ -154,16 +170,18 @@ class MnistClient(fl.client.Client):
         parameters = deserialize_RF(parameters)
 
         ####################################################################
-        #If it is enabled feature selection
-        if(ins.config["server_round"]==0):
-            print("Feature selection is enable:")
-            print("Feature selection is aggregted in the evaluate of the client")
-            #here we already have the aggregation of the most important features of all clients and we will
-            #select those ones in the dataset
-            self.feature_importance = parameters
-                        
-            # Extract the feature names 
-            self.selected_features_names  = [param[0] for param in parameters]
+        #If it is enabled feature selection overwrite the features selected that by default are all the columns
+        #If the feature selection is not enabled all the columns are selected by default in the init of the client
+        if(ins.config["server_round"]==0 ):
+            if(self.enabled_fs == True):
+                print("Feature selection is enabled:")
+                print("Feature selection is aggregted in the evaluate of the client")
+                #here we already have the aggregation of the most important features of all clients and we will
+                #select those ones in the dataset
+                self.feature_importance = parameters
+                            
+                # Extract the feature names 
+                self.selected_features_names  = [param[0] for param in parameters]
 
             status = Status(code=Code.OK, message="Success")
             return EvaluateRes(
