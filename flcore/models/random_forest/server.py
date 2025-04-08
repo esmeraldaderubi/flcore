@@ -27,9 +27,12 @@ from flcore.metrics import metrics_aggregation_fn
 
 warnings.filterwarnings( 'ignore' )
 
-def fit_round( server_round: int, enabled_fs = False) -> Dict:
-    if(enabled_fs==True):
-        server_round = server_round-1
+def fit_round( server_round: int) -> Dict:
+    #We force round 0 as feature selection always active
+    #in server and if client does not have fs enabled
+    #we do not aggregate anything in round 0 otherwise
+    #we aggregate the features then it recovers normal behaviour
+    server_round = server_round-1
     """Send round number to client."""
     return { 'server_round': server_round }
 
@@ -65,13 +68,13 @@ def get_server_and_strategy(config):
     #Increase the number of rounds as we will use round 1 renamed as round 0 for feature selection and
     #the training will start in the following rounds renamed as by default (1..N) but internally
     #cannot be changed so we will need one round more: 1--> 0=fs; 2-->1; 3-->2;
-    if "internal_fs" in config and config["internal_fs"] > 0:
-        print(f"Enabled feature selection with internal_fs value: {config['internal_fs']}")
-        strategy.enabled_fs = True
-        strategy.number_features = config['internal_fs']
-        config['num_rounds'] = config['num_rounds']+1
-    else:
-        strategy.enabled_fs = False
+    #if "internal_fs" in config and config["internal_fs"] > 0:
+    #    print(f"Enabled feature selection with internal_fs value: {config['internal_fs']}")
+    #    strategy.enabled_fs = True
+    #    strategy.number_features = config['internal_fs']
+    #    config['num_rounds'] = config['num_rounds']+1
+    #else:
+    #    strategy.enabled_fs = False
 
 
     return None, strategy

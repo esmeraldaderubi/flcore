@@ -67,8 +67,8 @@ class FedCustom(fl.server.strategy.FedAvg):
         config = {}
         if self.on_fit_config_fn is not None:
             # Custom fit config function provided
-            # If feature selection is enabled round 1 will become round 0 and so on
-            config = self.on_fit_config_fn(server_round,self.enabled_fs)
+            # feature selection always enabled in server round 1 will become round 0 and so on
+            config = self.on_fit_config_fn(server_round)
         fit_ins = FitIns(parameters, config)
 
         # Sample clients
@@ -104,8 +104,8 @@ class FedCustom(fl.server.strategy.FedAvg):
 
         if self.on_evaluate_config_fn is not None:
             # Custom evaluation config function provided
-            # If feature selection is enabled round 1 will become round 0 and so on
-            config = self.on_evaluate_config_fn(server_round,self.enabled_fs)
+            # feature selection is always enabled so round 1 will become round 0 and so on but it is not necessary to be used
+            config = self.on_evaluate_config_fn(server_round)
         evaluate_ins = EvaluateIns(parameters, config)
 
         # Sample clients
@@ -143,9 +143,8 @@ class FedCustom(fl.server.strategy.FedAvg):
         failures: List[Union[Tuple[ClientProxy, FitRes], BaseException]],
     ) -> Tuple[Optional[Parameters], Dict[str, Scalar]]:
         
-        #If feature selection is enabled round 1 becomes 0 and so on
-        if(self.enabled_fs==True):
-            server_round = server_round-1
+        #feature selection is always enabled round 1 becomes 0 and so on
+        server_round = server_round-1
             
         """Aggregate fit results using weighted average."""
         if not results:
@@ -166,9 +165,15 @@ class FedCustom(fl.server.strategy.FedAvg):
             for _, fit_res in results
         ]
 
-        #If we are in server_round 0 means that we have feature selection
-        #so we aggregate here the features and we return them to the client
+        #We reserve round 0 for feature selection
+        #If the client returns an empty array, it means that fs is not enabled
+        #otherwise get the top n features using all the top features of the nodes
         if(server_round==0):
+            if(len(weights_results[0][0]) == 0):
+                return {},{}
+            #we assume that all clients has the same number of features so get the number of features with the
+            #lenght of the first client and aggregate the same number
+            self.number_features = len(weights_results[0][0][0])
             aggregation_result = federated_top_features(weights_results, top_k=self.number_features)
             parameters_aggregated = serialize_RF(aggregation_result)
             return parameters_aggregated, {}
@@ -235,9 +240,8 @@ class FedCustom(fl.server.strategy.FedAvg):
         if not self.accept_failures and failures:
             return None, {}
         
-        #If feature selection is enabled round 1 becomes 0 and so on
-        if(self.enabled_fs==True):
-            server_round = server_round-1
+        #If feature selection is always enabled in server so round 1 becomes 0 and so on even it is not used 
+        server_round = server_round-1
 
         #If we are in server_round 0 means that we have feature selection
         #so we do not have to aggregate any evaluation metrics
