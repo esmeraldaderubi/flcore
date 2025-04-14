@@ -25,7 +25,7 @@ from sklearn.pipeline import Pipeline
 
 #Performs univariate feature selection using mutual information for both categorical
 #and numerical features, and returns the selected feature column names.
-def selectKBestfeatures(X_train, y_train,  k_features):
+def selectKBestfeatures(X_train, y_train,  k_features,seed):
     # Identify categorical features in X_train
     cat_features = X_train.select_dtypes(include='category').columns
     # Create a discrete_features mask where categorical features are True
@@ -33,7 +33,7 @@ def selectKBestfeatures(X_train, y_train,  k_features):
 
     # Create a pipeline with mutual_info_classif for feature selection
     pipeline = Pipeline([
-        ("kbest", SelectKBest(score_func=partial(mutual_info_classif, discrete_features=discrete_features_mask), k=k_features))
+        ("kbest", SelectKBest(score_func=partial(mutual_info_classif, discrete_features=discrete_features_mask,random_state=seed), k=k_features))
     ])
 
     # Fit the pipeline to the training data

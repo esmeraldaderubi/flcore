@@ -117,8 +117,8 @@ def aggregateRF_withprevious(rfs,previous_estimators,bal_RF):
 #weigth, we transform into probability /sum(weights)
 #and random choice select according to probability distribution
 def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed):
-    rfa= get_model(bal_RF,seed)
-    numberTreesperclient = int(len(rfs[0][0][0]))
+    rfa= get_model(bal_RF,rfs[0][0][0].random_state)
+    numberTreesperclient = int(len(rfs[0][0][0].estimators_)) #int(len(rfs[0][0][0]))
     number_Clients = len(rfs)
     #random_select =int(numberTreesperclient/number_Clients)
     list_classifiers = []
@@ -130,9 +130,9 @@ def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strengh
         #same probability
         weights_centers = [1]*(number_Clients)
     for i in range(number_Clients):
-        list_classifiers = np.concatenate(((list_classifiers),(rfs[i][0][0])))
+        list_classifiers = np.concatenate(((list_classifiers),(rfs[i][0][0].estimators_))) #np.concatenate(((list_classifiers),(rfs[i][0][0])))
         weights_smooth = weights_centers[i]
-        weights_classifiers = np.concatenate(((weights_classifiers),([weights_smooth]*len(rfs[i][0][0]))))
+        weights_classifiers = np.concatenate(((weights_classifiers),([weights_smooth]*len(rfs[i][0][0].estimators_)))) #np.concatenate(((weights_classifiers),([weights_smooth]*len(rfs[i][0][0]))))
 
     weights_classifiers = weights_classifiers / sum(weights_classifiers )
     np.random.seed(seed)  # Set seed for reproducibility
