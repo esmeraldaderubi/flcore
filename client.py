@@ -10,20 +10,20 @@ from params import get_parser, validate_model_specific_args,generate_config_dict
 # Start Flower client but after the server or error
 
 if __name__ == "__main__":
-    #if len(sys.argv) == 3:
-    #    config_path = sys.argv[2]
-    #else:
-    #    config_path = "config.yaml"
+    if len(sys.argv) == 3:
+        config_path = sys.argv[2]
+    else:
+        config_path = "config.yaml"
 
-    #with open(config_path, "r") as f:
-    #    config = yaml.safe_load(f)
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
 
 
     #Instead of using the config.yaml use the parameters
-    parser = get_parser(isserver=False)
-    args = parser.parse_args()
-    validate_model_specific_args(args)
-    config = generate_config_dict(args,False)
+    #parser = get_parser(isserver=False)
+    #args = parser.parse_args()
+    #validate_model_specific_args(args)
+    #config = generate_config_dict(args,False)
 
 
 
@@ -31,8 +31,8 @@ if __name__ == "__main__":
     model = config["model"]
 
     if config["production_mode"]:
-        #from dotenv import load_dotenv
-        #status = load_dotenv('client.env', override=True)
+        from dotenv import load_dotenv
+        status = load_dotenv('client.env', override=True)
         node_name = os.getenv("NODE_NAME")
         #num_client = int(node_name.split("_")[-1])
         data_path = os.getenv("DATA_PATH")
@@ -60,9 +60,10 @@ if __name__ == "__main__":
     #The table of features selected
     first_file_selected = file_featsselected
 
-    (X_train, y_train), (X_test, y_test) = datasets.load_dataset(config,first_file_selected)
+    #We also get the pipeline for inference
+    (X_train, y_train), (X_test, y_test),pipeline = datasets.load_dataset(config,first_file_selected)
 
-    data = (X_train, y_train), (X_test, y_test)
+    data = (X_train, y_train), (X_test, y_test),pipeline
 
     if config["production_mode"]:
         client = get_model_client(config, data,  f"{config['name_client']}")

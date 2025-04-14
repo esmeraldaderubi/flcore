@@ -4,6 +4,7 @@ import flwr as fl
 import pandas as pd
 from sklearn.metrics import log_loss
 import flcore.datasets as datasets
+from flcore.results import save_pipeline_inference
 from flcore.serialization_funs import serialize_RF, deserialize_RF
 import flcore.models.random_forest.utils as utils
 from flcore.metrics import calculate_metrics, fit_metrics_server_report, getFairnessResults, visualization_distributed_metrics_server_report
@@ -25,10 +26,9 @@ class MnistClient(fl.client.Client):
     def __init__(self, data,client_id,config):
         self.client_id = client_id
         n_folds_out= config['num_rounds']
-        seed= config['seed']
-
+        self.seed= config['seed']
         # Load data
-        (self.X_train, self.y_train), (self.X_test, self.y_test) = data
+        (self.X_train, self.y_train), (self.X_test, self.y_test),self.pipeline = data
 
 
         #If fairness is defined enable fairness save the features of X_test 
@@ -61,10 +61,10 @@ class MnistClient(fl.client.Client):
             self.enabled_fs = False
             self.selected_features_names = self.X_train.columns
 
-        self.splits_nested  = datasets.split_partitions(n_folds_out,0.2, seed, self.X_train, self.y_train)
+        self.splits_nested  = datasets.split_partitions(n_folds_out,0.2, self.seed, self.X_train, self.y_train)
         print("The outcome is: ", self.y_test.name)
         self.bal_RF = config['random_forest']['balanced_rf']
-        self.model = utils.get_model(self.bal_RF,seed) 
+        self.model = utils.get_model(self.bal_RF,self.seed) 
         # Setting initial parameters, akin to model.compile for keras models
         #utils.set_initial_params_client(self.model,self.X_train, self.y_train)
 
@@ -98,7 +98,7 @@ class MnistClient(fl.client.Client):
             if(self.enabled_fs == True):
                 print("Feature selection is enable:")
                 print("Feature selection is sending the top best of the client only")
-                fs_topnames = fs.selectKBestfeatures(self.X_train, self.y_train,self.num_features)
+                fs_topnames = fs.selectKBestfeatures(self.X_train, self.y_train,self.num_features,self.seed)
                 parameters_updated = serialize_RF(fs_topnames)
 
                 # Build and return response with the top N features
@@ -135,6 +135,11 @@ class MnistClient(fl.client.Client):
             #To implement the center dropout, we need the execution time
             start_time = time.time()
             self.model.fit(X_train_2[self.selected_features_names], y_train_2)
+            #We save the variables for inference
+            self.model = save_pipeline_inference(self.model,self.pipeline,X_train_2,self.selected_features_names)
+            #self.model.pipeline_processing_ = self.pipeline
+            #self.model.pipeline_processing_.fit(X_train_2)
+            #self.model.selected_features_names_ = self.selected_features_names
             #accuracy = model.score( X_test, y_test )
             # accuracy,specificity,sensitivity,balanced_accuracy, precision, F1_score = \
             # measurements_metrics(self.model,X_val, y_val)
@@ -152,7 +157,7 @@ class MnistClient(fl.client.Client):
         params = utils.get_model_parameters(self.model)
         parameters_updated = serialize_RF(params)
 
-        #print(f"Number of trees in the Random Forest: {len(self.model)}")
+     
 
         # Build and return response
         status = Status(code=Code.OK, message="Success")
@@ -195,7 +200,12 @@ class MnistClient(fl.client.Client):
 
 
 
-        utils.set_model_params(self.model, parameters)
+        self.model  = utils.set_model_params(self.model, parameters)
+        #self.model.pipeline_processing_ = self.pipeline
+        #self.model.pipeline_processing_.fit(self.X_train)
+        #self.model.selected_features_names_ = self.selected_features_names
+        #We save the variables for inference
+        self.model = save_pipeline_inference(self.model,self.pipeline,self.X_train,self.selected_features_names)
         y_pred_prob = self.model.predict_proba(self.X_test[self.selected_features_names])
         loss = log_loss(self.y_test, y_pred_prob)
         # accuracy,specificity,sensitivity,balanced_accuracy, precision, F1_score = \
