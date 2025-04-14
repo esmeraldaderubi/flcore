@@ -7,34 +7,30 @@
 #https://doi.org/10.1093/bioinformatics/btac065                            ##
 #The aggregation add all the estimators in the server                      ##
 #Feel free to extend it                                                    ##
-#Another interesting paper is to aggregate via accuracy (not implemented)  ##                                     ##
+#Another interesting paper is to aggregate via accuracy (not implemented)  ##                                     
 #https://link.springer.com/chapter/10.1007/978-3-031-08333-4_11#Sec3       ##
 #https://ieeexplore.ieee.org/document/9867984                              ##
 #############################################################################
 
 
 from logging import WARNING
-import os
-from typing import  Dict, List,Callable, Optional,Tuple,Union
+from typing import  Dict, List,Optional,Tuple,Union
 #from dropout import Fast_at_odd_rounds
 
-from flwr.common import  FitIns, FitRes,EvaluateRes,EvaluateIns, MetricsAggregationFn, NDArrays, Parameters,  Scalar
+from flwr.common import  FitIns, FitRes,EvaluateRes,EvaluateIns, Parameters,  Scalar
 from flwr.common.logger import log
 from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 import flwr as fl
-import joblib
 from flcore.featureselection import federated_top_features
 from flcore.models.random_forest.aggregatorRF import aggregateRFwithSizeCenterProbs, aggregateRFwithSizeCenterProbs_withprevious
 from flcore.serialization_funs import serialize_RF, deserialize_RF
 
-import numpy as np
-from flcore.models.random_forest.utils import get_model, save_model
-import random
+from flcore.models.random_forest.utils import create_structure_inference
+from flcore.results import save_aggregaged_model,save_local_models
 import time
 import flwr.server.strategy.fedavg as fedav
 from flcore.dropout import select_clients
-from flcore.smoothWeights import smooth_aggregate,computeSmoothedWeights
 
 WARNING_MIN_AVAILABLE_CLIENTS_TOO_LOW = """
 Setting `min_available_clients` lower than `min_fit_clients` or
@@ -175,6 +171,7 @@ class FedCustom(fl.server.strategy.FedAvg):
             #lenght of the first client and aggregate the same number
             self.number_features = len(weights_results[0][0][0])
             aggregation_result = federated_top_features(weights_results, top_k=self.number_features)
+            self.selected_features_names  = [param[0] for param in aggregation_result]
             parameters_aggregated = serialize_RF(aggregation_result)
             return parameters_aggregated, {}
 
@@ -183,18 +180,23 @@ class FedCustom(fl.server.strategy.FedAvg):
             client_ids = [x[1].metrics["client_name"] for x in results]
             #The model saved is only for predictions as only estimators (decision trees) are shared
             #The feature importance is not kept in the parameters so it can be different
-            save_model(weights_results, self.experiment_dir,client_ids,self.bal_RF,self.seed)
+            save_local_models(weights_results, self.experiment_dir,client_ids)
             aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed)
             #aggregation_result,self.server_estimators = aggregateRF(weights_results,self.bal_RF)
         else:
             aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed)
             #aggregation_result,self.server_estimators = aggregateRF_withprevious(weights_results,self.server_estimators,self.bal_RF)
 
+        #create the structure for the inference as the aggregated does not have fit so
+        #you need to create the structure as the aggregated classifier is empty
+        aggregation_result = create_structure_inference(aggregation_result,weights_results,self.selected_features_names)
 
-        #Save the model for each aggregation
-        filename = os.path.join( self.experiment_dir, 'final_model'+str(server_round)+'.pkl' )
-        joblib.dump(aggregation_result[0], filename)
-
+        #Save the model after each aggregation. As we do not have pipeline here as it is the ensambled of clients we will get the first balanced random forest pipeline
+        #of the first client, as we need the pre-processing to know the parameters (e.g., std, mean) so we need to
+        #have one fitted pipeline and we will select the firt one belonging to the first client
+        #we assume that it will not change much. This decision was aggreed by the development group
+        save_aggregaged_model(aggregation_result,server_round,self.experiment_dir,weights_results,self.selected_features_names)
+       
         #ndarrays_to_parameters necessary to send the message
         parameters_aggregated = serialize_RF(aggregation_result)
         

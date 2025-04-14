@@ -7,6 +7,7 @@
 #USE CLIENT NOT NUMPY CLIENT TO CUSTOMIZE SERIALIZATION               ##
 ########################################################################
 
+import joblib
 import numpy as np
 from typing import Tuple, Union, List
 from io import BytesIO
@@ -24,7 +25,7 @@ from flwr.common import   Parameters
 def ndarray_to_bytes_RF(ndarray: NDArray) -> bytes:
     """Serialize NumPy ndarray to bytes."""
     bytes_io = BytesIO()
-    np.save(bytes_io, ndarray, allow_pickle=True)  # type: ignore
+    joblib.dump(ndarray, bytes_io) 
     return bytes_io.getvalue()
 
 def ndarrays_to_parameters_RF(ndarrays: NDArrays) -> Parameters:
@@ -42,8 +43,8 @@ def serialize_RF(params) -> Parameters:
 def bytes_to_ndarray_RF(tensor: bytes) -> NDArray:
     """Deserialize NumPy ndarray from bytes."""
     bytes_io = BytesIO(tensor)
-    ndarray_deserialized = np.load(bytes_io, allow_pickle=True)  # type: ignore
-    return cast(NDArray, ndarray_deserialized)
+    ndarray_deserialized = joblib.load(bytes_io)
+    return ndarray_deserialized 
 
 def parameters_to_ndarrays_RF(parameters: Parameters) -> NDArrays:
     """Convert parameters object to NumPy ndarrays."""

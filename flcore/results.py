@@ -1,6 +1,11 @@
+from functools import partial
 import json
 from pathlib import Path
 import yaml
+from sklearn.pipeline import FunctionTransformer, Pipeline
+from sklearn.base import BaseEstimator, TransformerMixin
+from flcore.datasets import define_pipeline
+import joblib
 
 """
 Recursively convert NumPy types to native Python types
@@ -111,3 +116,123 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
 
     print('The history has been saved')
     return history
+
+
+
+
+
+
+#save parameters in client for inference
+def save_pipeline_inference(model,pipeline,X_train,selected_features_names):
+    model.pipeline_processing_ = pipeline
+    model.pipeline_processing_.fit(X_train)
+    model.selected_features_names_ = selected_features_names
+    return model
+
+#This function is for the inference within the pipeline
+def remove_prefixes(X):
+    # Remove 'num__' and 'cat__' from column names
+    new_columns = [col.split('__')[-1] for col in X.columns]
+    X.columns = new_columns
+    return X
+
+#This function is for the inference within the pipeline
+def select_columns_func(X, columns):
+    return X[columns]
+
+#This function is for the inference within the pipeline
+class NamedColumnSelector(FunctionTransformer):
+    def __init__(self, columns):
+        self.columns = columns
+        func = partial(select_columns_func, columns=self.columns)
+        super().__init__(func=func, validate=False)
+
+    def get_feature_names_out(self, input_features=None):
+        return self.columns
+
+
+#This function is for the inference: pipeline.predict(X_data)
+#for that we need to save in client the pipeline and
+#the features selected. We save it in the same model
+#and here we build the pipeline
+def save_local_models(rfs, save_path,client_name):
+    number_Clients = len(rfs)
+    # Process each client separately and save their model
+    for i in range(number_Clients):
+        rfa= rfs[i] 
+        # Properly format the client_name
+        client_name_current = str(client_name[i]).strip("[]'\"")
+    
+        pipeline = rfa[0][0].pipeline_processing_
+        client_ids_fs = rfa[0][0].selected_features_names_
+
+
+        pipeline_processor = pipeline
+
+        #Build preprocessor pipeline (already fitted)
+        #pipeline_processor.fit(X_data[client_ids_fs])
+        pipeline = Pipeline([
+            ("preprocessor", pipeline_processor),
+            ("remove_prefixes", FunctionTransformer(remove_prefixes, validate=False)),  # Remove prefixes step
+            ("column_selector", NamedColumnSelector(client_ids_fs)),
+            ("classifier", rfa[0][0])
+        ])
+
+        # Print out the expected columns for each transformer inside it
+        #feature_names = pipeline.named_steps["preprocessor"].get_feature_names_out()
+        #print(feature_names.tolist())
+        #selector = pipeline.named_steps["column_selector"]
+        #print(selector)
+
+
+         # Create the correct file path
+        file_path = f"{save_path}/pipeline_local_{client_name_current}.pkl"
+        #Save pipeline with model
+        joblib.dump(pipeline,file_path)
+
+
+#This function is for the inference: pipeline.predict(X_data)
+#for that we need to save in client the pipeline and
+#the features selected. We save it in the same model
+#and here we build the pipeline
+def save_aggregaged_model(aggregation_result,server_round,save_path,weights_results,selected_features_names):
+    #create the structure for the inference as the aggregated does not have fit so
+    #you need to create the structure as the aggregated classifier is empty
+    #We will use the information of the first classifier as an approximation
+    #as the aggregated model does not have a fitted pipeline
+    #and we need some initializations as standard scaler (e.g., mean and std)
+    #We assume that there will not be much differences among clients (discussed already with the group)
+    #aggregation_result[0].pipeline_processing_ = weights_results[0][0][0].pipeline_processing_
+    #aggregation_result[0].selected_features_names_   = selected_features_names
+    #aggregation_result[0].n_classes_ = weights_results[0][0][0].n_classes_
+    #aggregation_result[0].classes_ = weights_results[0][0][0].classes_
+    #aggregation_result[0].n_features_in_ = weights_results[0][0][0].n_features_in_
+    #aggregation_result[0].n_outputs_ = weights_results[0][0][0].n_outputs_
+
+    rfa = aggregation_result[0]
+
+    pipeline = rfa.pipeline_processing_
+    client_ids_fs = rfa.selected_features_names_
+
+    pipeline_processor = pipeline
+
+    #Build preprocessor pipeline (already fitted)
+    #pipeline_processor.fit(X_data[client_ids_fs])
+    pipeline = Pipeline([
+        ("preprocessor", pipeline_processor),
+        ("remove_prefixes", FunctionTransformer(remove_prefixes, validate=False)),  # Remove prefixes step
+        ("column_selector", NamedColumnSelector(client_ids_fs)),
+        ("classifier", rfa)
+    ])
+
+    # Print out the expected columns for each transformer inside it
+    #feature_names = pipeline.named_steps["preprocessor"].get_feature_names_out()
+    #print(feature_names.tolist())
+    #selector = pipeline.named_steps["column_selector"]
+    #print(selector)
+
+    # Create the correct file path
+    file_path = f"{save_path}/pipeline_final_{str(server_round)}.pkl"
+    #Save pipeline with model
+    joblib.dump(pipeline,file_path)
+
