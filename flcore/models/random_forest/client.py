@@ -138,6 +138,8 @@ class MnistClient(fl.client.Client):
             y_val = self.y_train.iloc[val_idx]
             #To implement the center dropout, we need the execution time
             start_time = time.time()
+            #restart the model otherwise the estimators grows every aggregation
+            self.model = utils.get_model(self.bal_RF,self.seed) 
             self.model.fit(X_train_2[self.selected_features_names], y_train_2)
             #We save the variables for inference
             self.model = save_pipeline_inference(self.model,self.pipeline,X_train_2,self.selected_features_names)
@@ -161,7 +163,7 @@ class MnistClient(fl.client.Client):
         params = utils.get_model_parameters(self.model)
         parameters_updated = serialize_RF(params)
 
-     
+        #print(f"Number of estimators: {len(self.model.estimators_)}")
 
         # Build and return response
         status = Status(code=Code.OK, message="Success")
@@ -203,8 +205,10 @@ class MnistClient(fl.client.Client):
         ####################################################################
 
 
-
+        #Always the last function is evulate after fit and we want the last model of server to have it in the client
+        #so overwrite the current model
         self.model  = utils.set_model_params(self.model, parameters)
+        #print(f"Number of estimators: {len(self.model.estimators_)}")
         #self.model.pipeline_processing_ = self.pipeline
         #self.model.pipeline_processing_.fit(self.X_train)
         #self.model.selected_features_names_ = self.selected_features_names
