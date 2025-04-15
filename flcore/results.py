@@ -195,7 +195,7 @@ def save_local_models(rfs, save_path,client_name):
 #for that we need to save in client the pipeline and
 #the features selected. We save it in the same model
 #and here we build the pipeline
-def save_aggregaged_model(aggregation_result,server_round,save_path,weights_results,selected_features_names):
+def save_aggregaged_model(aggregation_result,server_round,save_path):
     #create the structure for the inference as the aggregated does not have fit so
     #you need to create the structure as the aggregated classifier is empty
     #We will use the information of the first classifier as an approximation

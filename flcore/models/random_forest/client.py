@@ -95,11 +95,13 @@ class MnistClient(fl.client.Client):
         #otherwise return an empty array
         #We do it like this otherwise we need to add param in server and be consequent in the following client new calls
         if(ins.config['server_round']==0):
+            metrics = {}
             if(self.enabled_fs == True):
                 print("Feature selection is enable:")
                 print("Feature selection is sending the top best of the client only")
                 fs_topnames = fs.selectKBestfeatures(self.X_train, self.y_train,self.num_features,self.seed)
                 parameters_updated = serialize_RF(fs_topnames)
+                metrics['enabled_fs'] = 1
 
                 # Build and return response with the top N features
                 status = Status(code=Code.OK, message="Success")
@@ -107,18 +109,20 @@ class MnistClient(fl.client.Client):
                     status=status,
                     parameters=parameters_updated,
                     num_examples=0,
-                    metrics={}
+                    metrics=metrics
                 )
             else:
                 print("Feature selection is NOT enabled")
-                parameters_updated = serialize_RF({})
+                parameters_updated = serialize_RF(self.X_train.columns)
+                metrics['enabled_fs'] = 0
+
                 # Build and return response that no feature selection is performed
                 status = Status(code=Code.OK, message="Success")
                 return FitRes(
                     status=status,
                     parameters=parameters_updated,
                     num_examples=0,
-                    metrics={}
+                    metrics=metrics
                 )
 
                 

@@ -165,7 +165,8 @@ class FedCustom(fl.server.strategy.FedAvg):
         #If the client returns an empty array, it means that fs is not enabled
         #otherwise get the top n features using all the top features of the nodes
         if(server_round==0):
-            if(len(weights_results[0][0]) == 0):
+            if(results[1][1].metrics["enabled_fs"] == 0):
+                self.selected_features_names  = [param[0] for param in weights_results[0][0]]
                 return {},{}
             #we assume that all clients has the same number of features so get the number of features with the
             #lenght of the first client and aggregate the same number
@@ -195,7 +196,7 @@ class FedCustom(fl.server.strategy.FedAvg):
         #of the first client, as we need the pre-processing to know the parameters (e.g., std, mean) so we need to
         #have one fitted pipeline and we will select the firt one belonging to the first client
         #we assume that it will not change much. This decision was aggreed by the development group
-        save_aggregaged_model(aggregation_result,server_round,self.experiment_dir,weights_results,self.selected_features_names)
+        save_aggregaged_model(aggregation_result,server_round,self.experiment_dir)
        
         #ndarrays_to_parameters necessary to send the message
         parameters_aggregated = serialize_RF(aggregation_result)
