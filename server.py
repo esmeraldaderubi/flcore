@@ -75,8 +75,8 @@ if __name__ == "__main__":
     # Create experiment directory
     #experiment_dir = Path(os.path.join(config["experiment"]["log_path"], config["experiment"]["name"]))
     #experiment_dir.mkdir(parents=True, exist_ok=True)
-    from dotenv import load_dotenv
-    load_dotenv()
+    #from dotenv import load_dotenv
+    #load_dotenv()
     experiment_dir = os.getenv("SANDBOX_PATH")
 
 
