@@ -124,7 +124,7 @@ def aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strengh
     list_classifiers = []
     weights_classifiers = [] 
     if(smoothing_method!= 'None'):
-        weights_centers = computeSmoothedWeights(rfs,True,smoothing_strenght)
+        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght)
     else:
         #If smooth weights is not available all the trees have the
         #same probability

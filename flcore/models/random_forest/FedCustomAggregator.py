@@ -162,11 +162,11 @@ class FedCustom(fl.server.strategy.FedAvg):
         ]
 
         #We reserve round 0 for feature selection
-        #If the client returns an empty array, it means that fs is not enabled
+        #If the client does not have fs enabled select all the features
         #otherwise get the top n features using all the top features of the nodes
         if(server_round==0):
             if(results[0][1].metrics.get("enabled_fs") == 0):
-                self.selected_features_names  = [param[0] for param in weights_results[0][0]]
+                self.selected_features_names  = [param for param in weights_results[0][0]]
                 return {},{}
             #we assume that all clients has the same number of features so get the number of features with the
             #lenght of the first client and aggregate the same number
