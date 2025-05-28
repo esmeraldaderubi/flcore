@@ -11,6 +11,8 @@
 # EqualVoting                                                    ##
 # SlowerQuartile                                                 ##
 # SsupperQuartile                                                ##
+# I have added a novel smooth weighting: 'fairnessWeighting'     ##
+# please DO NOT USE UNTIL TESTING & PUBLICATION                  ##
 ###################################################################
 
 
@@ -19,7 +21,7 @@ from functools import reduce
 import numpy as np
 
 
-def computeSmoothedWeights(results,smoothing_method,smoothing_strenght):
+def computeSmoothedWeights(results,smoothing_method,smoothing_strenght,fairness_scores=[]):
     """Compute weighted average."""
     # Calculate the total number of examples used during training
     num_examples_total = sum([num_examples for _, num_examples in results])
@@ -39,6 +41,46 @@ def computeSmoothedWeights(results,smoothing_method,smoothing_strenght):
             # x*smoothing+y*(1-smoothing) where x is the default weight and y is a homogenous weight
             final_weights = [(d*(1-smoothing_value)+h*smoothing_value) for d, h in zip(default_f_weights, homogeneous_weights)]
             # assert round(sum(final_weights),3) == 1, "Final weights after smoothing do not sum to 1, sum: {}".format(sum(final_weights))
+        elif( smoothing_method == 'fairnessWeighting'):
+            fairness_scores = [model[0].eod_weighted_  for model, _ in results]
+            #abs_eops = [abs(eop) for eop in fairness_scores]
+            #If EOP is NaN (e.g., no true positives), you treat it as maximally unfair (1.0).
+            abs_eops = [abs(eop) if not np.isnan(eop) else 1.0 for eop in fairness_scores]
+            balanced_acc_scores = [model[0].balanced_accuracy_  for model, _ in results]  # Already in [0, 1]
+
+            
+            #We're scaling each EOP score to the [0, 1] range, relative to the worst one. (higher weight = fairer)
+            #to check how far each client is from the worst-case (max)
+            #eop == 0 → gets full weight (1.0)
+            #eop == max_gap → gets no weight (0.0)
+            max_gap = max(abs_eops)
+
+            print("Absolute EOP scores:", abs_eops)
+            print("Max fairness gap:", max_gap)
+
+            fairness_adjustments = [(1 - (eop / max_gap)) for eop in abs_eops]
+
+            # Combine fairness and utility (balanced accuracy)
+            #alpha = 0.5  # 1.0 = fairness only, 0.0 = accuracy only
+            #center  means "start caring a lot about fairness above center EOD and steepness = 10 controls how fast the switch happens.
+            steepness = 10
+            center = 0.15
+            alpha = 1 / (1 + np.exp(-steepness * (max_gap - center)))
+            fairness_adjustments = [
+                alpha * f + (1 - alpha) * u for f, u in zip(fairness_adjustments, balanced_acc_scores)
+            ]
+
+            fairness_adjustments = np.array(fairness_adjustments)
+
+            #Normalize the adjustments so they sum to 1
+            fairness_adjustments /= fairness_adjustments.sum()
+
+            print("Normalized fairness adjustments:", fairness_adjustments.tolist())
+
+            final_weights = [
+                d * (1 - smoothing_value) + f * smoothing_value
+                for d, f in zip(default_f_weights, fairness_adjustments)
+            ]
         else: #quartile options
             #Savg =(default_f_weight+homogeneus_weight)/2
             Savg = [(d+f)/2 for d,f in zip(default_f_weights, homogeneous_weights)]
