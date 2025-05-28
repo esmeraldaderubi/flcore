@@ -1,6 +1,9 @@
 #############################################################################
 #Utils implemented by Esmeralda Ruiz Pujadas                               ##
 #This file is to initialize/save/get in the same way server and client     ##
+#It contains new function created for the new method by Esmeralda Ruiz for ##
+#fairness weight smoothing (still under development)                       ##
+#please DO NOT USE UNTIL TESTING & PUBLICATION                             ##
 #############################################################################
 
 
@@ -12,6 +15,8 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.pipeline import FunctionTransformer, Pipeline
+
+from flcore.metrics import getFairnessResults
 
 
 
@@ -72,6 +77,60 @@ def create_structure_inference(aggregation_result,weights_results,selected_featu
 
     return aggregation_result
 
+#Function created for the new method by Esmeralda Ruiz for fairness weight smoothing
+#Many metrics are added to find which one is more conventient
+#We can have more than one attribute (e.g., sex and age) so we
+#test several techniques to combine them in case there is more than one attribute
+#we store it in the same tree for simplicity
+def add_fairness_metrics_to_model(metrics, model,fairness_attribs,value_privileged_attrib, \
+                                    fairness_columns_train_values,y_val,val_idx, y_pred):
+        metric_fairness = {}
+        getFairnessResults(metric_fairness,y_val.name, y_pred, fairness_attribs, value_privileged_attrib,\
+                pd.concat([y_val, fairness_columns_train_values.iloc[val_idx,:]], axis=1))
+        
+        #Obtain EODs per attribute 
+        eod_dict = {f"equal_opportunity_difference_{feature_protected}": metric_fairness[  f"equal_opportunity_difference_{feature_protected}"] for feature_protected in fairness_attribs }
+        # Compute average directly of the EODs
+        eod_values = list(eod_dict.values())
+    
+        # Store average (for reference)
+        model.eod_avg_ = sum(eod_values) / len(eod_values)
+
+        # Store max (strict case)
+        model.eod_max_ = max(abs(eod) for eod in eod_values)
+
+        # Store RMS (more sensitive to multiple disparities)
+        model.eod_rms_ = np.sqrt(np.mean([eod**2 for eod in eod_values]))
+
+        # Store weighted max (emphasize worst but not overly)
+        sorted_eods = sorted([abs(eod) for eod in eod_values], reverse=True)
+        if len(sorted_eods) == 1:
+            eod_weighted = sorted_eods[0]
+        else:
+            eod_weighted = 0.7 * sorted_eods[0] + 0.3 * np.mean(sorted_eods[1:])
+        model.eod_weighted_ = eod_weighted
+        
+        model.balanced_accuracy_ = metrics["balanced_accuracy"]
+        #metrics["eod_avg"] = eod_avg
+        #metrics["average_equal_opportunity_difference"].update({f"equal_opportunity_difference_{feature_protected }": metric_fairness.get(f"equal_opportunity_difference_{feature_protected}", None)     for feature_protected in self.fairness_attribs })
+        #metrics["enabled_fairness"] = 1
+
+        return model
+
+#Funtion created for the new method by Esmeralda Ruiz for fairness weight aggregation
+def add_fairness_metrics_to_Trees_from_RF(metrics, model,fairness_attribs,value_privileged_attrib, \
+                                    fairness_columns_train_values,X_val,y_val,val_idx):
+    #we also obtain the performance and fairness metrics for each tree and we add it
+    for tree in model.estimators_:
+        y_pred = tree.predict(X_val)
+        add_fairness_metrics_to_model(metrics, tree,fairness_attribs,value_privileged_attrib, \
+                                fairness_columns_train_values,y_val,val_idx, y_pred)
+
+    #Sort the estimators by fairness metric (e.g., eod_weighted_)
+    #Just in case we want to order it to simulate other aggregations
+    #model.estimators_.sort(key=lambda tree: tree.eod_weighted_)    
+    return model
+     
 
 #def set_initial_params_server(model: RandomForestClassifier):
 #    """Sets initial parameters as zeros Required since model params are

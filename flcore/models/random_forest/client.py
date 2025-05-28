@@ -1,6 +1,7 @@
 import warnings
 
 import flwr as fl
+import numpy as np
 import pandas as pd
 from sklearn.metrics import log_loss
 import flcore.datasets as datasets
@@ -41,6 +42,8 @@ class MnistClient(fl.client.Client):
             self.fairness_attribs =  [col for col in fairness_attribs_names if col in self.X_test.columns]
             # Save the columns if they exist in X_test to make the fairness metrics
             self.fairness_columns_test_values = self.X_test[self.fairness_attribs].copy()
+            #In order of the weighting aggregation considering fairness, we also need to keep the training columns for fairness 
+            self.fairness_columns_train_values = self.X_train[self.fairness_attribs].copy()
             #drop fairness attributes if you do not want to use them in the training
             if(config["drop_fairness_attribs"]):
                 self.X_train = self.X_train.drop(columns= self.fairness_attribs)

@@ -25,7 +25,8 @@ def check_config(config):
     assert (config['smooth_method']== 'EqualVoting' or \
         config['smooth_method']== 'SlowerQuartile' or \
         config['smooth_method']== 'SsupperQuartile' or \
-        config['smooth_method']== 'None'), 'the smooth methods are not correct: EqualVoting, SlowerQuartile and SsupperQuartile' 
+        config['smooth_method']== 'fairnessWeighting' or \
+        config['smooth_method']== 'None'), 'the smooth methods are not correct: EqualVoting, fairnessWeighting, SlowerQuartile and SsupperQuartile' 
     
     if(config['model'] == 'weighted_random_forest'): 
          assert (config['weighted_random_forest']['levelOfDetail']== 'DecisionTree' or \
