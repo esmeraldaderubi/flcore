@@ -23,7 +23,7 @@ from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 import flwr as fl
 from flcore.featureselection import federated_top_features
-from flcore.models.random_forest.aggregatorRF import aggregateRFwithSizeCenterProbs, aggregateRFwithSizeCenterProbs_withprevious
+from flcore.models.random_forest.aggregatorRF import aggregateRF, aggregateRF_withprevious, aggregateRFwithFairnessTrafeoffProbs, aggregateRFwithFairnessTrafeoffProbs_withprevious, aggregateRFwithHardRankPerformance, aggregateRFwithHardRankPerformance_withprevious, aggregateRFwithPerformance, aggregateRFwithPerformance_withprevious, aggregateRFwithSizeCenterProbs, aggregateRFwithSizeCenterProbs_withprevious
 from flcore.serialization_funs import serialize_RF, deserialize_RF
 
 from flcore.models.random_forest.utils import create_structure_inference
@@ -47,8 +47,8 @@ class FedCustom(fl.server.strategy.FedAvg):
     clients_num_examples = {}
     server_estimators = []
     time_server_round = time.time()
-    bal_RF = None
-    dropout_method = None
+    #bal_RF = None
+    #dropout_method = None
     server_estimators = []
     server_estimators_weights = []
     accum_time = 0
@@ -182,11 +182,33 @@ class FedCustom(fl.server.strategy.FedAvg):
             #The model saved is only for predictions as only estimators (decision trees) are shared
             #The feature importance is not kept in the parameters so it can be different
             save_local_models(weights_results, self.experiment_dir,client_ids)
-            aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed)
-            #aggregation_result,self.server_estimators = aggregateRF(weights_results,self.bal_RF)
+            match self.aggregator_rf:
+                case "randomviaprobs":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed)
+                case "random":
+                    aggregation_result,self.server_estimators = aggregateRF(weights_results,self.bal_RF)
+                case "randomviaprobswithTradeoffMetrics":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithFairnessTrafeoffProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed)
+                case "sortedTradeoffMetrics":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght)
+                case "totalsortedTradeoffMetrics":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithHardRankPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght)
+              
         else:
-            aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed)
-            #aggregation_result,self.server_estimators = aggregateRF_withprevious(weights_results,self.server_estimators,self.bal_RF)
+            match self.aggregator_rf:
+                case "randomviaprobs":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed)
+                case "random":
+                    aggregation_result,self.server_estimators = aggregateRF_withprevious(weights_results,self.server_estimators,self.bal_RF)
+                case "randomviaprobswithTradeoffMetrics":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                        aggregateRFwithFairnessTrafeoffProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed)
+                case "sortedTradeoffMetrics":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                        aggregateRFwithPerformance_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght)
+                case "totalsortedTradeoffMetrics":
+                        aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                        aggregateRFwithHardRankPerformance_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght)
 
         #create the structure for the inference as the aggregated does not have fit so
         #you need to create the structure as the aggregated classifier is empty

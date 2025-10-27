@@ -157,6 +157,17 @@ class MnistClient(fl.client.Client):
     
             elapsed_time = (time.time() - start_time)
             fit_metrics_server_report(metrics,self.model,self.X_test[self.selected_features_names],self.y_test,elapsed_time,self.client_id)
+            ####for the new smoothing weight metric, we need to include the fairness information
+            if self.enabled_fairness:
+                self.model = utils.add_fairness_metrics_to_model(metrics, self.model, \
+                                                                     self.fairness_attribs,self.value_privileged_attrib, self.fairness_columns_train_values, \
+                                                                     y_val,val_idx,y_pred)
+                self.model = utils.add_fairness_metrics_to_Trees_from_RF(metrics, self.model, \
+                                                                     self.fairness_attribs,self.value_privileged_attrib, self.fairness_columns_train_values, \
+                                                                     X_val[self.selected_features_names], y_val,val_idx)
+                
+                self.model = utils.add_performance_metrics_to_Trees_from_RF(metrics, self.model,X_val[self.selected_features_names], y_val)
+            ###end for the new weight metric
 
             print(f"num_client {self.client_id} has an elapsed time {elapsed_time}")
             
