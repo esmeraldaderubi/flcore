@@ -58,6 +58,7 @@ def get_server_and_strategy(config):
     )
     #Select normal RF or Balanced RF from config
     strategy.bal_RF= config['random_forest']['balanced_rf']
+    strategy.aggregator_rf = config['random_forest']['aggregator_rf']
     strategy.dropout_method = config['dropout_method']
     strategy.percentage_drop = config['dropout']['percentage_drop']
     strategy.smoothing_method = config['smooth_method']

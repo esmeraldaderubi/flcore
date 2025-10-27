@@ -10,20 +10,20 @@ from params import get_parser, validate_model_specific_args,generate_config_dict
 # Start Flower client but after the server or error
 
 if __name__ == "__main__":
-    #if len(sys.argv) == 3:
-    #    config_path = sys.argv[2]
-    #else:
-    #    config_path = "config.yaml"
+    if len(sys.argv) == 3:
+        config_path = sys.argv[2]
+    else:
+        config_path = "config.yaml"
 
-    #with open(config_path, "r") as f:
-    #    config = yaml.safe_load(f)
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
 
 
     #Instead of using the config.yaml use the parameters
-    parser = get_parser(isserver=False)
-    args = parser.parse_args()
-    validate_model_specific_args(args)
-    config = generate_config_dict(args,False)
+    #parser = get_parser(isserver=False)
+    #args = parser.parse_args()
+    #validate_model_specific_args(args)
+    #config = generate_config_dict(args,False)
 
 
 
@@ -57,6 +57,7 @@ if __name__ == "__main__":
         print('File position of features simulating the center %s \n' % (file_featsselected))
         
 
+    config["data_path"] = data_path
     #The table of features selected
     first_file_selected = file_featsselected
 
