@@ -19,13 +19,14 @@ def get_parser(isserver):
     parser.add_argument("--feature_subset", nargs="+") 
     
     # Model-specific args (optional, validated later)
-    parser.add_argument("--n_features", type=int)
-    parser.add_argument("--balanced_rf", type=bool)
-    parser.add_argument("--levelOfDetail")
-    parser.add_argument("--batch_size", type=int)
-    parser.add_argument("--num_iterations", type=int)
-    parser.add_argument("--task_type")
-    parser.add_argument("--tree_num", type=int)  
+    parser.add_argument("--n_features", type=int, default=0) ###DEPRECATED BY internal_fs FIX!!
+    parser.add_argument("--balanced_rf", type=bool, default=True)
+    parser.add_argument("--aggregator_rf",default="randomviaprobs",choices=["all", "random", "randomviaprobs", "randomviaprobswithTradeoffMetrics", "sortedTradeoffMetrics","totalsortedTradeoffMetrics"])
+    parser.add_argument("--levelOfDetail",default="RandomForest",choices=["DecisionTree", "RandomForest"])
+    parser.add_argument("--batch_size", type=int,default=32)
+    parser.add_argument("--num_iterations", type=int,default=100)
+    parser.add_argument("--task_type",default="BINARY")
+    parser.add_argument("--tree_num", type=int,default=500)  
     
     # Other config
     #parser.add_argument("--held_out_center_id", type=int, default=-1)
@@ -37,7 +38,7 @@ def get_parser(isserver):
         # Dropout and smoothing
         parser.add_argument("--dropout_method", default="None")
         parser.add_argument("--percentage_drop", type=int, default=50)
-        parser.add_argument("--smooth_method", default="None")
+        parser.add_argument("--smooth_method", default="None",choices=["None","EqualVoting", "fairnessWeighting", "SlowerQuartile", "SupperQuartile"])
         parser.add_argument("--smoothing_strenght", type=float, default=0.5)
     
     else:     
@@ -54,14 +55,14 @@ def validate_model_specific_args(args):
         "logistic_regression": ["n_features"],
         "lsvc": ["n_features"],
         "elastic_net": ["n_features"],
-        "random_forest": ["balanced_rf"],
+        "random_forest": ["balanced_rf","aggregator_rf"],
         "weighted_random_forest": ["balanced_rf", "levelOfDetail"],
         "xgb": ["batch_size", "num_iterations", "task_type", "tree_num"]
     }
     allowed_args = model_args.get(args.model, [])
     passed_args = [k for k, v in vars(args).items() if v is not None]
     for arg in passed_args:
-        if arg in ["n_features", "balanced_rf", "levelOfDetail", "batch_size", "num_iterations", "task_type", "tree_num"]:
+        if arg in ["n_features", "balanced_rf","aggregator_rf", "levelOfDetail", "batch_size", "num_iterations", "task_type", "tree_num"]:
             if arg not in allowed_args:
                 raise ValueError(f"Argument --{arg} is not allowed for model '{args.model}'")
 
@@ -93,7 +94,7 @@ def generate_config_dict(args, isserver):
         config_dict["name_client"] = args.name_client    
         config_dict["internal_fs"] = args.internal_fs
         # If fairness is defined
-        if hasattr(args, "fairness_attribs") and args.fairness_attribs is not None:
+        if hasattr(args, "fairness_attribs"):
             config_dict["fairness_attribs"] = args.fairness_attribs
             config_dict["enabled_fairness"] = True
             #This version all the protected variables have the same privileged value
@@ -102,19 +103,29 @@ def generate_config_dict(args, isserver):
             config_dict["drop_fairness_attribs"] = args.drop_fairness_attribs
 
         else:
-            config_dict["enabled_fairness"] = False            
+            config_dict["enabled_fairness"] = False        
+            #You cannot enable fairnessWeighting if fairness attributes are not defined!!
+            if( args.smooth_method== "fairnessWeighting"):
+                raise ValueError(f"Argument --{args.smooth_method} cannot be used  if fairness attributes are not defined")
+             #You cannot enable randomviaprobswithTradeoffMetrics OR sortedTradeoffMetrics if fairness attributes are not defined!!
+            if(args.aggregator_rf== 'randomviaprobswithTradeoffMetrics' or args.aggregator_rf == 'sortedTradeoffMetrics'):   
+                raise ValueError(f"Argument --{args.aggregator_rf} cannot be used  if fairness attributes are not defined")
+
 
     # Add model-specific fields
-    if args.model in ["logistic_regression", "lsvc", "elastic_net"] and args.n_features is not None:
+    if args.model in ["logistic_regression", "lsvc", "elastic_net"]:
         config_dict["linear_models"] = {"n_features": args.n_features}
-    if args.model == "random_forest" and args.balanced_rf is not None:
-        config_dict["random_forest"] = {"balanced_rf": args.balanced_rf}
-    if args.model == "weighted_random_forest" and args.balanced_rf is not None and args.levelOfDetail is not None:
+    if args.model == "random_forest" :
+        config_dict["random_forest"] = {
+            "balanced_rf": args.balanced_rf,
+            "aggregator_rf": args.aggregator_rf}
+
+    if args.model == "weighted_random_forest":
         config_dict["weighted_random_forest"] = {
             "balanced_rf": args.balanced_rf,
             "levelOfDetail": args.levelOfDetail
         }
-    if args.model == "xgb" and all(v is not None for v in [args.batch_size, args.num_iterations, args.task_type, args.tree_num]):
+    if args.model == "xgb":
         config_dict["xgb"] = {
             "batch_size": args.batch_size,
             "num_iterations": args.num_iterations,

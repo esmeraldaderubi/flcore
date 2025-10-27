@@ -26,6 +26,7 @@ num_rounds: 3
 outcome: Eval
 production_mode: false
 random_forest:
+  aggregator_rf: randomviaprobs
   balanced_rf: true
 seed: 42
 smoothWeights:
@@ -41,4 +42,3 @@ xgb:
   num_iterations: 100
   task_type: BINARY
   tree_num: 500
-

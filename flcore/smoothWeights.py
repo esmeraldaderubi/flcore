@@ -42,7 +42,7 @@ def computeSmoothedWeights(results,smoothing_method,smoothing_strenght,fairness_
             final_weights = [(d*(1-smoothing_value)+h*smoothing_value) for d, h in zip(default_f_weights, homogeneous_weights)]
             # assert round(sum(final_weights),3) == 1, "Final weights after smoothing do not sum to 1, sum: {}".format(sum(final_weights))
         elif( smoothing_method == 'fairnessWeighting'):
-            fairness_scores = [model[0].eod_weighted_  for model, _ in results]
+            fairness_scores = [model[0].EODfairness_score_  for model, _ in results]
             #abs_eops = [abs(eop) for eop in fairness_scores]
             #If EOP is NaN (e.g., no true positives), you treat it as maximally unfair (1.0).
             abs_eops = [abs(eop) if not np.isnan(eop) else 1.0 for eop in fairness_scores]
@@ -53,25 +53,31 @@ def computeSmoothedWeights(results,smoothing_method,smoothing_strenght,fairness_
             #to check how far each client is from the worst-case (max)
             #eop == 0 → gets full weight (1.0)
             #eop == max_gap → gets no weight (0.0)
-            max_gap = max(abs_eops)
+            #max_gap = max(abs_eops)
 
-            print("Absolute EOP scores:", abs_eops)
-            print("Max fairness gap:", max_gap)
+            #print("Absolute EOP scores:", abs_eops)
+            #print("Max fairness gap:", max_gap)
 
-            fairness_adjustments = [(1 - (eop / max_gap)) for eop in abs_eops]
+            #fairness_adjustments = [(1 - (eop / max_gap)) for eop in abs_eops]
 
             # Combine fairness and utility (balanced accuracy)
             #alpha = 0.5  # 1.0 = fairness only, 0.0 = accuracy only
             #center  means "start caring a lot about fairness above center EOD and steepness = 10 controls how fast the switch happens.
-            steepness = 10
-            center = 0.15
-            alpha = 1 / (1 + np.exp(-steepness * (max_gap - center)))
+            #steepness = 10
+            #center = 0.15
+            #alpha = 1 / (1 + np.exp(-steepness * (max_gap - center)))
+     
+            #fairness_adjustments = [
+            #    alpha * f + (1 - alpha) * u for f, u in zip(abs_eops, balanced_acc_scores)
+            #]
+            alpha = 0.5
             fairness_adjustments = [
-                alpha * f + (1 - alpha) * u for f, u in zip(fairness_adjustments, balanced_acc_scores)
+                ((1 + alpha**2) * bal * (1 - abs(fair))) / (alpha**2 * bal + (1 - abs(fair)))
+                for fair, bal in zip(abs_eops, balanced_acc_scores)
             ]
 
             fairness_adjustments = np.array(fairness_adjustments)
-
+            
             #Normalize the adjustments so they sum to 1
             fairness_adjustments /= fairness_adjustments.sum()
 
