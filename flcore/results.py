@@ -7,6 +7,8 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from flcore.datasets import define_pipeline
 import joblib
 
+from flcore.generate_report import generate_report_history
+
 """
 Recursively convert NumPy types to native Python types
 to ensure compatibility with JSON serialization.
@@ -113,6 +115,8 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
 
     with open(experiment_dir / "history.json", "w") as f:
         json.dump(output_file, f,sort_keys=False,  indent=4)
+
+    generate_report_history(experiment_dir / "history.json", experiment_dir, True,None)
 
     print('The history has been saved')
     return history
