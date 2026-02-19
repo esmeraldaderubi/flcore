@@ -95,7 +95,7 @@ class MnistClient(fl.client.Client):
 
         ###############################################################################################
         #If it is enabled feature selection select the best features for the current client in round 0
-        #otherwise return an empty array
+        #otherwise return all column names (an empty array does not work. Check why)
         #We do it like this otherwise we need to add param in server and be consequent in the following client new calls
         if(ins.config['server_round']==0):
             metrics = {}
@@ -155,6 +155,11 @@ class MnistClient(fl.client.Client):
             y_pred = self.model.predict(X_val[self.selected_features_names])
             metrics = calculate_metrics(y_val, y_pred)
     
+            if ins.config['server_round']==1:
+                print(f"MANUAL_CHECK: Client={self.client_id} with VALIDATION DATA | "
+                    f"Num_Features={len(self.selected_features_names)} | "
+                    f"Bal_Acc={metrics['balanced_accuracy']:.4f}")
+
             elapsed_time = (time.time() - start_time)
             fit_metrics_server_report(metrics,self.model,self.X_test[self.selected_features_names],self.y_test,elapsed_time,self.client_id)
             ####for the new smoothing weight metric, we need to include the fairness information
