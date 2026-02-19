@@ -40,6 +40,41 @@ than or equal to the values of `min_fit_clients` and `min_evaluate_clients`.
 """
 
 
+import numpy as np
+
+def federated_score_n_clients(client_accuracies, lambda_gap=0.5, gap_metric="std"):
+    """
+    Generalized federated heuristic score for n clients.
+    
+    Parameters:
+    - client_accuracies: List or array of Balanced Accuracies from all n clients.
+    - lambda_gap: Penalty weight for client imbalance.
+    - gap_metric: 'std' (Standard Deviation) or 'range' (Max - Min).
+    
+    Returns:
+    - federated score
+    """
+    if not client_accuracies:
+        return 0.0
+
+    # 1. Calculate the unweighted mean (treats all clients equally)
+    mean_ba = np.mean(client_accuracies)
+    
+    # 2. Calculate the dispersion (the "gap")
+    if gap_metric == "std":
+        # Standard deviation: penalizes overall variance across the network
+        gap = np.std(client_accuracies)
+    elif gap_metric == "range":
+        # Range: penalizes the absolute worst-case difference between best and worst client
+        gap = np.max(client_accuracies) - np.min(client_accuracies)
+    else:
+        raise ValueError("gap_metric must be 'std' or 'range'")
+    
+    # 3. Apply the penalty
+    score = mean_ba - (lambda_gap * gap)
+    
+    return score
+
 class FedCustom(fl.server.strategy.FedAvg):
     """Configurable FedAvg strategy implementation."""
     #DropOut center variable to get the initial execution time of the first round
@@ -193,6 +228,30 @@ class FedCustom(fl.server.strategy.FedAvg):
                     aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght)
                 case "totalsortedTradeoffMetrics":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithHardRankPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght)
+
+            # >>> MANUAL CHECK BLOCK (ROUND 1 ONLY) <<<
+            # This calculates the global mean of the clients' local performance
+            # We use this to select the number of features 
+            # This is a manual technique like the state-of-the-art you need to check one by one [20.40,60]
+            # Then decide. It goes in validation so no leakage you can decide the N with the best metric
+            bal_acc_values = [res.metrics.get('balanced_accuracy', 0) for _, res in results]
+            valid_accs = [v for v in bal_acc_values if v > 0]
+            
+            if valid_accs:
+                # 1. Call the function we designed
+                # (Make sure federated_score_n_clients is imported or defined in this file)
+                federated_score = federated_score_n_clients(valid_accs, lambda_gap=0.5, gap_metric="std")
+                
+                # 2. Calculate these just for the terminal output
+                global_mean_acc = np.mean(valid_accs)
+                gap_penalty = np.std(valid_accs)
+                
+                print(f"\n***************************************************************")
+                print(f"*** SENSITIVITY CHECK (Round 1) ***")
+                print(f"*** Mean Bal_Acc:    {global_mean_acc:.4f} ***")
+                print(f"*** Gap (Std Dev):   {gap_penalty:.4f} ***")
+                print(f"*** Federated Score: {federated_score:.4f} (lambda=0.5) ***")
+                print(f"***************************************************************\n")
               
         else:
             match self.aggregator_rf:

@@ -21,87 +21,61 @@ from functools import reduce
 import numpy as np
 
 
-def computeSmoothedWeights(results,smoothing_method,smoothing_strenght,fairness_scores=[]):
-    """Compute weighted average."""
-    # Calculate the total number of examples used during training
+def computeSmoothedWeights(results, smoothing_method, smoothing_strength, baseline_type='equal_voting'):
+    """
+    Computes client aggregation weights.
+    baseline_type: 'fedavg' (Size-based) or 'equal_voting' (Democratic 1/N).
+    """
     num_examples_total = sum([num_examples for _, num_examples in results])
     num_centers = len(results)
-    homogeneous_weights = [1 / num_centers for _ in range(num_centers)]
+    
+    # Pre-calculate base distributions
+    examples_per_center = np.array([num_examples for _, num_examples in results])
+    fedavg_weights = examples_per_center / num_examples_total
+    equal_weights = np.ones(num_centers) / num_centers
 
-    # None, or float in [0,1]. 0 equals Federated Averaging.
+    # BASELINE LOGIC: Determine the 'None' state behavior
+    if smoothing_method == 'None' or smoothing_method is None:
+        return equal_weights.tolist() if baseline_type == 'equal_voting' else fedavg_weights.tolist()
+
+    lam = smoothing_strength 
+
+    if smoothing_method == 'EqualVoting':
+        # Linear interpolation between FedAvg and Equal Weights (Linardos et al.)
+        final_weights = (fedavg_weights * (1 - lam)) + (equal_weights * lam)
+            
+    elif smoothing_method == 'fairnessWeighting':
+        balanced_acc = np.array([m[0].balanced_accuracy_ for m, _ in results])
+        equity = np.array([1.0 - abs(m[0].EODfairness_score_) if not np.isnan(m[0].EODfairness_score_) else 0.0 for m, _ in results])
         
-    # if smoothing:
-    #if CONFIG['strategy']['smoothing']:
-    if smoothing_method!= 'None':
-        examples_per_center = [num_examples for _, num_examples in results]
-        default_f_weights = [examples_per_center[i] / num_examples_total for i in range(num_centers)]
-        # assert round(sum(default_f_weights),3) == 1, "Default weights do not sum to 1, sum: {}".format(sum(default_f_weights))
-        smoothing_value = smoothing_strenght #CONFIG['strategy']['smoothing']
-        if(smoothing_method=='EqualVoting'): #equal voting 
-            # x*smoothing+y*(1-smoothing) where x is the default weight and y is a homogenous weight
-            final_weights = [(d*(1-smoothing_value)+h*smoothing_value) for d, h in zip(default_f_weights, homogeneous_weights)]
-            # assert round(sum(final_weights),3) == 1, "Final weights after smoothing do not sum to 1, sum: {}".format(sum(final_weights))
-        elif( smoothing_method == 'fairnessWeighting'):
-            fairness_scores = [model[0].EODfairness_score_  for model, _ in results]
-            #abs_eops = [abs(eop) for eop in fairness_scores]
-            #If EOP is NaN (e.g., no true positives), you treat it as maximally unfair (1.0).
-            abs_eops = [abs(eop) if not np.isnan(eop) else 1.0 for eop in fairness_scores]
-            balanced_acc_scores = [model[0].balanced_accuracy_  for model, _ in results]  # Already in [0, 1]
+        # Unified Merit Score: alpha*Acc + (1-alpha)*Equity
+        alpha = 0.75 
+        merit_scores = alpha * balanced_acc + (1 - alpha) * equity
+        
+        if merit_scores.sum() > 0:
+            merit_weights = merit_scores / merit_scores.sum()
+        else:
+            merit_weights = equal_weights
 
+        # Blends volume-based importance with merit-based performance
+        final_weights = (fedavg_weights * (1 - lam)) + (merit_weights * lam)
             
-            #We're scaling each EOP score to the [0, 1] range, relative to the worst one. (higher weight = fairer)
-            #to check how far each client is from the worst-case (max)
-            #eop == 0 → gets full weight (1.0)
-            #eop == max_gap → gets no weight (0.0)
-            #max_gap = max(abs_eops)
+    else: # Quartile options
+        #Savg =(default_f_weight+homogeneus_weight)/2
+        Savg = (fedavg_weights + equal_weights) / 2
+        #SlowerQuartile = (default_f_weight+Svag)/2
+        if smoothing_method == 'SlowerQuartile':
+            final_weights = (fedavg_weights + Savg) / 2
+        #SupperQuartile = (homogeneous_weights+Svag)/2
+        else:
+            final_weights = (equal_weights + Savg) / 2
 
-            #print("Absolute EOP scores:", abs_eops)
-            #print("Max fairness gap:", max_gap)
+    # Numerical Stability: Ensure exact sum of 1.0
+    final_weights = np.array(final_weights)
+    if final_weights.sum() > 0:
+        final_weights /= final_weights.sum()
 
-            #fairness_adjustments = [(1 - (eop / max_gap)) for eop in abs_eops]
-
-            # Combine fairness and utility (balanced accuracy)
-            #alpha = 0.5  # 1.0 = fairness only, 0.0 = accuracy only
-            #center  means "start caring a lot about fairness above center EOD and steepness = 10 controls how fast the switch happens.
-            #steepness = 10
-            #center = 0.15
-            #alpha = 1 / (1 + np.exp(-steepness * (max_gap - center)))
-     
-            #fairness_adjustments = [
-            #    alpha * f + (1 - alpha) * u for f, u in zip(abs_eops, balanced_acc_scores)
-            #]
-            alpha = 0.5
-            fairness_adjustments = [
-                ((1 + alpha**2) * bal * (1 - abs(fair))) / (alpha**2 * bal + (1 - abs(fair)))
-                for fair, bal in zip(abs_eops, balanced_acc_scores)
-            ]
-
-            fairness_adjustments = np.array(fairness_adjustments)
-            
-            #Normalize the adjustments so they sum to 1
-            fairness_adjustments /= fairness_adjustments.sum()
-
-            print("Normalized fairness adjustments:", fairness_adjustments.tolist())
-
-            final_weights = [
-                d * (1 - smoothing_value) + f * smoothing_value
-                for d, f in zip(default_f_weights, fairness_adjustments)
-            ]
-        else: #quartile options
-            #Savg =(default_f_weight+homogeneus_weight)/2
-            Savg = [(d+f)/2 for d,f in zip(default_f_weights, homogeneous_weights)]
-            if(smoothing_method=='SlowerQuartile'):
-                #SlowerQuartile = (default_f_weight+Svag)/2
-                SlowerQuartile = [(d+Smean)/2 for d,Smean in zip(default_f_weights, Savg)]
-                final_weights = SlowerQuartile
-            else:
-                #SupperQuartile = (homogeneous_weights+Svag)/2
-                SupperQuartile = [(h+Smean)/2 for h,Smean in zip(homogeneous_weights, Savg)]
-                final_weights = SupperQuartile
-    else:
-        final_weights = homogeneous_weights
-
-    return final_weights
+    return final_weights.tolist()
 
 def smooth_aggregate(results,smoothing_method,smoothing_strenght) :
     final_weights = computeSmoothedWeights(results,smoothing_method,smoothing_strenght)
