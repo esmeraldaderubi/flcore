@@ -21,7 +21,10 @@ def get_parser(isserver):
     # Model-specific args (optional, validated later)
     parser.add_argument("--n_features", type=int, default=0) ###DEPRECATED BY internal_fs FIX!!
     parser.add_argument("--balanced_rf", type=bool, default=True)
-    parser.add_argument("--aggregator_rf",default="randomviaprobs",choices=["all", "random", "randomviaprobs", "randomviaprobswithTradeoffMetrics", "sortedTradeoffMetrics","totalsortedTradeoffMetrics"])
+    parser.add_argument("--aggregator_rf",default="randomviaprobs",choices=["all", "random", "randomviaprobs", "randomviaprobswithTradeoffMetrics", "sortedTradeoffMetrics","totalsortedTradeoffMetrics","ParetoQuota","DiversityPareto","AdaptiveDiversitySizeCenterProbs", "AdaptiveDiversitySizeCenterProbsv2","FairnessUtilityQuota"])
+    parser.add_argument("--smoothedWeights_baseline_type",default="equal_voting",choices=["equal_voting", "fedavg"])
+    parser.add_argument("--beta_fairness_trade_off", type=float, default=0.75)
+    
     parser.add_argument("--levelOfDetail",default="RandomForest",choices=["DecisionTree", "RandomForest"])
     parser.add_argument("--batch_size", type=int,default=32)
     parser.add_argument("--num_iterations", type=int,default=100)
@@ -62,7 +65,7 @@ def validate_model_specific_args(args):
     allowed_args = model_args.get(args.model, [])
     passed_args = [k for k, v in vars(args).items() if v is not None]
     for arg in passed_args:
-        if arg in ["n_features", "balanced_rf","aggregator_rf", "levelOfDetail", "batch_size", "num_iterations", "task_type", "tree_num"]:
+        if arg in ["n_features", "balanced_rf","aggregator_rf","smoothedWeights_baseline_type", "beta_fairness_trade_off", "smoothing_strenght", "levelOfDetail", "batch_size", "num_iterations", "task_type", "tree_num"]:
             if arg not in allowed_args:
                 raise ValueError(f"Argument --{arg} is not allowed for model '{args.model}'")
 

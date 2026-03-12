@@ -127,7 +127,7 @@ def aggregateRF_withprevious(rfs,previous_estimators,bal_RF):
 #weigth, we transform into probability /sum(weights)
 #and random choice select according to probability distribution
 #name: 'randomviaprobs'
-def aggregateRFwithSizeCenterProbs_old(rfs,bal_RF,smoothing_method,smoothing_strenght,seed):
+def aggregateRFwithSizeCenterProbs_old(rfs,bal_RF,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type):
     rfa= get_model(bal_RF,rfs[0][0][0].random_state)
     numberTreesperclient = int(len(rfs[0][0][0].estimators_)) #int(len(rfs[0][0][0]))
     number_Clients = len(rfs)
@@ -135,7 +135,7 @@ def aggregateRFwithSizeCenterProbs_old(rfs,bal_RF,smoothing_method,smoothing_str
     list_classifiers = []
     weights_classifiers = [] 
     if(smoothing_method!= 'None'):
-        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght)
+        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type)
     else:
         #If smooth weights is not available all the trees have the
         #same probability
@@ -181,7 +181,7 @@ def aggregateRFwithSizeCenterProbs_old(rfs,bal_RF,smoothing_method,smoothing_str
 # [1] Linardos et al., "Center Dropout: A Simple Method for Speed and Fairness in      #
 #     Federated Learning", FeTS Challenge 2021.                                        #
 ########################################################################################
-def aggregateRFwithSizeCenterProbs(rfs, bal_RF, smoothing_method, smoothing_strenght, seed):
+def aggregateRFwithSizeCenterProbs(rfs, bal_RF, smoothing_method, smoothing_strenght, seed,smoothedWeights_baseline_type):
     rfa = get_model(bal_RF, rfs[0][0][0].random_state)
     target_total_trees = int(len(rfs[0][0][0].estimators_))
     number_Clients = len(rfs)
@@ -193,7 +193,7 @@ def aggregateRFwithSizeCenterProbs(rfs, bal_RF, smoothing_method, smoothing_stre
     # 1. Calculate Client Importance (The "Center Probability")
     if smoothing_method != 'None':
         # [cite: 1, 9] Akis et al. Weight Smoothing
-        weights_centers = computeSmoothedWeights(rfs, smoothing_method, smoothing_strenght,'fedavg')
+        weights_centers = computeSmoothedWeights(rfs, smoothing_method, smoothing_strenght,smoothedWeights_baseline_type)
     else:
         weights_centers = [1.0] * number_Clients
     
@@ -244,8 +244,8 @@ def aggregateRFwithSizeCenterProbs(rfs, bal_RF, smoothing_method, smoothing_stre
     return [rfa], rfa.estimators_, weights_classifiers
 
 
-def aggregateRFwithSizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed)
+def aggregateRFwithSizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)
@@ -265,7 +265,7 @@ def aggregateRFwithSizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,p
 #RF (client-level) and DT (tree-level) weights using multiplicative weighting.
 #and apply a random choice base on that probability distribution
 #Funtion created for the new method by Esmeralda Ruiz for fairness weight aggregation
-def aggregateRFwithFairnessTrafeoffProbs_old(rfs,bal_RF,smoothing_method,smoothing_strenght,seed):
+def aggregateRFwithFairnessTrafeoffProbs_old(rfs,bal_RF,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type,beta_fairness_trade_off):
     rfa= get_model(bal_RF,rfs[0][0][0].random_state)
     numberTreesperclient = int(len(rfs[0][0][0].estimators_)) #int(len(rfs[0][0][0]))
     number_Clients = len(rfs)
@@ -275,7 +275,7 @@ def aggregateRFwithFairnessTrafeoffProbs_old(rfs,bal_RF,smoothing_method,smoothi
     
 
     if(smoothing_method!= 'None'):
-        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght)
+        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type)
     else:
         #If smooth weights is not available all the trees have the
         #same probability
@@ -285,7 +285,7 @@ def aggregateRFwithFairnessTrafeoffProbs_old(rfs,bal_RF,smoothing_method,smoothi
         rf_weights = [weights_centers[i]]*numberTreesperclient
         # rfs is a list/array of RandomForestClassifier objects
         #dt_weights = np.array([tree.balanced_accuracy_ for tree in rfs[i][0][0].estimators_]) 
-        alpha = 0.75
+        alpha = beta_fairness_trade_off
         dt_weights = np.array([alpha *tree.balanced_accuracy_ + (1 - alpha) * (1-np.abs(tree.EODfairness_score_)) for tree in rfs[i][0][0].estimators_]) 
 
 
@@ -336,7 +336,7 @@ def aggregateRFwithFairnessTrafeoffProbs_old(rfs,bal_RF,smoothing_method,smoothi
 # the final global forest. This ensures that only the most "Fair & Competent"         #
 # estimators are likely to graduate to the global model.                               #
 ########################################################################################
-def aggregateRFwithFairnessTrafeoffProbs(rfs, bal_RF, smoothing_method, smoothing_strength, seed):
+def aggregateRFwithFairnessTrafeoffProbs(rfs, bal_RF, smoothing_method, smoothing_strength, seed,smoothedWeights_baseline_type,beta_fairness_trade_off):
     """
     Proposed Method (Esmeralda Ruiz): Fairness-Utility Multiplicative Aggregation.
     Combines Client-level importance (macro) with Tree-level quality (micro).
@@ -349,8 +349,9 @@ def aggregateRFwithFairnessTrafeoffProbs(rfs, bal_RF, smoothing_method, smoothin
     weights_classifiers = [] 
 
     # 1. Get Global Client Weights (Macro-level)
-    # Using the refactored computeSmoothedWeights (Returns FedAvg if 'None')
-    weights_centers = computeSmoothedWeights(rfs, smoothing_method, smoothing_strength,'fedavg')
+    # Using the refactored computeSmoothedWeights 
+    # If smoothing_method == 'None', this reduces to 'equal_voting' automatically or 'fedavg' if you specify in params
+    weights_centers = computeSmoothedWeights(rfs, smoothing_method, smoothing_strength,smoothedWeights_baseline_type)
 
     # 2. Extract and Score Trees (Micro-level)
     for i in range(number_Clients):
@@ -358,7 +359,7 @@ def aggregateRFwithFairnessTrafeoffProbs(rfs, bal_RF, smoothing_method, smoothin
         list_classifiers.extend(estimators)
         
         # Calculate Merit Score for each tree: alpha*Acc + (1-alpha)*Equity
-        alpha = 0.75
+        alpha = beta_fairness_trade_off
         equity = np.array([1.0 - abs(tree.EODfairness_score_) for tree in estimators])
         accuracy = np.array([tree.balanced_accuracy_ for tree in estimators])
         
@@ -405,8 +406,8 @@ def aggregateRFwithFairnessTrafeoffProbs(rfs, bal_RF, smoothing_method, smoothin
 
     return [rfa], rfa.estimators_, weights_selected
 
-def aggregateRFwithFairnessTrafeoffProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithFairnessTrafeoffProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed)
+def aggregateRFwithFairnessTrafeoffProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithFairnessTrafeoffProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type,beta_fairness_trade_off)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)
@@ -430,11 +431,12 @@ def aggregateRFwithFairnessTrafeoffProbs_withprevious(rfs,bal_RF,previous_estima
 # The number of trees for each client is determined by the smooth weighting if enabled #
 # In this case, we make sure that each client is represented                           #
 # If smooth weighting is not enabled, the same number of trees per client is selected  #
+# or according to fedavg is you change the default                                     #
 #Funtion created for the new method by Esmeralda Ruiz for fairness weight aggregation  #
 ########################################################################################
 
 
-def aggregateRFwithPerformance_old(rfs,bal_RF,smoothing_method,smoothing_strenght):
+def aggregateRFwithPerformance_old(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off):
     rfa= get_model(bal_RF,rfs[0][0][0].random_state)
     numberTreesperclient = int(len(rfs[0][0][0].estimators_)) #int(len(rfs[0][0][0]))
     number_Clients = len(rfs)
@@ -444,7 +446,7 @@ def aggregateRFwithPerformance_old(rfs,bal_RF,smoothing_method,smoothing_strengh
     #N= int(np.round(numberTreesperclient / number_Clients))
 
     if(smoothing_method!= 'None'):
-        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght)
+        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type)
         weights_centers = np.array(weights_centers)
         N = np.round(weights_centers * numberTreesperclient).astype(int)
 
@@ -458,7 +460,7 @@ def aggregateRFwithPerformance_old(rfs,bal_RF,smoothing_method,smoothing_strengh
     for i in range(number_Clients):
         #weights for each center
         #weights in the level of the decision trees
-        alpha = 0.75
+        alpha = beta_fairness_trade_off
         dt_weights = np.array([alpha *tree.balanced_accuracy_ + (1 - alpha) * (1-np.abs(tree.EODfairness_score_)) for tree in rfs[i][0][0].estimators_]) 
 
         weights_smooth =  dt_weights 
@@ -511,7 +513,7 @@ def aggregateRFwithPerformance_old(rfs,bal_RF,smoothing_method,smoothing_strengh
 # Function created for the new method by Esmeralda Ruiz for fairness weight aggregation#
 ########################################################################################
 
-def aggregateRFwithPerformance(rfs, bal_RF, smoothing_method, smoothing_strength):
+def aggregateRFwithPerformance(rfs, bal_RF, smoothing_method, smoothing_strength,smoothedWeights_baseline_type,beta_fairness_trade_off):
     """
     Greedy Merit-Based Selection. 
     Determines client quotas first, then selects the 'Elite' trees from each client.
@@ -523,7 +525,7 @@ def aggregateRFwithPerformance(rfs, bal_RF, smoothing_method, smoothing_strength
     # 1. Macro-Level: Determine Tree Quotas (N)
     # By default, computeSmoothedWeights uses 'equal_voting' for the 'None' baseline.
     # To change this to proportional, you would pass baseline_type='fedavg' here.
-    weights_centers = np.array(computeSmoothedWeights(rfs, smoothing_method, smoothing_strength, baseline_type='equal_voting'))
+    weights_centers = np.array(computeSmoothedWeights(rfs, smoothing_method, smoothing_strength, smoothedWeights_baseline_type))
     
     # Largest Remainder Method: Ensures sum(N) always equals target_total perfectly.
     # This prevents the +/- 1 tree error caused by simple rounding.
@@ -543,7 +545,7 @@ def aggregateRFwithPerformance(rfs, bal_RF, smoothing_method, smoothing_strength
     # 2. Micro-Level: Merit-based Sorting and Selection per Client
     for i in range(num_clients):
         # Unified Merit Formula (Consistent with your entire study: alpha=0.75)
-        alpha = 0.75
+        alpha = beta_fairness_trade_off
         estimators = np.array(rfs[i][0][0].estimators_)
         
         # Merit = Weighted combination of Balanced Accuracy and Equity (1 - |EOD|)
@@ -579,8 +581,8 @@ def aggregateRFwithPerformance(rfs, bal_RF, smoothing_method, smoothing_strength
 
     return [rfa], rfa.estimators_, weights_classifiers
 
-def aggregateRFwithPerformance_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithPerformance(rfs,bal_RF,smoothing_method,smoothing_strenght)
+def aggregateRFwithPerformance_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithPerformance(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)
@@ -608,7 +610,7 @@ def aggregateRFwithPerformance_withprevious(rfs,bal_RF,previous_estimators,previ
 
 
 
-def aggregateRFwithHardRankPerformance_old(rfs,bal_RF,smoothing_method,smoothing_strenght):
+def aggregateRFwithHardRankPerformance_old(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off):
     rfa= get_model(bal_RF,rfs[0][0][0].random_state)
     numberTreesperclient = int(len(rfs[0][0][0].estimators_)) #int(len(rfs[0][0][0]))
     number_Clients = len(rfs)
@@ -616,9 +618,10 @@ def aggregateRFwithHardRankPerformance_old(rfs,bal_RF,smoothing_method,smoothing
     list_classifiers = []
     weights_classifiers = [] 
     #N= int(np.round(numberTreesperclient / number_Clients))
-
+    
+    # If smoothing_method == 'None', this reduces to 'equal_voting' automatically or 'fedavg' if you specify in params
     if(smoothing_method!= 'None'):
-        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght)
+        weights_centers = computeSmoothedWeights(rfs,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type)
         weights_centers = np.array(weights_centers)
     else:
         #If smooth weights is not available all the trees have the
@@ -632,7 +635,7 @@ def aggregateRFwithHardRankPerformance_old(rfs,bal_RF,smoothing_method,smoothing
         rf_weights = [weights_centers[i]]*numberTreesperclient
         #weights in the level of the decision trees
         #dt_weights = np.array([tree.balanced_accuracy_ for tree in rfs[i][0][0].estimators_])
-        alpha = 0.75
+        alpha = beta_fairness_trade_off
         dt_weights = np.array([alpha *tree.balanced_accuracy_ + (1 - alpha) * (1-np.abs(tree.EODfairness_score_)) for tree in rfs[i][0][0].estimators_]) 
  
 
@@ -689,7 +692,7 @@ def aggregateRFwithHardRankPerformance_old(rfs,bal_RF,smoothing_method,smoothing
 # Function created for the new method by Esmeralda Ruiz for fairness weight aggregation#
 ########################################################################################
 
-def aggregateRFwithHardRankPerformance(rfs, bal_RF, smoothing_method, smoothing_strength):
+def aggregateRFwithHardRankPerformance(rfs, bal_RF, smoothing_method, smoothing_strength,smoothedWeights_baseline_type,beta_fairness_trade_off):
     """
     Global Top-K Selection (Deterministic).
     Pools all trees and selects the N best estimators globally.
@@ -703,8 +706,8 @@ def aggregateRFwithHardRankPerformance(rfs, bal_RF, smoothing_method, smoothing_
     all_merit_scores = []
 
     # 1. Obtain Center Weights (Macro-Level)
-    # Defaults to 'equal_voting' for the 'None' baseline
-    weights_centers = np.array(computeSmoothedWeights(rfs, smoothing_method, smoothing_strength, baseline_type='equal_voting'))
+    # If smoothing_method == 'None', this reduces to 'equal_voting' automatically or 'fedavg' if you specify in params
+    weights_centers = np.array(computeSmoothedWeights(rfs, smoothing_method, smoothing_strength, smoothedWeights_baseline_type))
 
     # 2. Pool all trees and calculate their Global Merit
     for i in range(num_clients):
@@ -712,7 +715,7 @@ def aggregateRFwithHardRankPerformance(rfs, bal_RF, smoothing_method, smoothing_
         all_estimators.extend(estimators)
         
         # Unified Merit Formula (alpha=0.75)
-        alpha = 0.75
+        alpha = beta_fairness_trade_off
         equity = np.array([1.0 - abs(tree.EODfairness_score_) for tree in estimators])
         accuracy = np.array([tree.balanced_accuracy_ for tree in estimators])
         
@@ -750,8 +753,8 @@ def aggregateRFwithHardRankPerformance(rfs, bal_RF, smoothing_method, smoothing_
 
     return [rfa], rfa.estimators_, selected_weights
 
-def aggregateRFwithHardRankPerformance_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithHardRankPerformance(rfs,bal_RF,smoothing_method,smoothing_strenght)
+def aggregateRFwithHardRankPerformance_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithHardRankPerformance(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)
@@ -765,6 +768,7 @@ def aggregateRFwithHardRankPerformance_withprevious(rfs,bal_RF,previous_estimato
 
 ########################################################################################
 # AGGREGATOR 7: PARETO–QUOTA HYBRID (Esmeralda Ruiz – PROPOSED SOTA)
+# name given ParetoQuota                                                               #
 # ------------------------------------------------------------------------------------ #
 # IDEA:
 #   - Macro level: FORCE representation of each client using smoothed client weights
@@ -776,7 +780,7 @@ def aggregateRFwithHardRankPerformance_withprevious(rfs,bal_RF,previous_estimato
 #   - No stochasticity → reproducible and stable
 ########################################################################################
 
-def aggregateRFwithParetoQuota(rfs, bal_RF, smoothing_method, smoothing_strength):
+def aggregateRFwithParetoQuota(rfs, bal_RF, smoothing_method, smoothing_strength,smoothedWeights_baseline_type):
     # ------------------------------------------------------------------
     # Setup
     # ------------------------------------------------------------------
@@ -790,9 +794,9 @@ def aggregateRFwithParetoQuota(rfs, bal_RF, smoothing_method, smoothing_strength
     # 1. MACRO LEVEL — CLIENT REPRESENTATION (QUOTAS)
     # ------------------------------------------------------------------
     # We compute client importance using your unified smoothing logic.
-    # If smoothing_method == 'None', this reduces to FedAvg automatically.
+    # If smoothing_method == 'None', this reduces to 'equal_voting' automatically or 'fedavg' if you specify in params
     weights_centers = np.array(
-        computeSmoothedWeights(rfs, smoothing_method, smoothing_strength)
+        computeSmoothedWeights(rfs, smoothing_method, smoothing_strength, smoothedWeights_baseline_type)
     )
 
     # Convert fractional weights into exact integer quotas using
@@ -885,8 +889,8 @@ def aggregateRFwithParetoQuota(rfs, bal_RF, smoothing_method, smoothing_strength
     return [rfa], rfa.estimators_, weights_classifiers
 
 
-def aggregateRFwithParetoQuota_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithParetoQuota(rfs,bal_RF,smoothing_method,smoothing_strenght)
+def aggregateRFwithParetoQuota_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithParetoQuota(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)
@@ -900,6 +904,7 @@ def aggregateRFwithParetoQuota_withprevious(rfs,bal_RF,previous_estimators,previ
 
 ########################################################################################
 # AGGREGATOR 8: DIVERSITY-AWARE PARETO QUOTA (DAPQ) — FIXED VERSION
+# name given: DiversityPareto
 # ------------------------------------------------------------------------------------ #
 # GOAL:
 #   - Representation  → enforced by quotas
@@ -917,7 +922,7 @@ def aggregateRFwithParetoQuota_withprevious(rfs,bal_RF,previous_estimators,previ
 #   not act as a global scalar.                                                        #
 ########################################################################################
 
-def aggregateRFwithDiversityPareto(rfs, bal_RF, smoothing_method, smoothing_strength):
+def aggregateRFwithDiversityPareto(rfs, bal_RF, smoothing_method, smoothing_strength,smoothedWeights_baseline_type):
     # ------------------------------------------------------------------
     # Setup
     # ------------------------------------------------------------------
@@ -928,8 +933,10 @@ def aggregateRFwithDiversityPareto(rfs, bal_RF, smoothing_method, smoothing_stre
     # ------------------------------------------------------------------
     # 1. MACRO LEVEL — QUOTA-BASED REPRESENTATION
     # ------------------------------------------------------------------
+     # We compute client importance using your unified smoothing logic.
+    # If smoothing_method == 'None', this reduces to 'equal_voting' automatically or 'fedavg' if you specify in params
     weights_centers = np.array(
-        computeSmoothedWeights(rfs, smoothing_method, smoothing_strength)
+        computeSmoothedWeights(rfs, smoothing_method, smoothing_strength, smoothedWeights_baseline_type)
     )
 
     # Largest Remainder Method (exact quotas)
@@ -1011,8 +1018,8 @@ def aggregateRFwithDiversityPareto(rfs, bal_RF, smoothing_method, smoothing_stre
     return [rfa], rfa.estimators_, final_weights
 
 
-def aggregateRFwithDiversityPareto_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithDiversityPareto(rfs,bal_RF,smoothing_method,smoothing_strenght)
+def aggregateRFwithDiversityPareto_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithDiversityPareto(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)
@@ -1021,3 +1028,513 @@ def aggregateRFwithDiversityPareto_withprevious(rfs,bal_RF,previous_estimators,p
     weights_selectedTrees = np.concatenate(((previous_estimator_weights),(weights_selectedTrees)))
 
     return [rfa],rfa.estimators_,weights_selectedTrees
+
+
+
+
+########################################################################################
+# AGGREGATOR 9: ADAPTIVE DIVERSITY-AWARE CENTER PROBABILITIES (ADCP)
+# name given: AdaptiveDiversitySizeCenterProbs
+# ------------------------------------------------------------------------------------ #
+# GOAL:
+#   - Representation  → enforced by Smoothed Center Probabilities + Largest Remainder
+#   - Optimality      → enforced by adaptive Accuracy–Fairness tradeoff (α_i)
+#   - Diversity       → enforced by greedy correlation penalization (γ)
+# ------------------------------------------------------------------------------------ #
+# NOVELTY: This method extends "Random with Probs" by replacing random tree sampling
+# with a structured three-level optimization:
+#
+# 1. REPRESENTATION (Macro-Level Control):
+#    Client importance is computed via smoothed center probabilities.
+#    The Largest Remainder Method guarantees proportional inclusion
+#    of each client in the global forest.
+#
+# 2. ADAPTIVE FAIRNESS–PERFORMANCE TRADEOFF (Client-Level Micro-Optimality):
+#    Each client receives its own α_i:
+#
+#        α_i = base_alpha − 0.25 · |EOD_i|
+#
+#    This automatically increases fairness pressure for clients
+#    exhibiting larger Equal Opportunity gaps, while preserving
+#    performance emphasis for well-calibrated clients.
+#
+# 3. STRUCTURAL DIVERSITY (Tree-Level Optimization):
+#    Tree selection inside each client is performed via greedy
+#    merit maximization with correlation penalization:
+#
+#        Score = Merit − γ · Similarity
+#
+#    where Similarity is the mean Pearson correlation between
+#    candidate tree predictions and already selected trees.
+#
+# KEY PRINCIPLES:
+#   - Representation must be enforced BEFORE optimization.
+#   - Fairness correction should be CLIENT-ADAPTIVE, not globally fixed.
+#   - Diversity must reduce TREE-LEVEL redundancy to improve
+#     ensemble variance reduction and cross-client robustness.
+########################################################################################
+
+
+
+
+
+def aggregateRFwithAdaptiveDiversitySizeCenterProbs(rfs, bal_RF, smoothing_method, smoothing_strenght, seed,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    
+  # Setup
+    rfa = get_model(bal_RF, rfs[0][0][0].random_state)
+    target_total_trees = int(len(rfs[0][0][0].estimators_))
+    number_Clients = len(rfs)
+
+    list_classifiers = []
+    weights_classifiers = []
+
+    # Part 1. Client importance
+    # If smoothing_method == 'None', this reduces to 'equal_voting' automatically or 'fedavg' if you specify in params
+    if smoothing_method != 'None':
+        weights_centers = computeSmoothedWeights(
+            rfs, smoothing_method, smoothing_strenght, smoothedWeights_baseline_type
+        )
+    else:
+        weights_centers = [1.0] * number_Clients
+
+    weights_centers = np.array(weights_centers)
+    weights_centers = weights_centers / np.sum(weights_centers)
+
+    # Part 2. Exact quotas using Largest Remainder Method
+    N_float = weights_centers * target_total_trees
+    N = np.floor(N_float).astype(int)
+    remainder = N_float - N
+
+    missing = target_total_trees - np.sum(N)
+    if missing > 0:
+        indices = np.argsort(remainder)[::-1]
+        for i in range(int(missing)):
+            N[indices[i]] += 1
+
+    np.random.seed(seed)
+
+    # Part 3. Adaptive and Diversity-aware selection
+    base_alpha = beta_fairness_trade_off
+    gamma = 0.1
+
+    for i in range(number_Clients):
+
+        client_rf = rfs[i][0][0]
+        client_trees = client_rf.estimators_
+        n_select = min(len(client_trees), N[i])
+
+        if n_select == 0:
+            continue
+
+        # Extract tree metrics safely
+        ba = np.array([tree.balanced_accuracy_ for tree in client_trees])
+        
+        # Protect against missing values in fairness scores
+        eod = np.array([
+            abs(tree.EODfairness_score_) 
+            if hasattr(tree, 'EODfairness_score_') and not np.isnan(tree.EODfairness_score_) 
+            else 1.0 
+            for tree in client_trees
+        ])
+
+        # Adaptive client-level fairness adjustment
+        client_gap = np.mean(eod)
+        alpha_i = base_alpha - 0.25 * client_gap
+        alpha_i = np.clip(alpha_i, 0.5, 0.9)
+
+        merit = alpha_i * ba - (1 - alpha_i) * eod
+
+        remaining_idx = list(np.argsort(-merit))
+        selected_idx = []
+
+        # Greedy diversity-aware selection loop (using Feature Importance Similarity)
+        while len(selected_idx) < n_select and remaining_idx:
+
+            if not selected_idx:
+                best = remaining_idx.pop(0)
+                selected_idx.append(best)
+                continue
+
+            best_score = -np.inf
+            best_candidate = None
+
+            for idx in remaining_idx:
+
+                tree = client_trees[idx]
+                sims = []
+                
+                for s in selected_idx:
+                    # Swap prediction arrays for structural feature importance arrays
+                    feat1 = tree.feature_importances_
+                    feat2 = client_trees[s].feature_importances_
+
+                    # Compute correlation between the feature usage of the two trees
+                    corr = np.corrcoef(feat1, feat2)[0, 1]
+                    
+                    if np.isnan(corr):
+                        corr = 0.0
+                        
+                    sims.append(corr)
+
+                similarity = np.mean(sims) if sims else 0.0
+                
+                score = merit[idx] - gamma * similarity
+
+                if score > best_score:
+                    best_score = score
+                    best_candidate = idx
+
+            selected_idx.append(best_candidate)
+            remaining_idx.remove(best_candidate)
+
+        selected_local = np.array(client_trees)[selected_idx]
+        list_classifiers.extend(selected_local)
+        
+        weights_classifiers.extend([weights_centers[i]] * len(selected_local))
+
+    # Final assembly
+    rfa.estimators_ = np.array(list_classifiers)
+    rfa.n_estimators = len(list_classifiers)
+
+    weights_classifiers = np.array(weights_classifiers)
+    if np.sum(weights_classifiers) > 0:
+        weights_classifiers = weights_classifiers / np.sum(weights_classifiers)
+
+    return [rfa], rfa.estimators_, weights_classifiers
+
+def aggregateRFwithAdaptiveDiversitySizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithDiversityPareto(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off)
+
+    rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
+    rfa.estimators_=np.array(rfa.estimators_)
+    rfa.n_estimators = len(rfa.estimators_)
+
+    weights_selectedTrees = np.concatenate(((previous_estimator_weights),(weights_selectedTrees)))
+
+    return [rfa],rfa.estimators_,weights_selectedTrees
+
+
+
+
+
+
+
+########################################################################################
+# AGGREGATOR: ADAPTIVE DIVERSITY + SIZE-CENTER PROBS (DATA-DRIVEN VERSION)
+# ------------------------------------------------------------------------------------ #
+# GOAL:
+#   - Representation  → Largest Remainder quotas
+#   - Optimality      → Normalized multi-objective merit (BA vs EOD)
+#   - Adaptivity      → Client-relative fairness-driven alpha
+#   - Diversity       → Data-driven correlation penalty
+#   - Fair Voting     → Tree-level fairness-sensitive weights
+########################################################################################
+
+
+def aggregateRFwithAdaptiveDiversitySizeCenterProbsv2(
+    rfs,
+    bal_RF,
+    smoothing_method,
+    smoothing_strength,
+    seed,smoothedWeights_baseline_type,beta_fairness_trade_off
+):
+
+    # ------------------------------------------------------------------
+    # Setup
+    # ------------------------------------------------------------------
+    rfa = get_model(bal_RF, rfs[0][0][0].random_state)
+
+    target_total_trees = int(len(rfs[0][0][0].estimators_))
+    number_clients = len(rfs)
+
+    list_classifiers = []
+    weights_classifiers = []
+
+    np.random.seed(seed)
+
+    # ------------------------------------------------------------------
+    # 1 Client importance (macro level)
+    # ------------------------------------------------------------------
+    if smoothing_method != 'None':
+        weights_centers = computeSmoothedWeights(
+            rfs, smoothing_method, smoothing_strength, 'fedavg'
+        )
+    else:
+        weights_centers = np.ones(number_clients)
+
+    weights_centers = np.array(weights_centers)
+    weights_centers = weights_centers / np.sum(weights_centers)
+
+    # Largest Remainder quota allocation
+    N_float = weights_centers * target_total_trees
+    N = np.floor(N_float).astype(int)
+    remainder = N_float - N
+
+    missing = target_total_trees - np.sum(N)
+    if missing > 0:
+        indices = np.argsort(remainder)[::-1]
+        for i in range(int(missing)):
+            N[indices[i]] += 1
+
+    # ------------------------------------------------------------------
+    # 2 Compute global fairness distribution (for relative alpha)
+    # ------------------------------------------------------------------
+    client_gaps = []
+
+    for i in range(number_clients):
+        client_rf = rfs[i][0][0]
+        eod = np.array([
+            abs(tree.EODfairness_score_)
+            if hasattr(tree, 'EODfairness_score_') and not np.isnan(tree.EODfairness_score_)
+            else 1.0
+            for tree in client_rf.estimators_
+        ])
+        client_gaps.append(np.mean(eod))
+
+    client_gaps = np.array(client_gaps)
+    global_gap_mean = np.mean(client_gaps) + 1e-8
+
+    # ------------------------------------------------------------------
+    # 3 Client-level adaptive selection
+    # ------------------------------------------------------------------
+    for i in range(number_clients):
+
+        client_rf = rfs[i][0][0]
+        client_trees = client_rf.estimators_
+        n_select = min(len(client_trees), N[i])
+
+        if n_select == 0:
+            continue
+
+        # --- Extract metrics safely ---
+        ba = np.array([
+            tree.balanced_accuracy_
+            if not np.isnan(tree.balanced_accuracy_)
+            else 0.0
+            for tree in client_trees
+        ])
+
+        eod = np.array([
+            abs(tree.EODfairness_score_)
+            if hasattr(tree, 'EODfairness_score_') and not np.isnan(tree.EODfairness_score_)
+            else 1.0
+            for tree in client_trees
+        ])
+
+        # --- Normalize within client ---
+        ba_norm = (ba - ba.min()) / (ba.max() - ba.min() + 1e-8)
+        eod_norm = (eod - eod.min()) / (eod.max() - eod.min() + 1e-8)
+
+        # --- Adaptive alpha (relative fairness severity) ---
+        alpha_i = 1.0 - (client_gaps[i] / global_gap_mean)
+        alpha_i = np.clip(alpha_i, 0.3, 0.9)
+
+        merit = alpha_i * ba_norm - (1 - alpha_i) * eod_norm
+
+        # ------------------------------------------------------------------
+        # 4 Data-driven diversity strength
+        # ------------------------------------------------------------------
+        feat_matrix = np.array([tree.feature_importances_ for tree in client_trees])
+
+        if feat_matrix.shape[0] > 1:
+            corr_matrix = np.corrcoef(feat_matrix)
+            mean_corr = np.nanmean(np.abs(corr_matrix))
+        else:
+            mean_corr = 0.0
+
+        gamma = mean_corr  # Fully adaptive
+
+        remaining_idx = list(np.argsort(-merit))
+        selected_idx = []
+
+        while len(selected_idx) < n_select and remaining_idx:
+
+            if not selected_idx:
+                selected_idx.append(remaining_idx.pop(0))
+                continue
+
+            best_score = -np.inf
+            best_candidate = None
+
+            for idx in remaining_idx:
+
+                sims = []
+                for s in selected_idx:
+                    corr = np.corrcoef(
+                        client_trees[idx].feature_importances_,
+                        client_trees[s].feature_importances_
+                    )[0, 1]
+
+                    if np.isnan(corr):
+                        corr = 0.0
+
+                    sims.append(corr)
+
+                similarity = np.mean(sims) if sims else 0.0
+
+                score = merit[idx] - gamma * similarity
+
+                if score > best_score:
+                    best_score = score
+                    best_candidate = idx
+
+            selected_idx.append(best_candidate)
+            remaining_idx.remove(best_candidate)
+
+        selected_local = np.array(client_trees)[selected_idx]
+
+        list_classifiers.extend(selected_local)
+
+        # ------------------------------------------------------------------
+        # 5 Fairness-sensitive tree voting weights
+        # ------------------------------------------------------------------
+        local_weights = weights_centers[i] * (1 - eod_norm[selected_idx])
+        weights_classifiers.extend(local_weights)
+
+    # ------------------------------------------------------------------
+    # Final assembly
+    # ------------------------------------------------------------------
+    rfa.estimators_ = np.array(list_classifiers)
+    rfa.n_estimators = len(list_classifiers)
+
+    weights_classifiers = np.array(weights_classifiers)
+
+    if np.sum(weights_classifiers) > 0:
+        weights_classifiers = weights_classifiers / np.sum(weights_classifiers)
+
+    return [rfa], rfa.estimators_, weights_classifiers
+
+
+
+def aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithDiversityPareto(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off)
+
+    rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
+    rfa.estimators_=np.array(rfa.estimators_)
+    rfa.n_estimators = len(rfa.estimators_)
+
+    weights_selectedTrees = np.concatenate(((previous_estimator_weights),(weights_selectedTrees)))
+
+    return [rfa],rfa.estimators_,weights_selectedTrees
+
+
+
+
+
+
+########################################################################################
+# AGGREGATOR: FAIRNESS–UTILITY TRADEOFF QUOTA (FUTQ)
+# name given: FairnessUtilityQuota
+# ------------------------------------------------------------------------------------ #
+# GOAL:
+#   - Improve fairness without breaking accuracy
+#   - Representation → quotas per client
+#   - Fairness → weight trees by fairness metric
+#   - Utility → keep predictive performance in mind
+# ------------------------------------------------------------------------------------ #
+# PRINCIPLE:
+#   Each tree receives a combined score:
+#       combined_score = balanced_accuracy * fairness_score
+#   Quotas ensure each client is represented. Trees are selected proportionally
+#   to combined_score to assemble the global Random Forest.
+########################################################################################
+
+def aggregateRFwithFairnessUtilityQuota(rfs, bal_RF, smoothing_method, smoothing_strength, seed,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    # ------------------------------------------------------------------
+    # Setup
+    # ------------------------------------------------------------------
+    rfa = get_model(bal_RF, rfs[0][0][0].random_state)
+    total_trees = int(len(rfs[0][0][0].estimators_))
+    n_clients = len(rfs)
+
+    # ------------------------------------------------------------------
+    # 1. Client Importance — Center Probabilities
+    # ------------------------------------------------------------------
+    if smoothing_method != 'None':
+        weights_centers = computeSmoothedWeights(rfs, smoothing_method, smoothing_strength, 'fedavg')
+    else:
+        weights_centers = [1.0] * n_clients
+    weights_centers = np.array(weights_centers)
+    weights_centers /= np.sum(weights_centers)
+
+    # ------------------------------------------------------------------
+    # 2. Compute quotas using Largest Remainder Method
+    # ------------------------------------------------------------------
+    N_float = weights_centers * total_trees
+    N = np.floor(N_float).astype(int)
+    remainder = N_float - N
+    missing = total_trees - np.sum(N)
+    if missing > 0:
+        indices = np.argsort(remainder)[::-1]
+        for i in range(int(missing)):
+            N[indices[i]] += 1
+
+    # ------------------------------------------------------------------
+    # 3. Compute combined fairness–utility scores and select trees
+    # ------------------------------------------------------------------
+    np.random.seed(seed)
+    selected_trees = []
+    tree_weights = []
+
+    for i in range(n_clients):
+        client_rf = rfs[i][0][0]
+        client_trees = client_rf.estimators_
+        n_select = min(len(client_trees), N[i])
+        if n_select == 0:
+            continue
+
+        # Extract metrics
+        ba = np.array([getattr(tree, 'balanced_accuracy_', 0) for tree in client_trees])
+        fairness = np.array([
+            1.0 - abs(getattr(tree, 'EODfairness_score_', 0.0)) 
+            if hasattr(tree, 'EODfairness_score_') and not np.isnan(getattr(tree, 'EODfairness_score_', np.nan)) 
+            else 0.0 
+            for tree in client_trees
+        ])
+
+        # Combined score: utility × fairness
+        combined_score = ba * fairness
+        combined_score[combined_score < 0] = 0.0  # safety
+
+        # Normalize to probability distribution
+        if np.sum(combined_score) > 0:
+            probs = combined_score / np.sum(combined_score)
+        else:
+            probs = np.ones_like(combined_score) / len(combined_score)
+
+        # Sample trees proportionally to combined score
+        if n_select <= len(client_trees):
+            selected_idx = np.random.choice(len(client_trees), size=n_select, replace=False, p=probs)
+        else:
+            selected_idx = np.random.choice(len(client_trees), size=n_select, replace=True, p=probs)
+
+        selected_local = np.array(client_trees)[selected_idx]
+        selected_trees.extend(selected_local)
+        tree_weights.extend([weights_centers[i]] * len(selected_local))
+
+    # ------------------------------------------------------------------
+    # 4. Final assembly
+    # ------------------------------------------------------------------
+    rfa.estimators_ = np.array(selected_trees)
+    rfa.n_estimators = len(selected_trees)
+
+    tree_weights = np.array(tree_weights)
+    if np.sum(tree_weights) > 0:
+        tree_weights /= np.sum(tree_weights)
+
+    return [rfa], rfa.estimators_, tree_weights
+
+
+def aggregateRFwithFairnessUtilityQuota_withprevious(rfs, bal_RF, previous_estimators, previous_weights, smoothing_method, smoothing_strength, seed,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    # Aggregate new trees
+    [rfa], new_estimators, new_weights = aggregateRFwithFairnessUtilityQuota(rfs, bal_RF, smoothing_method, smoothing_strength, seed,smoothedWeights_baseline_type,beta_fairness_trade_off)
+    
+    # Concatenate with previous
+    rfa.estimators_ = np.concatenate((previous_estimators, new_estimators))
+    rfa.n_estimators = len(rfa.estimators_)
+    
+    combined_weights = np.concatenate((previous_weights, new_weights))
+    if np.sum(combined_weights) > 0:
+        combined_weights /= np.sum(combined_weights)
+
+    return [rfa], rfa.estimators_, combined_weights
