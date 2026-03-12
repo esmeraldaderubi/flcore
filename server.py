@@ -11,7 +11,7 @@ from flcore.server_selector import get_model_server_and_strategy
 #from flcore.compile_results import compile_results
 from flcore.results import history_to_dict
 from params import get_parser, validate_model_specific_args,generate_config_dict
-
+import numpy as np
 warnings.filterwarnings("ignore")
 
 def check_config(config):
@@ -113,4 +113,63 @@ if __name__ == "__main__":
     # Save the history as a yaml file
     #print(history)
     results = history_to_dict(history.metrics_distributed_fit, history.metrics_distributed,experiment_dir,config["model"],config["dataset"],config["num_clients"])
-    0==0
+    
+    # =================================================================
+    # ORCHESTRATOR COMPLIANCE
+    # =================================================================
+    import json
+    # 1. Extract configuration values dynamically
+    current_seed = config.get("seed", 0) 
+    sandbox_dir = config.get("SANDBOX_PATH", "./sandbox")
+
+    final_results = {}
+
+    # Safely get the metrics dictionaries from Flower history
+    eval_metrics = getattr(history, "metrics_distributed", {})
+    if not eval_metrics:
+        eval_metrics = getattr(history, "metrics_distributed_evaluate", {})
+
+    fit_metrics = getattr(history, "metrics_distributed_fit", {})
+
+    # 2. DYNAMICALLY determine the result key (the last round present in history)
+    all_history_keys = list(eval_metrics.values())[0] if eval_metrics else list(fit_metrics.values())[0]
+    if all_history_keys:
+        last_round_key = str(all_history_keys[-1][0])
+    else:
+        # Final safety fallback to config if history is empty
+        last_round_key = str(config.get("num_rounds", 1))
+
+    final_results[last_round_key] = {}
+
+    # Helper to safely extract floats from potentially nested structures
+    def extract_float(val):
+        if isinstance(val, (list, np.ndarray)):
+            return float(val[0])
+        return float(val)
+
+    # 3. CENTER (Baseline): Dynamically take the FIRST entry found in FIT
+    for m, values in fit_metrics.items():
+        if m in ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]:
+            # values[0] is the very first tuple (round_X, value) found
+            final_results[last_round_key][f"CENTER_{m}"] = extract_float(values[0][1])
+
+    # 4. DISTRIB (Federated): Dynamically take the LAST entry found in EVALUATE
+    for m, values in eval_metrics.items():
+        if m in ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]:
+            # values[-1] is the very last tuple (round_Y, value) found
+            final_results[last_round_key][f"DISTRIB_{m}"] = extract_float(values[-1][1])
+        elif "difference" in m: 
+            # Capture fairness metrics from the final evaluation
+            final_results[last_round_key][m] = extract_float(values[-1][1])
+
+    # 5. Save and Hard Exit to ensure orchestrator unblocks
+    save_path = os.path.join(sandbox_dir, f"results_seed_{current_seed}.json")
+    os.makedirs(sandbox_dir, exist_ok=True)
+    with open(save_path, "w") as f:
+        json.dump(final_results, f, indent=4)
+
+    print(f"File {save_path} saved. CENTER baseline from first found round. Exiting...")
+    sys.stdout.flush()
+    os._exit(0) 
+    # =================================================================
+

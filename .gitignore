@@ -168,9 +168,6 @@ cython_debug/
 dataset/icrc-dataset/Untitled.ipynb
 sandbox/pipeline_final_1.pkl
 .history/
-sandbox/
-dataset/NonUKpopulationMentalHealthIssues.csv
-dataset/NonUKpopulationMentalHealthIssues.csv
-dataset/UKpopulationMentalHealthIssues.csv
-dataset/NonUKpopulationMentalHealthIssues.csv
-dataset/UKpopulationMentalHealthIssues.csv
+sandbox/*
+dataset/*
+
