@@ -75,6 +75,37 @@ def generate_report_history(
     for fk in fairness_keys:
         aggregated_metrics[fk] = []
 
+
+    ### >>> EXTRACT ROUND 0 AS A CENTRALIZED REFERENCE (DO NOT APPEND TO TRENDS) <<< ###
+    if "0" in history:
+        round_data_0 = history["0"]
+        round_folder_0 = os.path.join(output_dir, "round_0")
+        os.makedirs(round_folder_0, exist_ok=True)
+        
+        per_client_0 = round_data_0.get("per_client", {})
+        
+        # Safely flatten arrays to prevent sklearn _check_targets crashes
+        def flatten(lst):
+            if not lst: return []
+            if isinstance(lst[0], list):
+                return [item for sublist in lst for item in sublist]
+            return lst
+            
+        y_true_0 = flatten(per_client_0.get("y_true", []))
+        y_pred_0 = flatten(per_client_0.get("y_pred", []))
+        y_prob_0 = flatten(per_client_0.get("y_pred_prob", []))
+        
+        # Safety check: ensure arrays are populated AND have matching lengths
+        if len(y_true_0) > 0 and len(y_true_0) == len(y_pred_0):
+            roc_path_0 = os.path.join(round_folder_0, "Centralized_Baseline_roc.png")
+            cm_path_0 = os.path.join(round_folder_0, "Centralized_Baseline_confusion.png")
+            
+            plot_roc(y_true_0, y_prob_0, "ROC Curve - Centralized Baseline (Round 0)", roc_path_0)
+            plot_confusion(y_true_0, y_pred_0, "Confusion Matrix - Centralized Baseline (Round 0)", cm_path_0)
+            
+            pdf_plots.extend([roc_path_0, cm_path_0])
+    ### 
+
     for rnd in rounds_to_plot:
         round_key = str(rnd)
         if round_key not in history:
@@ -101,20 +132,37 @@ def generate_report_history(
 
             pdf_plots.extend([roc_path, cm_path])
 
-            # SHAP feature importance per client
+            # SHAP feature importance per client (Top 10)
             shap_values = per_client.get("shap_values", [])
             shap_feature_names = per_client.get("shap_feature_names", [])
             if shap_values and shap_feature_names:
                 client_shap_values = shap_values[i]
                 features = shap_feature_names[i]
-                #client_shap_values = np.abs(shap_values[i])
 
+                # 1. Pair features with their values and sort them by absolute magnitude (highest first)
+                paired = list(zip(features, client_shap_values))
+                # Safely convert to float for sorting, handling potential None/NaN values
+                paired.sort(key=lambda x: abs(float(x[1])) if x[1] is not None else 0, reverse=True)
 
-                plt.figure(figsize=(8, 5))
-                plt.barh(features, client_shap_values)
-                plt.xlabel("Mean |SHAP value|")
-                plt.ylabel("Feature")
-                plt.title(f"SHAP Feature Importance - {client} (Round {rnd})")
+                # 2. Select only the Top 10 features for a clean, paper-ready plot
+                top_n = 10
+                paired_top = paired[:top_n]
+
+                # 3. Reverse the list so the most important feature appears at the TOP
+                paired_top.reverse()
+                top_features = [x[0] for x in paired_top]
+                top_values = [x[1] for x in paired_top]
+
+                # 4. Optimized figure size for exactly 10 features
+                plt.figure(figsize=(9, 6))
+                plt.barh(top_features, top_values, color="steelblue", edgecolor="black", linewidth=0.5)
+                plt.xlabel("Mean |SHAP value|", fontsize=11)
+                plt.ylabel("Feature", fontsize=11)
+                plt.title(f"Top {len(top_features)} SHAP Features - {client} (Round {rnd})", fontsize=12, fontweight="bold")
+                
+                # Make the feature names clear and readable
+                plt.yticks(fontsize=10) 
+                plt.xticks(fontsize=10)
                 plt.tight_layout()
 
                 shap_path = os.path.join(round_folder, f"{client}_shap_feature_importance.png")
@@ -170,6 +218,61 @@ def generate_report_history(
         plt.savefig(fair_path)
         plt.close()
         pdf_plots.append(fair_path)
+
+
+
+    ### >>> START OF CHANGE 2: GENERATE SEPARATE COMPARISON PLOTS <<< ###
+    # =================================================================
+    # BLOCK 2: OVERLAY PLOTS - CENTRALIZED VS LAST ROUND (PER CLIENT)
+    # =================================================================
+    if "0" in history and len(rounds_to_plot) > 0:
+        last_rnd = str(rounds_to_plot[-1])
+        if last_rnd in history:
+            per_client_0 = history["0"].get("per_client", {})
+            per_client_last = history[last_rnd].get("per_client", {})
+            
+            # Use client names from the last round, fallback to indexes
+            clients = per_client_last.get("client_name", [])
+            if not clients:
+                num_clients = len(per_client_last.get("y_true", []))
+                clients = [f"Client_{i}" for i in range(num_clients)]
+                
+            for i, client in enumerate(clients):
+                # Extract Round 0 arrays for this specific client
+                y_true_0_client = per_client_0.get("y_true", [])[i] if i < len(per_client_0.get("y_true", [])) else []
+                y_prob_0_client = per_client_0.get("y_pred_prob", [])[i] if i < len(per_client_0.get("y_pred_prob", [])) else []
+                
+                # Extract Last Round arrays for this specific client
+                y_true_last_client = per_client_last.get("y_true", [])[i] if i < len(per_client_last.get("y_true", [])) else []
+                y_prob_last_client = per_client_last.get("y_pred_prob", [])[i] if i < len(per_client_last.get("y_pred_prob", [])) else []
+                
+                # Plot the overlay if both exist
+                if len(y_true_0_client) > 0 and len(y_true_last_client) > 0:
+                    plt.figure(figsize=(8, 6))
+                    
+                    # Plot Centralized (Round 0)
+                    fpr_0, tpr_0, _ = roc_curve(y_true_0_client, y_prob_0_client)
+                    auc_0 = auc(fpr_0, tpr_0)
+                    plt.plot(fpr_0, tpr_0, linestyle="--", color="red", label=f"Centralized (Round 0) AUC = {auc_0:.3f}")
+                    
+                    # Plot Federated (Last Round)
+                    fpr_last, tpr_last, _ = roc_curve(y_true_last_client, y_prob_last_client)
+                    auc_last = auc(fpr_last, tpr_last)
+                    plt.plot(fpr_last, tpr_last, color="blue", label=f"Federated (Round {last_rnd}) AUC = {auc_last:.3f}")
+                    
+                    plt.plot([0, 1], [0, 1], color="grey", linestyle=":")
+                    plt.xlabel("False Positive Rate")
+                    plt.ylabel("True Positive Rate")
+                    plt.title(f"ROC Comparison: Centralized vs. Final Federated - {client}")
+                    plt.legend(loc="lower right")
+                    plt.tight_layout()
+                    
+                    roc_comp_path = os.path.join(summary_folder, f"roc_comparison_cent_vs_fed_{client}.png")
+                    plt.savefig(roc_comp_path)
+                    plt.close()
+                    pdf_plots.append(roc_comp_path)
+    # =================================================================
+
 
     print(f"Saved summary plots in {summary_folder}")
 

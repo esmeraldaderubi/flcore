@@ -13,7 +13,7 @@ fairness_attribs:
 - Sex
 - Ethnicity
 held_out_center_id: -1
-internal_fs: 15
+internal_fs: 0
 linear_models:
   n_features: 9
 local_port: 8081
@@ -21,18 +21,20 @@ metadata_file: metadata.json
 model: random_forest
 name_client: client
 normalization_method: IQR
-num_clients: 2
-num_rounds: 1
+num_clients: 4
+num_rounds: 5
 outcome: Eval
 production_mode: false
 random_forest:
   aggregator_rf: randomviaprobs
   balanced_rf: true
+  beta_fairness_trade_off: 0.75
+  smoothedWeights_baseline_type: equal_voting
 seed: 42
 smoothWeights:
   smoothing_strenght: 0.5
 smooth_method: None
-train_size: 0.8
+train_size: 0.7
 value_privileged_attrib: 1
 weighted_random_forest:
   balanced_rf: true

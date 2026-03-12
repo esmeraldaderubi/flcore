@@ -55,9 +55,10 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
         history[0]["per_client"] = {}
 
     # List of specific metrics to copy
-    metrics_to_copy = ["per client y_pred_prob", "per client y_true"]
+    metrics_to_copy = ["per client y_pred_prob", "per client y_true","per client accuracy","per client balanced_accuracy","per client f1", "per client precision", "per client recall", "per client specificity"]
 
-    for metric in metrics_to_copy:
+    #for metric in metrics_to_copy:
+    for metric, values in metrics_centralized_type.items():
         entries = metrics_centralized_type.get(metric, [])
         #feature selection is always reserved in round 0
         first_entry = 2

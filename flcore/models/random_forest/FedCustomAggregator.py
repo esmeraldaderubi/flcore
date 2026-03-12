@@ -23,7 +23,9 @@ from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 import flwr as fl
 from flcore.featureselection import federated_top_features
-from flcore.models.random_forest.aggregatorRF import aggregateRF, aggregateRF_withprevious, aggregateRFwithFairnessTrafeoffProbs, aggregateRFwithFairnessTrafeoffProbs_withprevious, aggregateRFwithHardRankPerformance, aggregateRFwithHardRankPerformance_withprevious, aggregateRFwithPerformance, aggregateRFwithPerformance_withprevious, aggregateRFwithSizeCenterProbs, aggregateRFwithSizeCenterProbs_withprevious
+from flcore.models.random_forest.aggregatorRF import aggregateRF, aggregateRF_withprevious, aggregateRFwithFairnessTrafeoffProbs, aggregateRFwithFairnessTrafeoffProbs_withprevious, aggregateRFwithHardRankPerformance, aggregateRFwithHardRankPerformance_withprevious, aggregateRFwithPerformance, aggregateRFwithPerformance_withprevious, aggregateRFwithSizeCenterProbs, aggregateRFwithSizeCenterProbs_withprevious, aggregateRFwithDiversityPareto_withprevious, aggregateRFwithParetoQuota_withprevious,aggregateRFwithDiversityPareto,aggregateRFwithParetoQuota
+from flcore.models.random_forest.aggregatorRF import aggregateRFwithAdaptiveDiversitySizeCenterProbs, aggregateRFwithAdaptiveDiversitySizeCenterProbs_withprevious,aggregateRFwithAdaptiveDiversitySizeCenterProbsv2, aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious,aggregateRFwithFairnessUtilityQuota,aggregateRFwithFairnessUtilityQuota_withprevious
+
 from flcore.serialization_funs import serialize_RF, deserialize_RF
 
 from flcore.models.random_forest.utils import create_structure_inference
@@ -219,16 +221,26 @@ class FedCustom(fl.server.strategy.FedAvg):
             save_local_models(weights_results, self.experiment_dir,client_ids)
             match self.aggregator_rf:
                 case "randomviaprobs":
-                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed)
-                case "random":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type)
+                case "all":
                     aggregation_result,self.server_estimators = aggregateRF(weights_results,self.bal_RF)
                 case "randomviaprobswithTradeoffMetrics":
-                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithFairnessTrafeoffProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed)
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithFairnessTrafeoffProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
                 case "sortedTradeoffMetrics":
-                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght)
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
                 case "totalsortedTradeoffMetrics":
-                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithHardRankPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght)
-
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithHardRankPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                case "ParetoQuota":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithParetoQuota(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type)
+                case "DiversityPareto":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithDiversityPareto(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type)
+                case "AdaptiveDiversitySizeCenterProbs":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithAdaptiveDiversitySizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                case "AdaptiveDiversitySizeCenterProbsv2":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithAdaptiveDiversitySizeCenterProbsv2(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                case "FairnessUtilityQuota":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithFairnessUtilityQuota(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+          
             # >>> MANUAL CHECK BLOCK (ROUND 1 ONLY) <<<
             # This calculates the global mean of the clients' local performance
             # We use this to select the number of features 
@@ -256,19 +268,34 @@ class FedCustom(fl.server.strategy.FedAvg):
         else:
             match self.aggregator_rf:
                 case "randomviaprobs":
-                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed)
-                case "random":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type)
+                case "all":
                     aggregation_result,self.server_estimators = aggregateRF_withprevious(weights_results,self.server_estimators,self.bal_RF)
                 case "randomviaprobswithTradeoffMetrics":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = \
-                        aggregateRFwithFairnessTrafeoffProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed)
+                        aggregateRFwithFairnessTrafeoffProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
                 case "sortedTradeoffMetrics":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = \
-                        aggregateRFwithPerformance_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght)
+                        aggregateRFwithPerformance_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
                 case "totalsortedTradeoffMetrics":
                         aggregation_result,self.server_estimators,self.server_estimators_weights = \
-                        aggregateRFwithHardRankPerformance_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght)
-
+                        aggregateRFwithHardRankPerformance_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                case "ParetoQuota":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                        aggregateRFwithParetoQuota_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type)
+                case "DiversityPareto":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                        aggregateRFwithDiversityPareto_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type)
+                case "AdaptiveDiversitySizeCenterProbs":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                        aggregateRFwithAdaptiveDiversitySizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                case "AdaptiveDiversitySizeCenterProbsv2":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                        aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                case "FairnessUtilityQuota":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                        aggregateRFwithFairnessUtilityQuota_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                
         #create the structure for the inference as the aggregated does not have fit so
         #you need to create the structure as the aggregated classifier is empty
         aggregation_result = create_structure_inference(aggregation_result,weights_results,self.selected_features_names)

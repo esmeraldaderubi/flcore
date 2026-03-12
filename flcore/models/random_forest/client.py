@@ -158,7 +158,11 @@ class MnistClient(fl.client.Client):
             if ins.config['server_round']==1:
                 print(f"MANUAL_CHECK: Client={self.client_id} with VALIDATION DATA | "
                     f"Num_Features={len(self.selected_features_names)} | "
-                    f"Bal_Acc={metrics['balanced_accuracy']:.4f}")
+                    f"Bal_Acc={metrics['balanced_accuracy']:.4f} |"
+                    f"Num_trees={len(self.model.estimators_)}")
+            else:
+                print(f"MANUAL_CHECK: Client={self.client_id}  | "
+                f"Num_trees={len(self.model.estimators_)}")
 
             elapsed_time = (time.time() - start_time)
             fit_metrics_server_report(metrics,self.model,self.X_test[self.selected_features_names],self.y_test,elapsed_time,self.client_id)
@@ -205,7 +209,7 @@ class MnistClient(fl.client.Client):
         if(ins.config["server_round"]==0 ):
             if(self.enabled_fs == True):
                 print("Feature selection is enabled:")
-                print("Feature selection is aggregted in the evaluate of the client")
+                print("Feature selection is aggregated in the evaluate of the client")
                 #here we already have the aggregation of the most important features of all clients and we will
                 #select those ones in the dataset
                 self.feature_importance = parameters
