@@ -142,7 +142,18 @@ def generate_report_history(
                 # 1. Pair features with their values and sort them by absolute magnitude (highest first)
                 paired = list(zip(features, client_shap_values))
                 # Safely convert to float for sorting, handling potential None/NaN values
-                paired.sort(key=lambda x: abs(float(x[1])) if x[1] is not None else 0, reverse=True)
+                #paired.sort(key=lambda x: abs(float(x[1])) if x[1] is not None else 0, reverse=True)
+                # Helper to extract the final metric value from Flower's history lists
+                def extract_val(v):
+                    if v is None: return 0
+                    if isinstance(v, list):
+                        if not v: return 0
+                        v = v[-1] # Get the final round's data
+                    if isinstance(v, tuple):
+                        v = v[1] # Extract the metric value from the (round, value) tuple
+                    return abs(float(v))
+
+                paired.sort(key=lambda x: extract_val(x[1]), reverse=True)
 
                 # 2. Select only the Top 10 features for a clean, paper-ready plot
                 top_n = 10
@@ -155,6 +166,8 @@ def generate_report_history(
 
                 # 4. Optimized figure size for exactly 10 features
                 plt.figure(figsize=(9, 6))
+                # Strip away the round numbers or tuple structure so Matplotlib gets a 1D list of floats
+                top_values = [val[1] if isinstance(val, (list, tuple)) else float(val) for val in top_values]
                 plt.barh(top_features, top_values, color="steelblue", edgecolor="black", linewidth=0.5)
                 plt.xlabel("Mean |SHAP value|", fontsize=11)
                 plt.ylabel("Feature", fontsize=11)

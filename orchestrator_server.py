@@ -9,6 +9,7 @@ SERVER_IP = "137.120.2.14"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CERT_PATH = os.path.join(BASE_DIR, "certificates")
 
+
 context = ssl.create_default_context(cafile=os.path.join(CERT_PATH, "ca.crt"))
 context.load_cert_chain(
     certfile=os.path.join(CERT_PATH, "server.pem"), 
@@ -36,12 +37,12 @@ def trigger_training():
                 
                 # 2. DYNAMIC PATH: Placeholder to be filled by the Client
                 "-v {{DYNAMIC_PATH}}:/flcore/certificates " 
-                
+                "-v {{DYNAMIC_DATA_PATH}}:/flcore/dataset "
                 f"-e FLOWER_CENTRAL_SERVER_IP={SERVER_IP} "
                 "-e FLOWER_CENTRAL_SERVER_PORT=4433 "
                 "-e FLOWER_SSL_CACERT=/flcore/certificates/ca.crt "
                 f"-e NODE_NAME={node} "
-                
+                "-e DATA_PATH=/flcore/dataset/ "
                 # 3. UNBUFFERED LOGS (-u): Forces logs to show up immediately
                 "esmeraldaruiz/flcore:latest python3 -u client.py " 
                 "--dataset youthgems_format --model random_forest --balanced_rf True"
