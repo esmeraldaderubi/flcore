@@ -16,12 +16,20 @@ MY_NODE_NAME = sys.argv[1]
 # Finds the folder where THIS script is running
 SCRIPT_LOCATION = os.path.dirname(os.path.abspath(__file__))
 LOCAL_CERT_PATH = os.path.join(SCRIPT_LOCATION, "certificates")
+LOCAL_DATA_PATH = os.path.join(SCRIPT_LOCATION, "dataset")
 
 # Safety Check
 if not os.path.exists(LOCAL_CERT_PATH):
     print(f"\n [X] CRITICAL ERROR: Certificates missing!")
     print(f"     I looked here: {LOCAL_CERT_PATH}")
     print(f"     Please ensure the 'certificates' folder is next to this script.\n")
+    sys.exit(1)
+
+# Safety Check for the Dataset
+if not os.path.exists(LOCAL_DATA_PATH):
+    print(f"\n [X] CRITICAL ERROR: Dataset folder missing!")
+    print(f"     I looked here: {LOCAL_DATA_PATH}")
+    print(f"     Please ensure you created a 'dataset' folder next to this script.\n")
     sys.exit(1)
 
 # SSL Context
@@ -47,14 +55,15 @@ def handle_task(ch, method, props, body):
     # --- PATH INJECTION ---
     # Replace the placeholder {{DYNAMIC_PATH}} with the real local path
     final_cmd = raw_cmd.replace("{{DYNAMIC_PATH}}", LOCAL_CERT_PATH)
+    final_cmd = final_cmd.replace("{{DYNAMIC_DATA_PATH}}", LOCAL_DATA_PATH) 
     
     # OPTIONAL: If you configured 'sudo groupadd docker', uncomment next line to remove sudo
-    # final_cmd = final_cmd.replace("sudo ", "")
+    final_cmd = final_cmd.replace("sudo ", "")
 
     print(f" [Debug] Mounting Volume: {LOCAL_CERT_PATH}")
 
     # Cleanup Old Container
-    subprocess.run(f"sudo docker rm -f flcore-client-{node}", shell=True, stderr=subprocess.DEVNULL)
+    subprocess.run(f"docker rm -f flcore-client-{node}", shell=True, stderr=subprocess.DEVNULL)
 
     # Execute
     try:
