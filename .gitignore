@@ -61,6 +61,7 @@ cover/
 *.mo
 *.pot
 
+
 # Django stuff:
 *.log
 local_settings.py
@@ -170,4 +171,30 @@ sandbox/pipeline_final_1.pkl
 .history/
 sandbox/*
 dataset/*
+certificates/*
+flcore/certificates/*
+./flcore/certificates/*
+*.crt
+*.key
 
+certificates/ca.crt
+certificates/ca.crt
+certificates/server.pem
+certificates/server.pem
+# Ignore everything inside any certificates folder
+**/certificates/*
+
+# Explicitly ignore common certificate extensions anywhere
+*.crt
+*.key
+*.pem
+*.srl
+*.csr
+certificates/ca.crt
+# Ignorar la carpeta de certificados completa
+certificates/
+
+# Ignorar cualquier archivo con estas extensiones por seguridad
+*.crt
+*.key
+*.pem
