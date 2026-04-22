@@ -1,8 +1,9 @@
 import pika, ssl, json, os
 
 # --- CONFIGURATION ---
-TARGET_NODES = ["Node_1"]  # Add "Node_2", "Node_3" here later
+TARGET_NODES = ["Node_1", "Node_2", "Node_3", "Node_4"]  # Add "Node_1", "Node_2", "Node_3", "Node_4" here later
 SERVER_IP = "137.120.2.14"
+FL_ROUNDS = 5
 # ---------------------
 
 # SSL Setup
@@ -33,7 +34,7 @@ def trigger_training():
             "node_name": node,
             "docker_command": (
                 # 1. NETWORK HOST: Fixes connection issues by removing Docker NAT
-                f"sudo docker run -d --rm --network host --name flcore-client-{node} "
+                f"sudo docker run --rm --network host --name flcore-client-{node} "
                 
                 # 2. DYNAMIC PATH: Placeholder to be filled by the Client
                 "-v {{DYNAMIC_PATH}}:/flcore/certificates " 
@@ -45,7 +46,8 @@ def trigger_training():
                 "-e DATA_PATH=/flcore/dataset/ "
                 # 3. UNBUFFERED LOGS (-u): Forces logs to show up immediately
                 "esmeraldaruiz/flcore:latest python3 -u client.py " 
-                "--dataset youthgems_format --model random_forest --balanced_rf True"
+                "--dataset youthgems_format --model random_forest --balanced_rf True "
+                f"--num_rounds {FL_ROUNDS}"
             )
         }
 
