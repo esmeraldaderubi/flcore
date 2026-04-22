@@ -135,51 +135,56 @@ def generate_report_history(
             # SHAP feature importance per client (Top 10)
             shap_values = per_client.get("shap_values", [])
             shap_feature_names = per_client.get("shap_feature_names", [])
+            
             if shap_values and shap_feature_names:
-                client_shap_values = shap_values[i]
+                # Decode JSON if needed
+                if isinstance(shap_values, str):
+                    shap_values = json.loads(shap_values)
+                if isinstance(shap_feature_names, str):
+                    shap_feature_names = json.loads(shap_feature_names)
+
                 features = shap_feature_names[i]
+                client_shap_raw = shap_values[i]
 
-                # 1. Pair features with their values and sort them by absolute magnitude (highest first)
-                paired = list(zip(features, client_shap_values))
-                # Safely convert to float for sorting, handling potential None/NaN values
-                #paired.sort(key=lambda x: abs(float(x[1])) if x[1] is not None else 0, reverse=True)
-                # Helper to extract the final metric value from Flower's history lists
-                def extract_val(v):
-                    if v is None: return 0
-                    if isinstance(v, list):
-                        if not v: return 0
-                        v = v[-1] # Get the final round's data
-                    if isinstance(v, tuple):
-                        v = v[1] # Extract the metric value from the (round, value) tuple
-                    return abs(float(v))
+                # 1. Convert to numpy array
+                client_shap_array = np.array(client_shap_raw).astype(float)
+                
+                # 2. Extract ONLY ONE class (Class 1) and take its absolute value
+                # The shape is (num_features, 2) where column 0 is Class 0, and column 1 is Class 1
+                if client_shap_array.ndim == 2 and client_shap_array.shape[1] == 2:
+                    client_importance = np.abs(client_shap_array[:, 1])
+                else:
+                    # Fallback if it's already 1D
+                    client_importance = np.abs(client_shap_array.flatten())
 
-                paired.sort(key=lambda x: extract_val(x[1]), reverse=True)
+                # 3. Pair and sort
+                paired = list(zip(features, client_importance))
+                paired.sort(key=lambda x: float(x[1]), reverse=True)
 
-                # 2. Select only the Top 10 features for a clean, paper-ready plot
+                # Select Top 10 and reverse
                 top_n = 10
                 paired_top = paired[:top_n]
-
-                # 3. Reverse the list so the most important feature appears at the TOP
                 paired_top.reverse()
-                top_features = [x[0] for x in paired_top]
-                top_values = [x[1] for x in paired_top]
 
-                # 4. Optimized figure size for exactly 10 features
-                plt.figure(figsize=(9, 6))
-                # Strip away the round numbers or tuple structure so Matplotlib gets a 1D list of floats
-                top_values = [val[1] if isinstance(val, (list, tuple)) else float(val) for val in top_values]
-                plt.barh(top_features, top_values, color="steelblue", edgecolor="black", linewidth=0.5)
-                plt.xlabel("Mean |SHAP value|", fontsize=11)
-                plt.ylabel("Feature", fontsize=11)
-                plt.title(f"Top {len(top_features)} SHAP Features - {client} (Round {rnd})", fontsize=12, fontweight="bold")
+                top_features = [x[0] for x in paired_top]
+                top_values = [float(x[1]) for x in paired_top]
+
+                # 4. Plot
+                plt.figure(figsize=(9, 7))
                 
-                # Make the feature names clear and readable
-                plt.yticks(fontsize=10) 
+                # height=0.5 ensures the bars are narrow
+                plt.barh(top_features, top_values, color="steelblue", edgecolor="black", linewidth=0.5, height=0.5)
+                
+                plt.xlabel("Mean |SHAP value| (Class 1)", fontsize=11)
+                plt.ylabel("", fontsize=11)
+                plt.title(f"Top 10 SHAP Features - {client} (Round {rnd})", fontsize=12, fontweight="bold")
+
+                plt.yticks(fontsize=10)
                 plt.xticks(fontsize=10)
                 plt.tight_layout()
 
                 shap_path = os.path.join(round_folder, f"{client}_shap_feature_importance.png")
-                plt.savefig(shap_path)
+                plt.savefig(shap_path, dpi=300)
                 plt.close()
                 pdf_plots.append(shap_path)
 
@@ -387,6 +392,28 @@ def generate_report_history(
     print(f"PDF report generated: {pdf_path}")
 
 
+if __name__ == "__main__":
+    # Define paths for sandbox execution
+    input_json = "sandbox/history.json"
+    output_path = "sandbox/results"
+
+    import os
+    if os.path.exists(input_json):
+        print(f"Postdoc Analysis: Processing federated parameters from {input_json}...")
+        
+        generate_report_history(
+            history_path=input_json,
+            output_dir=output_path,
+            generate_pdf=True,
+            rounds_to_plot=None # Automatically process all valid rounds
+        )
+        
+        print("\n" + "="*50)
+        print("REPORT GENERATED WITH FULL PARAMETER NAMES")
+        print(f"Output Directory: {output_path}")
+        print("="*50)
+    else:
+        print(f"Error: Could not find {input_json}. Please check your sandbox directory.")
 
 
 

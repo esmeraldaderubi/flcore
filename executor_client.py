@@ -35,8 +35,8 @@ if not os.path.exists(LOCAL_DATA_PATH):
 # SSL Context
 context = ssl.create_default_context(cafile=os.path.join(LOCAL_CERT_PATH, "ca.crt"))
 context.load_cert_chain(
-    certfile=os.path.join(LOCAL_CERT_PATH, "server.pem"), 
-    keyfile=os.path.join(LOCAL_CERT_PATH, "server.key")
+    certfile=os.path.join(LOCAL_CERT_PATH, f"{MY_NODE_NAME}_cert.pem"), 
+    keyfile=os.path.join(LOCAL_CERT_PATH, f"{MY_NODE_NAME}_key.pem")
 )
 context.check_hostname = False
 
@@ -68,18 +68,19 @@ def handle_task(ch, method, props, body):
     # Execute
     try:
         subprocess.run(final_cmd, shell=True, check=True)
-        print(f" [✔] Container launched successfully.")
+        print(f" [✔] Container finished training successfully.")
     except Exception as e:
         print(f" [X] Launch Failed: {e}")
 
     ch.basic_ack(delivery_tag=method.delivery_tag)
+    print("\n [*] Task complete. Listening for next command...")
 
 # MAIN CONNECTION LOOP
 while True:
     try:
         print(f" [*] Connecting to {SERVER_IP} as {MY_NODE_NAME}...")
         conn = pika.BlockingConnection(pika.ConnectionParameters(
-            host=SERVER_IP, port=5671, ssl_options=pika.SSLOptions(context)))
+            host=SERVER_IP, port=5671, ssl_options=pika.SSLOptions(context),heartbeat=0))
         ch = conn.channel()
 
         ch.exchange_declare(exchange='fl_mission_control', exchange_type='direct')

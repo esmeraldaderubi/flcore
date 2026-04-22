@@ -10,7 +10,7 @@ def get_parser(isserver):
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--local_port", type=int, default=8081)
     parser.add_argument("--production_mode", type=bool, default=True)
-    parser.add_argument("--num_rounds", type=int, default=2)
+    parser.add_argument("--num_rounds", type=int, default=5)
  
     #Model arguments
     parser.add_argument("--model", choices=["logistic_regression", "lsvc", "elastic_net", "random_forest", "weighted_random_forest", "xgb"], required=True)
