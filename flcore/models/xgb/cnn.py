@@ -1,203 +1,182 @@
-# ## Centralized Federated XGBoost
-# #### Create 1D convolutional neural network on trees prediction results.
-# #### 1D kernel size == client_tree_num
-# #### Make the learning rate of the tree ensembles learnable.
 
-from collections import OrderedDict
-from typing import Tuple
-
-import flwr as fl
+from typing import List, Tuple
+ 
 import numpy as np
-import torch
-import torch.nn as nn
 from sklearn.metrics import accuracy_score, mean_squared_error
-from torch.utils.data import DataLoader
-from torchmetrics import Accuracy, MeanSquaredError
-from flcore.metrics import get_metrics_collection
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 from tqdm import tqdm
-
-
-class CNN(nn.Module):
+ 
+from flcore.metrics import calculate_metrics
+ 
+NDArrays = List[np.ndarray]
+ 
+ 
+def _bce(y_true: np.ndarray, p: np.ndarray, eps: float = 1e-7) -> float:
+    """Binary cross-entropy on probabilities (numpy, torch-free)."""
+    p = np.clip(p, eps, 1.0 - eps)
+    return float(-np.mean(y_true * np.log(p) + (1.0 - y_true) * np.log(1.0 - p)))
+ 
+ 
+class MLPModel:
+    """scikit-learn MLP wrapper exposing a Flower-friendly weight interface.
+ 
+    Drop-in replacement for the old torch `CNN`: same constructor signature and
+    the same `get_weights` / `set_weights` contract (a flat list of NumPy arrays).
+    """
+ 
     def __init__(
-        self, client_num=5, client_tree_num=100, n_channel: int = 64, task_type="BINARY"
+        self,
+        client_num: int = 5,
+        client_tree_num: int = 100,
+        n_channel: int = 64,
+        task_type: str = "BINARY",
     ) -> None:
-        super(CNN, self).__init__()
-        n_out = 1
         self.task_type = task_type
-        self.conv1d = nn.Conv1d(
-            1, n_channel, kernel_size=client_tree_num, stride=client_tree_num, padding=0
+        self.input_dim = client_num * client_tree_num
+        # The old conv produced n_channel features per client block, flattened
+        # across all clients -> n_channel * client_num hidden units.
+        hidden = (n_channel * client_num,)
+        self.n_layers = len(hidden) + 1  # coef/intercept arrays per side
+ 
+        common = dict(
+            hidden_layer_sizes=hidden,
+            activation="relu",
+            solver="adam",
+            learning_rate_init=1e-4,  # matches the old Adam lr
+            alpha=0.0,                # no L2, the torch net had none
+            random_state=0,           # identical init across clients for FedAvg
+            max_iter=1,
         )
-        self.layer_direct = nn.Linear(n_channel * client_num, n_out)
-        self.ReLU = nn.ReLU()
-        self.Sigmoid = nn.Sigmoid()
-        self.Identity = nn.Identity()
-
-        # Add weight initialization
-        for layer in self.modules():
-            if isinstance(layer, nn.Linear):
-                nn.init.kaiming_uniform_(
-                    layer.weight, mode="fan_in", nonlinearity="relu"
-                )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.ReLU(self.conv1d(x))
-        x = x.flatten(start_dim=1)
-        x = self.ReLU(x)
+ 
+        if task_type == "BINARY":
+            self.estimator = MLPClassifier(**common)
+        elif task_type == "REG":
+            self.estimator = MLPRegressor(**common)
+        else:
+            # The original CNN had n_out = 1, so it only supported BINARY/REG.
+            raise ValueError(f"Unsupported task_type for this model: {task_type}")
+ 
+        self._initialize()
+ 
+    def _initialize(self) -> None:
+        """Force weight allocation so get_weights works before any real fit.
+ 
+        Uses a deterministic dummy partial_fit; because random_state is fixed and
+        the dummy data is identical, every client starts from the same weights.
+        """
+        x0 = np.zeros((2, self.input_dim), dtype=np.float32)
         if self.task_type == "BINARY":
-            x = self.Sigmoid(self.layer_direct(x))
-        elif self.task_type == "REG":
-            x = self.Identity(self.layer_direct(x))
-        return x
-
-    def get_weights(self) -> fl.common.NDArrays:
-        """Get model weights as a list of NumPy ndarrays."""
-        return [
-            np.array(val.cpu().numpy(), copy=True)
-            for _, val in self.state_dict().items()
-        ]
-
-    def set_weights(self, weights: fl.common.NDArrays) -> None:
-        """Set model weights from a list of NumPy ndarrays."""
-        layer_dict = {}
-        for k, v in zip(self.state_dict().keys(), weights):
-            if v.ndim != 0:
-                layer_dict[k] = torch.Tensor(np.array(v, copy=True))
-        state_dict = OrderedDict(layer_dict)
-        self.load_state_dict(state_dict, strict=True)
-
-
+            self.estimator.partial_fit(x0, np.array([0, 1]), classes=np.array([0, 1]))
+        else:
+            self.estimator.partial_fit(x0, np.array([0.0, 1.0]))
+ 
+    def get_weights(self) -> NDArrays:
+        """Coefs first, then intercepts — a flat list of NumPy arrays."""
+        coefs = [np.array(w, copy=True) for w in self.estimator.coefs_]
+        intercepts = [np.array(b, copy=True) for b in self.estimator.intercepts_]
+        return coefs + intercepts
+ 
+    def set_weights(self, weights: NDArrays) -> None:
+        """Inverse of get_weights. Same split point on every client."""
+        coefs = weights[: self.n_layers]
+        intercepts = weights[self.n_layers : 2 * self.n_layers]
+        self.estimator.coefs_ = [np.array(w, copy=True) for w in coefs]
+        self.estimator.intercepts_ = [np.array(b, copy=True) for b in intercepts]
+        # Drop the stale Adam state so the next training round rebinds to the
+        # freshly assigned weight arrays (the torch version also built a new
+        # optimizer every fit() call).
+        if hasattr(self.estimator, "_optimizer"):
+            del self.estimator._optimizer
+ 
+ 
+# Backwards-compatible alias for any code still importing `CNN`.
+CNN = MLPModel
+ 
+ 
 def train(
     task_type: str,
-    net: CNN,
-    trainloader: DataLoader,
-    device: torch.device,
+    net: MLPModel,
+    trainset,  # TreeDataset-like: has .data and .labels
     num_iterations: int,
     log_progress: bool = True,
 ) -> Tuple[float, float, int]:
-    # Define loss and optimizer
+    """Full-batch training for `num_iterations` Adam steps."""
+    x = np.asarray(trainset.data, dtype=np.float32)
+    y = np.asarray(trainset.labels)
+    n_samples = x.shape[0]
+    num_iterations = int(num_iterations) if num_iterations else 1
+ 
+    # Fresh optimizer for this round, then full-batch updates.
+    if hasattr(net.estimator, "_optimizer"):
+        del net.estimator._optimizer
+    net.estimator.batch_size = n_samples
+ 
+    iterator = range(num_iterations)
+    if log_progress:
+        iterator = tqdm(iterator, total=num_iterations, desc="TRAIN")
+ 
     if task_type == "BINARY":
-        criterion = nn.BCELoss()
+        y = y.astype(int).ravel()
+        for _ in iterator:
+            net.estimator.partial_fit(x, y)
+        proba = net.estimator.predict_proba(x)[:, 1]
+        loss = _bce(y, proba)
+        preds = (proba >= 0.5).astype(int)
+        result = float(accuracy_score(y, preds))
     elif task_type == "REG":
-        criterion = nn.MSELoss()
-    # optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-6)
-    optimizer = torch.optim.Adam(net.parameters(), lr=0.0001, betas=(0.9, 0.999))
-
-    def cycle(iterable):
-        """Repeats the contents of the train loader, in case it gets exhausted in 'num_iterations'."""
-        while True:
-            for x in iterable:
-                yield x
-
-    # Train the network
-    net.train()
-    total_loss, total_result, n_samples = 0.0, 0.0, 0
-    pbar = (
-        tqdm(iter(cycle(trainloader)), total=num_iterations, desc="TRAIN")
-        if log_progress
-        else iter(cycle(trainloader))
-    )
-
-    # Unusually, this training is formulated in terms of number of updates/iterations/batches processed
-    # by the network. This will be helpful later on, when partitioning the data across clients: resulting
-    # in differences between dataset sizes and hence inconsistent numbers of updates per 'epoch'.
-    for i, data in zip(range(num_iterations), pbar):
-        tree_outputs, labels = data[0].to(device), data[1].to(device)
-        optimizer.zero_grad()
-
-        outputs = net(tree_outputs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
-
-        # Collected training loss and accuracy statistics
-        total_loss += loss.item()
-        n_samples += labels.size(0)
-
-        if task_type == "BINARY":
-            acc = Accuracy(task="binary")(outputs, labels.type(torch.int))
-            total_result += acc * labels.size(0)
-        elif task_type == "REG":
-            mse = MeanSquaredError()(outputs, labels.type(torch.int))
-            total_result += mse * labels.size(0)
-        total_result = total_result.item()
-
-        if log_progress:
-            if task_type == "BINARY":
-                pbar.set_postfix(
-                    {
-                        "train_loss": total_loss / n_samples,
-                        "train_acc": total_result / n_samples,
-                    }
-                )
-            elif task_type == "REG":
-                pbar.set_postfix(
-                    {
-                        "train_loss": total_loss / n_samples,
-                        "train_mse": total_result / n_samples,
-                    }
-                )
+        y = y.astype(np.float32).ravel()
+        for _ in iterator:
+            net.estimator.partial_fit(x, y)
+        preds = net.estimator.predict(x)
+        loss = float(mean_squared_error(y, preds))
+        result = loss
+    else:
+        raise ValueError(f"Unsupported task_type: {task_type}")
+ 
     if log_progress:
         print("\n")
-
-    return total_loss / n_samples, total_result / n_samples, n_samples
-
-
+ 
+    return loss, result, n_samples
+ 
+ 
 def test(
     task_type: str,
-    net: CNN,
-    testloader: DataLoader,
-    device: torch.device,
+    net: MLPModel,
+    testset,  # TreeDataset-like: has .data and .labels
     log_progress: bool = True,
-) -> Tuple[float, float, int]:
-    """Evaluates the network on test data."""
+) -> Tuple[float, dict, int]:
+    """Evaluate on test/val data. Metrics come from flcore.metrics."""
+    x = np.asarray(testset.data, dtype=np.float32)
+    y = np.asarray(testset.labels)
+    n_samples = x.shape[0]
+ 
     if task_type == "BINARY":
-        criterion = nn.BCELoss()
-    if task_type == "MULTICLASS":
-        criterion = nn.CrossEntropyLoss()
+        y_int = y.astype(int).ravel()
+        proba = net.estimator.predict_proba(x)[:, 1]
+        loss = _bce(y_int, proba)
+        preds = (proba >= 0.5).astype(int)
+        metrics = calculate_metrics(y_int, preds, task_type)
     elif task_type == "REG":
-        criterion = nn.MSELoss()
-
-    total_loss, total_result, n_samples = 0.0, 0.0, 0
-    metrics = get_metrics_collection()
-    net.eval()
-    with torch.no_grad():
-        pbar = tqdm(testloader, desc="TEST") if log_progress else testloader
-        for data in pbar:
-            tree_outputs, labels = data[0].to(device), data[1].to(device)
-            outputs = net(tree_outputs)
-
-            # Collected testing loss and accuracy statistics
-            total_loss += criterion(outputs, labels).item()
-            n_samples += labels.size(0)
-            num_classes = np.unique(labels.cpu().numpy()).size
-
-            y_pred = outputs.cpu()
-            y_true = labels.cpu()
-            metrics.update(y_pred, y_true)
-
-            # if task_type == "BINARY" or task_type == "MULTICLASS":
-            #     if task_type == "MULTICLASS":
-            #         raise NotImplementedError()
-                
-            #     # acc = Accuracy(task=task_type.lower())(
-            #     #     outputs.cpu(), labels.type(torch.int).cpu())
-            #     # total_result += acc * labels.size(0)
-            # elif task_type == "REG":
-            #     mse = MeanSquaredError()(outputs.cpu(), labels.type(torch.int).cpu())
-            #     total_result += mse * labels.size(0)
-    
-    metrics = metrics.compute()
-    metrics = {k: v.item() for k, v in metrics.items()}
-
-    # total_result = total_result.item()
-
+        y_f = y.astype(np.float32).ravel()
+        preds = net.estimator.predict(x)
+        loss = float(mean_squared_error(y_f, preds))
+        metrics = calculate_metrics(y_f, preds, task_type)
+    else:
+        raise ValueError(f"Unsupported task_type: {task_type}")
+ 
+    metrics = {k: float(v) for k, v in metrics.items()}
+ 
     if log_progress:
         print("\n")
-
-    return total_loss / n_samples, metrics, n_samples
-
-
-def print_model_layers(model: nn.Module) -> None:
-    print(model)
-    for param_tensor in model.state_dict():
-        print(param_tensor, "\t", model.state_dict()[param_tensor].size())
+ 
+    return loss, metrics, n_samples
+ 
+ 
+def print_model_layers(model: MLPModel) -> None:
+    est = model.estimator
+    print(est)
+    for i, w in enumerate(getattr(est, "coefs_", [])):
+        print(f"coef_{i}\t{w.shape}")
+    for i, b in enumerate(getattr(est, "intercepts_", [])):
+        print(f"intercept_{i}\t{b.shape}")
+ 

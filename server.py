@@ -11,6 +11,8 @@ from flcore.server_selector import get_model_server_and_strategy
 #from flcore.compile_results import compile_results
 from flcore.results import history_to_dict
 from params import get_parser, generate_config_dict
+from flcore._patches import patch_server_cid
+
 #validate_model_specific_args,
 import numpy as np
 warnings.filterwarnings("ignore")
@@ -33,6 +35,29 @@ def check_config(config):
          assert (config['weighted_random_forest']['levelOfDetail']== 'DecisionTree' or \
             config['weighted_random_forest']['levelOfDetail']== 'RandomForest'), 'the levels of detail for weighted RF are not correct: DecisionTree and RandomForest '
         
+def _resolve_environment(config: dict):
+    """Resolve central server address, experiment directory, and TLS certificates."""
+    if os.getenv("FLOWER_CENTRAL_SERVER_IP") is not None:
+        central_ip = os.getenv("FLOWER_CENTRAL_SERVER_IP")
+        central_port = os.getenv("FLOWER_CENTRAL_SERVER_PORT")
+        experiment_dir = Path("/flcore/sandbox")
+        if os.getenv("FLOWER_CENTRAL_SERVER_PORT") not in (4433, "4433"):
+            certificates = None
+        else:
+            certificate_path = Path(os.getenv("FLOWER_SSL_CACERT")).parent
+            node_name = os.getenv("NODE_NAME")
+            env = os.getenv("ENV", "PRO")
+            flwr_cert = Path(os.getenv("FLOWER_SSL_CACERT")).read_bytes()
+            node_cert = Path(certificate_path / f"rmq-{node_name}-{env}-cert.pem").read_bytes()
+            node_key = Path(certificate_path / f"rmq-{node_name}-{env}-key.pem").read_bytes()
+            certificates = (flwr_cert, node_cert, node_key)
+    else:
+        central_ip = "LOCALHOST"
+        central_port = config.get("local_port", 8081)
+        experiment_dir = Path(config.get("sandbox_path", "/sandbox")) / config["experiment_name"]
+        certificates = None
+    experiment_dir.mkdir(parents=True, exist_ok=True)
+    return central_ip, central_port, experiment_dir, certificates
 
 if __name__ == "__main__":
 
@@ -56,18 +81,28 @@ if __name__ == "__main__":
     #Check the config file
     check_config(config)
 
-    with open(config_path, "w") as f:
-        yaml.dump(config, f)
+
+
+
+    #with open(config_path, "w") as f:
+    #    yaml.dump(config, f)
 
     if config["production_mode"]:
         data_path = os.getenv("DATA_PATH")
         central_ip = os.getenv("FLOWER_CENTRAL_SERVER_IP")
         central_port = os.getenv("FLOWER_CENTRAL_SERVER_PORT")
-        certificates = (
-            Path(os.getenv("FLOWER_SSL_CACERT")).read_bytes(),
-            Path('certificates/server.pem').read_bytes(),
-            Path('certificates/server.key').read_bytes(),
-        )
+        #certificates = (
+        #    Path(os.getenv("FLOWER_SSL_CACERT")).read_bytes(),
+        #    Path('certificates/server.pem').read_bytes(),
+        #    Path('certificates/server.key').read_bytes(),
+        #)
+        certificate_path = Path(os.getenv("FLOWER_SSL_CACERT")).parent
+        node_name = os.getenv("NODE_NAME")
+        env = os.getenv("ENV", "PRO")
+        flwr_cert = Path(os.getenv("FLOWER_SSL_CACERT")).read_bytes()
+        node_cert = Path(certificate_path / f"rmq-{node_name}-{env}-cert.pem").read_bytes()
+        node_key = Path(certificate_path / f"rmq-{node_name}-{env}-key.pem").read_bytes()
+        certificates = (flwr_cert, node_cert, node_key)
     else:
         data_path = config["data_path"]
         central_ip = "LOCALHOST"
@@ -79,7 +114,10 @@ if __name__ == "__main__":
     #experiment_dir.mkdir(parents=True, exist_ok=True)
     #from dotenv import load_dotenv
     #load_dotenv()
-    experiment_dir = os.getenv("SANDBOX_PATH")
+    #experiment_dir = os.getenv("SANDBOX_PATH")
+    #due to some bugs from FEM-CLIENT HARDCODE the path
+    #Temporary solution
+    experiment_dir = "./sandbox"
 
 
     # Checkpoint directory for saving the model
@@ -98,7 +136,15 @@ if __name__ == "__main__":
 
     server, strategy = get_model_server_and_strategy(config)
     strategy.experiment_dir = experiment_dir
-    
+    import logging
+    logger = logging.getLogger(__name__)
+
+    central_ip, central_port, experiment_dir, certificates = _resolve_environment(config)
+    config["experiment_dir"] = experiment_dir
+
+    if os.getenv("FLOWER_CENTRAL_SERVER_IP") is not None:
+        patch_server_cid(logger)
+
     # Start Flower server for three rounds of federated learning
     history = fl.server.start_server(
         server_address=f"{central_ip}:{central_port}",

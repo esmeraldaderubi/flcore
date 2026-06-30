@@ -39,6 +39,10 @@ def get_parser(isserver):
     parser.add_argument("--value_privileged_attrib", type=int, default=1)
     parser.add_argument("--drop_fairness_attribs", type=int, default=1)
     
+    #configuration
+    parser.add_argument("--execution_id", type=str, default="unknown",
+                        help="Execution ID for Traefik routing (required when FLOWER_CENTRAL_SERVER_IP is set)")
+
     #specific variables for client and server 
     if(isserver == True): #server
         parser.add_argument("--num_clients", type=int, default=1)
@@ -83,6 +87,8 @@ def generate_config_dict(args, isserver):
         "production_mode": args.production_mode,
         "outcome" : args.outcome,
         "num_rounds" :  args.num_rounds,
+        #configuration traeffik
+        "execution_id" : args.execution_id
         
     }
 

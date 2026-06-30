@@ -20,83 +20,41 @@ import json
 import pandas as pd
 import numpy as np
 import shap
-import torch
-from torch import Tensor
-from torchmetrics import MetricCollection
-from torchmetrics.classification import (
-    BinaryAccuracy,
-    BinaryF1Score,
-    BinaryPrecision,
-    BinaryRecall,
-    BinarySpecificity,
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    confusion_matrix,
+    balanced_accuracy_score,
+    mean_squared_error,
 )
-
-from torchmetrics.functional.classification.precision_recall import (
-    _precision_recall_reduce,
-)
-from torchmetrics.functional.classification.specificity import _specificity_reduce
-from torchmetrics.classification.stat_scores import BinaryStatScores
-from torchmetrics.regression import MeanSquaredError
 
 from aif360.metrics import ClassificationMetric,BinaryLabelDatasetMetric
 from aif360.datasets import StandardDataset,BinaryLabelDataset
 
-class BinaryBalancedAccuracy(BinaryStatScores):
-    is_differentiable = False
-    higher_is_better = True
-    full_state_update: bool = False
-
-    def compute(self) -> Tensor:
-        """Computes balanced accuracy based on inputs passed in to ``update`` previously."""
-        tp, fp, tn, fn = self._final_state()
-
-        recall = _precision_recall_reduce(
-            "recall",
-            tp,
-            fp,
-            tn,
-            fn,
-            average="binary",
-            multidim_average=self.multidim_average,
-        )
-        specificity = _specificity_reduce(
-            tp, fp, tn, fn, average="binary", multidim_average=self.multidim_average
-        )
-
-        return (recall + specificity) / 2
-
-
 def get_metrics_collection(task_type="binary", device="cpu"):
-
-    if task_type.lower() == "binary":
-        return MetricCollection(
-            {
-                "accuracy": BinaryAccuracy().to(device),
-                "precision": BinaryPrecision().to(device),
-                "recall": BinaryRecall().to(device),
-                "specificity": BinarySpecificity().to(device),
-                "f1": BinaryF1Score().to(device),
-                "balanced_accuracy": BinaryBalancedAccuracy().to(device),
-            }
-        )
-    elif task_type.lower() == "reg":
-        return MetricCollection({
-            "mse": MeanSquaredError().to(device),
-        })
+    return None
 
 def calculate_metrics(y_true, y_pred, task_type="binary"):
-    metrics_collection = get_metrics_collection(task_type)
-    if not torch.is_tensor(y_true):
-        y_true = torch.tensor(y_true.tolist())
-    if not torch.is_tensor(y_pred):
-        y_pred = torch.tensor(y_pred.tolist())
-    metrics_collection.update(y_pred, y_true)
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
 
-    metrics = metrics_collection.compute()
-    metrics = {k: v.item() for k, v in metrics.items()}
-
-    return metrics
-
+    if task_type.lower() == "binary":
+        tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+        specificity = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+        return {
+            "accuracy": accuracy_score(y_true, y_pred),
+            "precision": precision_score(y_true, y_pred, zero_division=0),
+            "recall": recall_score(y_true, y_pred, zero_division=0),
+            "specificity": specificity,
+            "f1": f1_score(y_true, y_pred, zero_division=0),
+            "balanced_accuracy": balanced_accuracy_score(y_true, y_pred),
+        }
+    elif task_type.lower() == "reg":
+        return {"mse": mean_squared_error(y_true, y_pred)}
+    else:
+        raise ValueError(f"Unknown task type: {task_type}")
 
 #It is used by aggregate_evaluate and also can be used by aggregate_fit in FedCustomAggregator. It adds new metrics
 #for visualization for the final history used for the server report 

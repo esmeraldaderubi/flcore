@@ -58,7 +58,10 @@ if __name__ == "__main__":
         print('File position of features simulating the center %s \n' % (file_featsselected))
         
 
-    config["data_path"] = data_path
+    #due to some bugs from FEM-CLIENT HARDCODE the path
+    #Temporary solution
+    #config["data_path"] = data_path
+    config["data_path"] = "/flcore/dataset/" 
     #The table of features selected
     first_file_selected = file_featsselected
 
@@ -71,6 +74,10 @@ if __name__ == "__main__":
         client = get_model_client(config, data,  f"{config['name_client']}")
     else: ##in debug
         client = get_model_client(config, data,  f"{config['name_client']}"+str(file_featsselected))
+
+    from flcore._patches import patch_flwr_channel
+    execution_id = config['execution_id']
+    patch_flwr_channel(execution_id, node_name, root_certificate)
 
     if isinstance(client, fl.client.NumPyClient):
         fl.client.start_numpy_client(
