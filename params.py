@@ -10,7 +10,12 @@ def get_parser(isserver):
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--local_port", type=int, default=8081)
     parser.add_argument("--production_mode", type=bool, default=True)
-    parser.add_argument("--num_rounds", type=int, default=5)
+    parser.add_argument("--num_rounds", type=int, default=50)
+    #-------------------
+    parser.add_argument("--dd_name",required=False,default="dataset_description.json")
+    parser.add_argument("--drop", required=False,default=[],nargs='+')
+    # ------------------
+
  
     #Model arguments
     parser.add_argument("--model", choices=["logistic_regression", "lsvc", "elastic_net", "random_forest", "weighted_random_forest", "xgb"], required=True)
@@ -81,6 +86,10 @@ def generate_config_dict(args, isserver):
     config_dict = {
         "dataset": args.dataset,
         "model": args.model,
+        #Added
+        "dd_name": args.dd_name,
+        "drop": args.drop,
+        #
         "seed": args.seed,
         "local_port": args.local_port,
         "data_path": args.data_path,

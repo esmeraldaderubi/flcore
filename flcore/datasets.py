@@ -37,8 +37,8 @@ def define_pipeline():
     #print("Data size:",data.shape)
     #print("Number of categorical:", length_cats)
     
-    imputer_cat = SimpleImputer(missing_values = np.nan, strategy='most_frequent')
-    imputer_cont = KNNImputer(n_neighbors=4, weights="uniform")
+    imputer_cat = SimpleImputer(missing_values = np.nan, strategy='most_frequent', keep_empty_features=True)
+    imputer_cont = KNNImputer(n_neighbors=4, weights="uniform", keep_empty_features=True)
 
     numeric_transformer = Pipeline(
         steps=[("imputer", imputer_cont), ("scaler", StandardScaler())]
@@ -64,14 +64,15 @@ def define_pipeline():
 #It makes the imputer in categorical
 #Please use data separated by training and testing separately
 #and make sure to define the cat and cont initially
-def pre_processingyouthgemts(data):
+def pre_processingyouthgemts(data, pipeline= None):
     cat_features = data.select_dtypes(include='category').columns
     length_cats = len(cat_features)
     print("Data size:",data.shape)
     print("Number of categorical:", length_cats)
 
-    pipeline = define_pipeline()
-    pipeline.fit(data)
+    if pipeline is None:
+        pipeline = define_pipeline()
+        pipeline.fit(data)
 
     data = pipeline.transform(data)
     #remove the prefix added by the transformer NUM___ and CAT___
@@ -102,6 +103,21 @@ def get_continous_variables(config) -> Dataset:
     print(continuous_vars)
     return continuous_vars
 
+#If we have the identifiers in the tabular data, we delete them.
+#However they need to be tagged as identifier type
+def get_identifiers_ids(config) -> Dataset:
+    data_path = config["data_path"]
+    file_name = data_path+"dataset_description.json"
+
+    with open(file_name, "r") as f:
+        data = json.load(f)
+
+    # Extract names of variables where type is continuous
+    identifier_vars = [item["name"] for item in data if item.get("type") == "identifier"]
+
+    print("Identifier variables:")
+    print(identifier_vars)
+    return identifier_vars
 
 def select_feature_subsets(df, config) -> Dataset:
     # Check if feature_subset is defined and not None
@@ -114,15 +130,12 @@ def select_feature_subsets(df, config) -> Dataset:
 #Select the first file in the folder where the dataset is located
 #for debug purposes we allow to choose the position of the file (center_id)
 #but in production, the selected file will always be the first file (center_id=0)   
-def load_youthgems(config, center_id=0) -> Dataset:
+#the same as generic in production you can delete it
+def load_generic_dataset(config,center_id=0)-> Dataset:
     data_path = config["data_path"]
     continuous_variable_names = get_continous_variables(config) 
 
-    #read the tabular data
-    #if center_id == 1:
-    #    file_name = data_path+'UKpopulationMentalHealthIssues.csv'
-    #else:
-    #    file_name = data_path+'WalespopulationMentalHealthIssues.csv'
+    print(f"Dataset path (.csv) : {data_path}")
 
     try:
         # Check if the folder exists
@@ -140,17 +153,50 @@ def load_youthgems(config, center_id=0) -> Dataset:
         print("Error:", e)
         return None  # Return None to indicate failure
 
-    file_name = files[center_id] # the first file found
+    #file_name = files[center_id] # the first file found
+    file_name = [ f for f in files if f.endswith(".csv")]
+    # ASUME that first file is always the one we want to use 
+    file_name = file_name[center_id]
+    print("filename",file_name)
+
     #remove unknown columns
-    code_id = "MCSID"
-    code_id2 = "ACNUM00"
     code_outcome = config["outcome"]
     print("outcome")
     print(code_outcome)
+    data = pd.read_csv(file_name, sep=None, engine="python")
+    print(data.shape)
+    print(data.columns.tolist())
+    #print( "drops cli",config["drop"])
 
-    data = pd.read_csv(file_name)
+    #if config["drop"]:
+    #    drops = config["drop"] + [code_outcome]
+    #    print("drops",drops)
+    #    X_data = data.drop(drops, axis=1)
+    #else: 
+    #    X_data = data
 
-    X_data = data.drop([code_id,code_id2, code_outcome], axis=1)
+    code_ids = get_identifiers_ids(config)
+    if isinstance(code_ids, str):
+        code_ids = [code_ids]
+
+    print("drops cli", config["drop"])
+
+    if config["drop"]:
+        drops = code_ids + config["drop"] + [code_outcome]
+    else:
+        drops = code_ids + [code_outcome]
+
+    # Keep only columns that exist
+    drops = [c for c in drops if c in data.columns]
+
+    print("Identifiers:", code_ids)
+    print("drops", drops)
+
+    X_data = data.drop(drops, axis=1)
+    
+    # drop lines with NaN eval 
+
+    
     #If we define a subset of features remove the non-specified ones
     X_data = select_feature_subsets(X_data, config)
     y_data = data[code_outcome]
@@ -179,7 +225,7 @@ def load_youthgems(config, center_id=0) -> Dataset:
 
     #impute and standarize the data
     X_train,pipeline = pre_processingyouthgemts(X_train)
-    X_test, _ = pre_processingyouthgemts(X_test)
+    X_test, _ = pre_processingyouthgemts(X_test,pipeline)
     
     print(X_train.shape)
     print(X_test.shape)
@@ -188,10 +234,12 @@ def load_youthgems(config, center_id=0) -> Dataset:
 
 
 def load_dataset(config, id=0):
-    if config["dataset"] == "youthgems_format":
-        return load_youthgems(config, id)
-    else:
-        raise ValueError("Invalid dataset name")
+    print(config["dataset"] )
+    try:
+        return load_generic_dataset(config,id)
+    except:
+        raise ValueError("Unable to parse dataset")
+
 
 def get_stratifiedPartitions(n_splits,test_size, random_state):
     sss = StratifiedShuffleSplit(n_splits=n_splits,test_size=test_size, random_state=random_state)

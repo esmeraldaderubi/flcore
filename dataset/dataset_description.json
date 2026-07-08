@@ -1,5 +1,21 @@
 [
     {
+        "name": "MCSID",
+        "description": "Identifies the family",
+        "type": "identifier",
+        "categories": {
+        },
+        "scope": "Identifier Variables"
+    },
+    {
+        "name": "ACNUM00",
+        "description": "Identifies the cohort member",
+        "type": "identifier",
+        "categories": {
+        },
+        "scope": "Identifier Variables"
+    },
+    {
         "name": "Eval",
         "description": "Parent-reported SDQ score to assess mental health difficulties in youth, threshold >=17 ",
         "type": "categorical",
@@ -19,7 +35,7 @@
             "1.0": "Female"
 
         },
-        "scope": "Outcome Variables"
+        "scope": "Sociodemographic data"
     },
     {
         "name": "Ethnicity",
@@ -30,7 +46,7 @@
             "1.0": "White"
 
         },
-        "scope": "Outcome Variables"
+        "scope": "Sociodemographic data"
     },
     {
         "name": "ACGIVE00",
