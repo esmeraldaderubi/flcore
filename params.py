@@ -66,6 +66,43 @@ def get_parser(isserver):
         
     return parser
 
+import re
+
+def normalize_array(value):
+    """
+    Normalize an array-like input into a list of strings.
+
+    Supports:
+        "a"
+        "a b c"
+        "a,b,c"
+        "a;b;c"
+        "[a, b, c]"
+        ["a b c"]
+        ["a,b,c"]
+        ["[a, b, c]"]
+        ["a", "b", "c"]
+    """
+
+    if value is None:
+        return []
+
+    # Ensure we always work with a single string
+    if isinstance(value, list):
+        value = " ".join(str(v) for v in value)
+
+    value = str(value).strip()
+
+    # Remove surrounding brackets if present
+    if value.startswith("[") and value.endswith("]"):
+        value = value[1:-1]
+
+    # Split on comma, semicolon or whitespace
+    items = re.split(r"[,\s;]+", value)
+
+    # Remove quotes and empty values
+    return [item.strip("'\"") for item in items if item.strip("'\"")]
+
 #def validate_model_specific_args(args):
 #    model_args = {
 #        "logistic_regression": ["n_features"],
@@ -88,7 +125,7 @@ def generate_config_dict(args, isserver):
         "model": args.model,
         #Added
         "dd_name": args.dd_name,
-        "drop": args.drop,
+        "drop": normalize_array(args.drop),
         #
         "seed": args.seed,
         "local_port": args.local_port,
