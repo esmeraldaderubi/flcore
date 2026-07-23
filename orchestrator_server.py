@@ -1,7 +1,7 @@
 import pika, ssl, json, os
 
 # --- CONFIGURATION ---
-TARGET_NODES = ["Node_1", "Node_2", "Node_3", "Node_4"]  # Add "Node_1", "Node_2", "Node_3", "Node_4" here later
+TARGET_NODES = ["Node_1"]  # Add "Node_1", "Node_2", "Node_3", "Node_4" here later
 SERVER_IP = "137.120.2.14"
 FL_ROUNDS = 5
 # ---------------------
