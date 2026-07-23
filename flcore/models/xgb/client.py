@@ -1,10 +1,10 @@
-## Create Flower custom client
+## Flower custom client (scikit-learn version, torch-free)
 
-from typing import List, Tuple, Union
 import time
+from typing import List, Tuple, Union
+
 import flwr as fl
 import numpy as np
-import torch
 from flwr.common import (
     Code,
     EvaluateIns,
@@ -16,23 +16,20 @@ from flwr.common import (
     GetPropertiesIns,
     GetPropertiesRes,
     Status,
-    ndarrays_to_parameters,
     parameters_to_ndarrays,
 )
 from flwr.common.typing import Parameters
-from torch.utils.data import DataLoader
 from xgboost import XGBClassifier, XGBRegressor
 
-from flcore.models.xgb.cnn import CNN, test, train
+from flcore.models.xgb.cnn import MLPModel, test, train
 from flcore.models.xgb.utils import (
-    NumpyEncoder,
     TreeDataset,
     construct_tree_from_loader,
     get_dataloader,
     parameters_to_objects,
     serialize_objects_to_parameters,
+    train_test,
     tree_encoding_loader,
-    train_test
 )
 
 
@@ -40,16 +37,14 @@ class FL_Client(fl.client.Client):
     def __init__(
         self,
         task_type: str,
-        trainloader: DataLoader,
-        valloader: DataLoader,
+        trainloader: TreeDataset,
+        valloader: TreeDataset,
         client_tree_num: int,
         client_num: int,
         cid: str,
         log_progress: bool = False,
     ):
-        """
-        Creates a client for training `network.Net` on tabular dataset.
-        """
+        """Creates a client for training the MLP aggregator on a tabular dataset."""
         self.task_type = task_type
         self.cid = cid
         self.tree = construct_tree_from_loader(trainloader, client_tree_num, task_type)
@@ -68,10 +63,12 @@ class FL_Client(fl.client.Client):
         self.tmp_dir = ""
 
         # instantiate model
-        self.net = CNN(client_num=client_num, client_tree_num=client_tree_num)
+        self.net = MLPModel(
+            client_num=client_num,
+            client_tree_num=client_tree_num,
+            task_type=task_type,
+        )
 
-        # determine device
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.round_time = -1
 
     def get_properties(self, ins: GetPropertiesIns) -> GetPropertiesRes:
@@ -79,9 +76,7 @@ class FL_Client(fl.client.Client):
 
     def get_parameters(
         self, ins: GetParametersIns
-    ) -> Tuple[
-        GetParametersRes, Union[Tuple[XGBClassifier, int], Tuple[XGBRegressor, int]]
-    ]:
+    ) -> GetParametersRes:
         net_params = self.net.get_weights()
         parameters = serialize_objects_to_parameters(
             [net_params, (self.tree, self.cid)], self.tmp_dir
@@ -125,6 +120,7 @@ class FL_Client(fl.client.Client):
             print("Client " + self.cid + ": recieved", len(aggregated_trees), "trees")
         else:
             print("Client " + self.cid + ": only had its own tree")
+
         self.trainloader = tree_encoding_loader(
             self.trainloader_original,
             batch_size,
@@ -140,49 +136,49 @@ class FL_Client(fl.client.Client):
             self.client_num,
         )
 
-        # num_iterations = None special behaviour: train(...) runs for a single epoch, however many updates it may be
-        num_iterations = num_iterations or len(self.trainloader)
+        # num_iterations = None -> a single full-batch update.
+        num_iterations = num_iterations or 1
 
-        # Train the model
         print(f"Client {self.cid}: training for {num_iterations} iterations/updates")
         start_time = time.time()
-        self.net.to(self.device)
         train_loss, train_result, num_examples = train(
             self.task_type,
             self.net,
             self.trainloader,
-            device=self.device,
             num_iterations=num_iterations,
             log_progress=self.log_progress,
         )
         print(
             f"Client {self.cid}: training round complete, {num_examples} examples processed"
         )
-        
-        self.round_time = (time.time() - start_time)
 
-        # Return training information: model, number of examples processed and metrics
+        self.round_time = time.time() - start_time
+
         if self.task_type == "BINARY":
             return FitRes(
                 status=Status(Code.OK, ""),
-                # parameters=self.get_parameters(fit_params.config),
                 parameters=self.get_parameters(fit_params.config).parameters,
                 num_examples=num_examples,
-                metrics={"loss": train_loss, "accuracy": train_result, "running_time":self.round_time},
+                metrics={
+                    "loss": train_loss,
+                    "accuracy": train_result,
+                    "running_time": self.round_time,
+                },
             )
         elif self.task_type == "REG":
             return FitRes(
                 status=Status(Code.OK, ""),
-                parameters=self.get_parameters(fit_params.config),
+                parameters=self.get_parameters(fit_params.config).parameters,
                 num_examples=num_examples,
-                metrics={"loss": train_loss, "mse": train_result, "running_time":self.round_time},
+                metrics={
+                    "loss": train_loss,
+                    "mse": train_result,
+                    "running_time": self.round_time,
+                },
             )
 
     def evaluate(self, eval_params: EvaluateIns) -> EvaluateRes:
-
-        print(
-            f"Client {self.cid}: Start evaluation round"
-        )
+        print(f"Client {self.cid}: Start evaluation round")
         # Process incoming request to evaluate
         objects = parameters_to_objects(
             eval_params.parameters, self.tree_config_dict, self.tmp_dir
@@ -190,12 +186,10 @@ class FL_Client(fl.client.Client):
         self.set_parameters(objects)
 
         # Evaluate the model
-        self.net.to(self.device)
         loss, result, num_examples = test(
             self.task_type,
             self.net,
             self.valloader,
-            device=self.device,
             log_progress=self.log_progress,
         )
 
@@ -203,22 +197,23 @@ class FL_Client(fl.client.Client):
         metrics["client_id"] = int(self.cid)
         metrics["round_time [s]"] = self.round_time
 
-        # Return evaluation information
         if self.task_type == "BINARY":
             accuracy = metrics["accuracy"]
             print(
-                f"Client {self.cid}: evaluation on {num_examples} examples: loss={loss:.4f}, accuracy={accuracy:.4f}"
+                f"Client {self.cid}: evaluation on {num_examples} examples: "
+                f"loss={loss:.4f}, accuracy={accuracy:.4f}"
             )
             return EvaluateRes(
                 status=Status(Code.OK, ""),
                 loss=loss,
                 num_examples=num_examples,
-                # metrics={"accuracy": result},
                 metrics=metrics,
             )
         elif self.task_type == "REG":
+            mse = metrics.get("mse", float("nan"))
             print(
-                f"Client {self.cid}: evaluation on {num_examples} examples: loss={loss:.4f}, mse={result:.4f}"
+                f"Client {self.cid}: evaluation on {num_examples} examples: "
+                f"loss={loss:.4f}, mse={mse:.4f}"
             )
             return EvaluateRes(
                 status=Status(Code.OK, ""),
@@ -242,6 +237,7 @@ def get_client(config, data, client_id) -> fl.client.Client:
 
     metrics = train_test(data, client_tree_num)
     from flcore import datasets
+
     if client_id == 1:
         cross_id = 2
     else:

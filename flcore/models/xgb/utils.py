@@ -1,10 +1,9 @@
 import json
 import os
 import uuid
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
-import torch
 import xgboost as xgb
 from flwr.common import (
     NDArray,
@@ -14,20 +13,35 @@ from flwr.common import (
 )
 from flwr.common.typing import Parameters
 from matplotlib import pyplot as plt  # pylint: disable=E0401
-from torch.utils.data import DataLoader, Dataset, random_split
 from xgboost import XGBClassifier, XGBRegressor
+
 from flcore.metrics import calculate_metrics
 
 
+class TreeDataset:
+    """Plain container for tabular / tree-encoded data.
+
+    Replaces the torch Dataset. Exposes `.data` (n, features) and `.labels` (n,)
+    as NumPy arrays. Kept indexable for any legacy callers.
+    """
+
+    def __init__(self, data: NDArray, labels: NDArray) -> None:
+        self.data = np.asarray(data)
+        self.labels = np.asarray(labels)
+
+    def __len__(self) -> int:
+        return len(self.labels)
+
+    def __getitem__(self, idx):
+        return {0: self.data[idx], 1: self.labels[idx]}
+
 
 def get_dataloader(
-    dataset: Dataset, partition: str, batch_size: Union[int, str]
-) -> DataLoader:
-    if batch_size == "whole":
-        batch_size = len(dataset)
-    return DataLoader(
-        dataset, batch_size=batch_size, pin_memory=True, shuffle=(partition == "train")
-    )
+    dataset: TreeDataset, partition: str, batch_size: Union[int, str]
+) -> TreeDataset:
+    """Previously wrapped a torch DataLoader. Training was always full-batch
+    (`batch_size == "whole"`), so we just return the dataset container."""
+    return dataset
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -38,32 +52,53 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def do_fl_partitioning(
-    trainset: Dataset,
-    testset: Dataset,
+    trainset: TreeDataset,
+    testset: TreeDataset,
     pool_size: int,
     batch_size: Union[int, str],
     val_ratio: float = 0.0,
-) -> Tuple[DataLoader, DataLoader, DataLoader]:
-    # Split training set into `num_clients` partitions to simulate different local datasets
-    partition_size = len(trainset) // pool_size
-    lengths = [partition_size] * pool_size
-    if sum(lengths) != len(trainset):
-        lengths[-1] = len(trainset) - sum(lengths[0:-1])
-    datasets = random_split(trainset, lengths, torch.Generator().manual_seed(0))
+) -> Tuple[List[TreeDataset], Optional[List[TreeDataset]], TreeDataset]:
+    """Split the training set into `pool_size` partitions (numpy, torch-free)."""
+    rng = np.random.default_rng(0)
+    n = len(trainset)
+    idx = rng.permutation(n)
+    partition_size = n // pool_size
 
-    # Split each partition into train/val and create DataLoader
-    trainloaders = []
-    valloaders = []
-    for ds in datasets:
-        len_val = int(len(ds) * val_ratio)
-        len_train = len(ds) - len_val
-        lengths = [len_train, len_val]
-        ds_train, ds_val = random_split(ds, lengths, torch.Generator().manual_seed(0))
-        trainloaders.append(get_dataloader(ds_train, "train", batch_size))
-        if len_val != 0:
-            valloaders.append(get_dataloader(ds_val, "val", batch_size))
+    trainloaders: List[TreeDataset] = []
+    val_list: List[TreeDataset] = []
+    start = 0
+    for p in range(pool_size):
+        end = n if p == pool_size - 1 else start + partition_size
+        part_idx = idx[start:end]
+        start = end
+
+        len_val = int(len(part_idx) * val_ratio)
+        if len_val > 0:
+            v_idx, t_idx = part_idx[:len_val], part_idx[len_val:]
+            trainloaders.append(
+                get_dataloader(
+                    TreeDataset(trainset.data[t_idx], trainset.labels[t_idx]),
+                    "train",
+                    batch_size,
+                )
+            )
+            val_list.append(
+                get_dataloader(
+                    TreeDataset(trainset.data[v_idx], trainset.labels[v_idx]),
+                    "val",
+                    batch_size,
+                )
+            )
         else:
-            valloaders = None
+            trainloaders.append(
+                get_dataloader(
+                    TreeDataset(trainset.data[part_idx], trainset.labels[part_idx]),
+                    "train",
+                    batch_size,
+                )
+            )
+
+    valloaders = val_list if val_list else None
     testloader = get_dataloader(testset, "test", batch_size)
     return trainloaders, valloaders, testloader
 
@@ -76,9 +111,9 @@ def plot_xgbtree(tree: Union[XGBClassifier, XGBRegressor], n_tree: int) -> None:
 
 
 def construct_tree(
-    dataset: Dataset, label: NDArray, n_estimators: int, tree_type: str
+    dataset: NDArray, label: NDArray, n_estimators: int, tree_type: str
 ) -> Union[XGBClassifier, XGBRegressor]:
-    """Construct a xgboost tree form tabular dataset."""
+    """Construct a xgboost tree from a tabular dataset."""
     tree = get_tree(n_estimators, tree_type)
     tree.fit(dataset, label)
     return tree
@@ -123,19 +158,18 @@ def get_tree(n_estimators: int, tree_type: str) -> Union[XGBClassifier, XGBRegre
             num_parallel_tree=1,
             min_child_weight=1,
             scale_pos_weight=50,
-
         )
 
     return tree
 
 
 def construct_tree_from_loader(
-    dataset_loader: DataLoader, n_estimators: int, tree_type: str
+    dataset_loader: TreeDataset, n_estimators: int, tree_type: str
 ) -> Union[XGBClassifier, XGBRegressor]:
-    """Construct a xgboost tree form tabular dataset loader."""
-    for dataset in dataset_loader:
-        data, label = dataset[0], dataset[1]
-    return construct_tree(data, label, n_estimators, tree_type)
+    """Construct a xgboost tree from a dataset container."""
+    return construct_tree(
+        dataset_loader.data, dataset_loader.labels, n_estimators, tree_type
+    )
 
 
 def single_tree_prediction(
@@ -158,7 +192,7 @@ def single_tree_prediction(
 
 
 def tree_encoding(  # pylint: disable=R0914
-    trainloader: DataLoader,
+    trainloader: TreeDataset,
     client_trees: Union[
         Tuple[XGBClassifier, int],
         Tuple[XGBRegressor, int],
@@ -168,15 +202,20 @@ def tree_encoding(  # pylint: disable=R0914
     client_num: int,
 ) -> Optional[Tuple[NDArray, NDArray]]:
     """Transform the tabular dataset into prediction results using the
-    aggregated xgboost tree ensembles from all clients."""
+    aggregated xgboost tree ensembles from all clients.
+
+    Returns (X_enc, y) as NumPy arrays:
+      X_enc: float32, shape (n_samples, client_num * client_tree_num)
+      y:     float32, shape (n_samples,)
+    """
     if trainloader is None:
         return None
 
-    for local_dataset in trainloader:
-        x_train, y_train = local_dataset[0], local_dataset[1]
+    x_train, y_train = trainloader.data, trainloader.labels
 
-    x_train_enc = np.zeros((x_train.shape[0], client_num * client_tree_num))
-    x_train_enc = np.array(x_train_enc, copy=True)
+    x_train_enc = np.zeros(
+        (x_train.shape[0], client_num * client_tree_num), dtype=np.float32
+    )
 
     temp_trees: Any = None
     if isinstance(client_trees, list) is False:
@@ -198,38 +237,14 @@ def tree_encoding(  # pylint: disable=R0914
             if len(predictions.shape) != 1:
                 predictions = np.argmax(predictions, 1)
             x_train_enc[:, i * client_tree_num + j] = predictions
-            # x_train_enc[:, i * client_tree_num + j] = single_tree_prediction(
-            #     temp_trees[i], j, x_train
-            # )
 
-    x_train_enc32: Any = np.float32(x_train_enc)
-    y_train32: Any = np.float32(y_train)
-
-    x_train_enc32, y_train32 = torch.from_numpy(
-        np.expand_dims(x_train_enc32, axis=1)  # type: ignore
-    ), torch.from_numpy(
-        np.expand_dims(y_train32, axis=-1)  # type: ignore
-    )
-    return x_train_enc32, y_train32
-
-
-class TreeDataset(Dataset):
-    def __init__(self, data: NDArray, labels: NDArray) -> None:
-        self.labels = labels
-        self.data = data
-
-    def __len__(self) -> int:
-        return len(self.labels)
-
-    def __getitem__(self, idx: int) -> Dict[int, NDArray]:
-        label = self.labels[idx]
-        data = self.data[idx, :]
-        sample = {0: data, 1: label}
-        return sample
+    x_train_enc = x_train_enc.astype(np.float32)
+    y_train = np.asarray(y_train, dtype=np.float32).ravel()
+    return x_train_enc, y_train
 
 
 def tree_encoding_loader(
-    dataloader: DataLoader,
+    dataloader: TreeDataset,
     batch_size: int,
     client_trees: Union[
         Tuple[XGBClassifier, int],
@@ -238,7 +253,7 @@ def tree_encoding_loader(
     ],
     client_tree_num: int,
     client_num: int,
-) -> DataLoader:
+) -> Optional[TreeDataset]:
     encoding = tree_encoding(dataloader, client_trees, client_tree_num, client_num)
     if encoding is None:
         return None
@@ -329,6 +344,7 @@ def json_to_tree(tree_json, client_tree_num, task_type, tmp_directory=""):
 
     return tree
 
+
 def train_test(data, client_tree_num):
     (X_train, y_train), (X_test, y_test) = data
 
@@ -337,10 +353,6 @@ def train_test(data, client_tree_num):
     X_test.flags.writeable = True
     y_test.flags.writeable = True
 
-    # If the feature dimensions of the trainset and testset do not agree,
-    # specify n_features in the load_svmlight_file function in the above cell.
-    # https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_svmlight_file.html
-    # print("Feature dimension of the dataset:", X_train.shape[1])
     print("Size of the trainset:", X_train.shape[0])
     print("Size of the testset:", X_test.shape[0])
     assert X_train.shape[1] == X_test.shape[1]
@@ -358,29 +370,9 @@ def train_test(data, client_tree_num):
         y_train[y_train == -1] = 0
         y_test[y_test == -1] = 0
 
-    trainset = TreeDataset(np.array(X_train, copy=True), np.array(y_train, copy=True))
-    testset = TreeDataset(np.array(X_test, copy=True), np.array(y_test, copy=True))
-
-    # ## Conduct tabular dataset partition for Federated Learning
-
-    # ## Define global variables for Federated XGBoost Learning
-
-    # ## Build global XGBoost tree for comparison
+    # Build global XGBoost tree for comparison
     global_tree = construct_tree(X_train, y_train, client_tree_num, task_type)
-    preds_train = global_tree.predict(X_train)
     preds_test = global_tree.predict(X_test)
 
-    # metrics = calculate_metrics(y_train, preds_train, task_type)
-    # print("Global XGBoost Training Metrics:", metrics)
     metrics = calculate_metrics(y_test, preds_test, task_type)
     return metrics
-    # if task_type == "BINARY":
-    #     result_train = accuracy_score(y_train, preds_train)
-    #     result_test = accuracy_score(y_test, preds_test)
-    #     print("Global XGBoost Training Accuracy: %f" % (result_train))
-    #     print("Global XGBoost Testing Accuracy: %f" % (result_test))
-    # elif task_type == "REG":
-    #     result_train = mean_squared_error(y_train, preds_train)
-    #     result_test = mean_squared_error(y_test, preds_test)
-    #     print("Global XGBoost Training MSE: %f" % (result_train))
-    #     print("Global XGBoost Testing MSE: %f" % (result_test))
