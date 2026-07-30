@@ -41,23 +41,27 @@ if __name__ == "__main__":
     #else:
     #    config_path = "config.yaml"
 
-    ### Read the config file
+    if len(sys.argv) == 2 and sys.argv[1].endswith((".yaml", ".yml")):
+        # Configuration file mode
+        config_path = sys.argv[1]
 
-    #with open(config_path, "r") as f:
-    #    config = yaml.safe_load(f)
+        ### Read the config file
 
-    #Instead of using the config.yaml use the parameters
-    config_path = "config.yaml"
-    parser = get_parser(isserver=True)
-    args = parser.parse_args()
-    ##validate_model_specific_args(args)
-    config = generate_config_dict(args,True)
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+    else:
+        ##Instead of using the config.yaml use the parameters
+        config_path = "config.yaml"
+        parser = get_parser(isserver=True)
+        args = parser.parse_args()
+        ##validate_model_specific_args(args)
+        config = generate_config_dict(args,True)
 
-    #Check the config file
-    check_config(config)
+        #Check the config file
+        check_config(config)
 
-    with open(config_path, "w") as f:
-        yaml.dump(config, f)
+        with open(config_path, "w") as f:
+            yaml.dump(config, f)
 
     if config["production_mode"]:
         data_path = os.getenv("DATA_PATH")
@@ -68,18 +72,20 @@ if __name__ == "__main__":
             Path('certificates/server.pem').read_bytes(),
             Path('certificates/server.key').read_bytes(),
         )
+        experiment_dir = os.getenv("SANDBOX_PATH")
     else:
         data_path = config["data_path"]
         central_ip = "LOCALHOST"
         central_port = config["local_port"]
         certificates = None
+        experiment_dir =config["SANDBOX_PATH"] 
 
     # Create experiment directory
     #experiment_dir = Path(os.path.join(config["experiment"]["log_path"], config["experiment"]["name"]))
     #experiment_dir.mkdir(parents=True, exist_ok=True)
     #from dotenv import load_dotenv
     #load_dotenv()
-    experiment_dir = os.getenv("SANDBOX_PATH")
+    
 
 
     # Checkpoint directory for saving the model

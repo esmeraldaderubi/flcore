@@ -60,6 +60,12 @@ def handle_task(ch, method, props, body):
     # OPTIONAL: If you configured 'sudo groupadd docker', uncomment next line to remove sudo
     final_cmd = final_cmd.replace("sudo ", "")
 
+    print("\n========== FINAL COMMAND ==========")
+    print(final_cmd)
+    print("\nrepr(final_cmd):")
+    print(repr(final_cmd))
+    print("===================================\n")
+
     print(f" [Debug] Mounting Volume: {LOCAL_CERT_PATH}")
 
     # Cleanup Old Container
