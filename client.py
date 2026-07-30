@@ -11,20 +11,23 @@ from params import get_parser,generate_config_dict
 # Start Flower client but after the server or error
 
 if __name__ == "__main__":
-    #if len(sys.argv) == 3:
-    #    config_path = sys.argv[2]
-    #else:
-    #    config_path = "config.yaml"
+    if len(sys.argv) == 3 and sys.argv[2].endswith((".yaml", ".yml")):
+        # Configuration file mode
+        config_path = sys.argv[2]
 
-    #with open(config_path, "r") as f:
-    #    config = yaml.safe_load(f)
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
 
+        print('The configuration comes from config file')
 
-    #Instead of using the config.yaml use the parameters
-    parser = get_parser(isserver=False)
-    args = parser.parse_args()
-    ##validate_model_specific_args(args)
-    config = generate_config_dict(args,False)
+    else:
+        ##Instead of using the config.yaml use the parameters
+        parser = get_parser(isserver=False)
+        args = parser.parse_args()
+        ##validate_model_specific_args(args)
+        config = generate_config_dict(args,False)
+
+        print('The configuration comes from parameters')
 
 
 
