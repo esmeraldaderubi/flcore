@@ -6,6 +6,7 @@ import shutil
 import sys
 import statistics
 from datetime import datetime
+import math
 
 # --- CONFIGURATION ---
 TARGET_NODES = ["Node_1", "Node_2", "Node_3", "Node_4"]  # Add "Node_1", "Node_2", "Node_3", "Node_4" here later
@@ -34,13 +35,16 @@ context.check_hostname = False
 # --- EXPERIMENT CONFIGURATION ---
 EXPERIMENT = {
     "model": "random_forest",
-    "balanced_rf": True,
+    "balanced_rf": 1,
     "num_rounds": 5,
     "num_clients": len(TARGET_NODES),
     "num_runs": 5,
     "base_seed": 42,
     "dataset": "youthgems_format",
     "aggregator_rf": "randomviaprobs",
+    "enabled_fairness" : 1,
+    "fairness_attribs": "Sex Ethnicity",
+
 
     # Future hyperparameters
     # "aggregator": "randomviaprobs",
@@ -103,7 +107,9 @@ def restart_flower_server(seed):
     --num_rounds {EXPERIMENT["num_rounds"]} \
     --num_clients {EXPERIMENT["num_clients"]} \
     --aggregator_rf {EXPERIMENT["aggregator_rf"]} \
-    --seed {seed}
+    --seed {seed} \
+    --fairness_attribs {EXPERIMENT["fairness_attribs"]} \
+
     """
 
     subprocess.run(command, shell=True,check=True)
@@ -167,10 +173,28 @@ def save_experiment_summary(config):
 
     for metric in metrics_per_run[0]:
         values = [m[metric] for m in metrics_per_run]
-        summary[metric] = {
-            "mean": statistics.mean(values),
-            "std": statistics.stdev(values) if len(values) > 1 else 0.0,
-        }
+
+        # Keep only valid numeric values
+        valid_values = [
+            v for v in values
+            if isinstance(v, (int, float)) and not math.isnan(v)
+        ]
+
+        if len(valid_values) == 0:
+            summary[metric] = {
+                "mean": float("nan"),
+                "std": float("nan"),
+            }
+        elif len(valid_values) == 1:
+            summary[metric] = {
+                "mean": valid_values[0],
+                "std": float("nan"),
+            }
+        else:
+            summary[metric] = {
+                "mean": statistics.mean(valid_values),
+                "std": statistics.stdev(valid_values),
+            }
 
     experiment = {
         "timestamp": datetime.now().isoformat(),
@@ -246,7 +270,7 @@ def trigger_training(seed):
                 # 3. UNBUFFERED LOGS (-u): Forces logs to show up immediately
                 "esmeraldaruiz/flcore:latest python3 -u client.py " 
                 f"--dataset {EXPERIMENT['dataset']} --model {EXPERIMENT['model']} --balanced_rf {EXPERIMENT['balanced_rf']} --aggregator_rf {EXPERIMENT['aggregator_rf']} "
-                f"--num_rounds {EXPERIMENT['num_rounds']} --seed {seed}"
+                f"--num_rounds {EXPERIMENT['num_rounds']} --seed {seed}  --fairness_attribs {EXPERIMENT["fairness_attribs"]} "
             )
         }
 
@@ -277,52 +301,53 @@ if __name__ == "__main__":
     for run in range(EXPERIMENT["num_runs"]):
 
         seed = EXPERIMENT["base_seed"] + run
-        experiment_completed = False
 
-        while not experiment_completed:
-            print("\n" + "=" * 60)
-            print(f" [*] Starting experiment {run + 1}/{EXPERIMENT['num_runs']} (seed={seed})")
-            print("=" * 60)
+        print("\n" + "=" * 60)
+        print(f" [*] Starting experiment {run + 1}/{EXPERIMENT['num_runs']} (seed={seed})")
+        print("=" * 60)
 
-            # Moved the queue purge inside the loop. 
-            # Guarantees no stale messages are hanging around from a previous failed run.
-            clean_rabbit_queues()
+        clean_rabbit_queues()
 
-            trigger_training(seed)
+        trigger_training(seed)
 
-            print(" [*] Waiting for Flower experiment to finish...")
+        print(" [*] Waiting for Flower experiment to finish...")
 
-            # Added a timeout counter to break the infinite wait if a client gets stuck
-            start_wait = time.time()
+        start_wait = time.time()
 
-            # Wait until Flower server finishes training
-            while True:
-                if time.time() - start_wait > MAX_EXPERIMENT_TIME:
-                    print(f" [X] Timeout reached ({MAX_EXPERIMENT_TIME}s). Server stuck waiting for clients.")
-                    print(f" [*] Closing properly and restarting seed {seed}...")
-                    break
+        while True:
 
-                result = subprocess.run(
-                    "sudo docker ps -q --filter name=flcore-server-container",
+            if time.time() - start_wait > MAX_EXPERIMENT_TIME:
+                print(f"\n[X] Timeout reached ({MAX_EXPERIMENT_TIME}s).")
+                print("[*] Cleaning everything and exiting...")
+                print("[*] Stopping Flower server...")
+                print("[*] Saving Flower server logs...")
+                subprocess.run(
+                    "sudo docker logs flcore-server-container",
                     shell=True,
-                    capture_output=True,
-                    text=True,
                 )
-                if not result.stdout.strip():
-                    print(f" [✔] Flower experiment {run + 1} completed and data extracted.")
-                    experiment_completed = True
-                    break
-                
-                time.sleep(10)
 
-            # Kill Flower before next seed OR before retrying the current seed
-            stop_flower()
-            
-            if experiment_completed:
-                print(f" [✔] Experiment {run + 1} completed.")
-            else:
-                print(f" [*] Retrying experiment {run + 1}...")
-                time.sleep(5)  # Brief cooldown before restart
+                print("[*] Stopping Flower server...")
+                stop_flower()
+                print("[*] Purging RabbitMQ queues...")
+                clean_rabbit_queues()
+                print("[X] Experiment aborted.")
+                sys.exit(1)
+
+            result = subprocess.run(
+                "sudo docker ps -q --filter name=flcore-server-container",
+                shell=True,
+                capture_output=True,
+                text=True,
+            )
+
+            if not result.stdout.strip():
+                print(f" [✔] Flower experiment {run + 1} completed and data extracted.")
+                break
+
+            time.sleep(10)
+
+        stop_flower()
+        print(f" [✔] Experiment {run + 1} completed.")
 
     save_experiment_summary(EXPERIMENT)
 

@@ -61,7 +61,6 @@ def handle_task(ch, method, props, body):
     final_cmd = final_cmd.replace("sudo ", "")
 
     print("\n========== FINAL COMMAND ==========")
-    print(final_cmd)
     print("\nrepr(final_cmd):")
     print(repr(final_cmd))
     print("===================================\n")
