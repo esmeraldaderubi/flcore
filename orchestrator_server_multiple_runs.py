@@ -76,7 +76,7 @@ def stop_flower():
 
     print(" [✔] Flower container stopped.")
 
-def restart_flower_server(seed):
+def restart_flower_server(seed, run_dir):
 
     # Remove previous Flower server container if it exists
     subprocess.run(
@@ -86,13 +86,16 @@ def restart_flower_server(seed):
         stderr=subprocess.DEVNULL
     )
 
+    # Make sure this run has its own directory
+    os.makedirs(run_dir, exist_ok=True)
+
     # Start a new Flower server container
     command = f"""
     sudo docker run -d --name flcore-server-container \
     -p 4433:4433 \
     -v {CERT_PATH}:/flcore/certificates \
     -v {DATASET_PATH}:/flcore/dataset \
-    -v {EXPERIMENT['sandbox_path']}:/flcore/sandbox \
+    -v {run_dir}:/flcore/sandbox \
     -e FLOWER_SSL_CACERT=/flcore/certificates/ca.crt \
     -e FLOWER_SSL_CERT=/flcore/certificates/server.pem \
     -e FLOWER_SSL_KEY=/flcore/certificates/server.key \
@@ -158,8 +161,12 @@ def save_experiment_summary(config):
 
     for run in range(config["num_runs"]):
         seed = config["base_seed"] + run
-        filename = os.path.join(
+        run_dir = filename = os.path.join(
             config["sandbox_path"],
+            f"run_{run + 1:02d}_seed_{seed}"
+        )
+        filename = os.path.join(
+            run_dir,
             f"results_seed_{seed}.json",
         )
 
@@ -171,30 +178,105 @@ def save_experiment_summary(config):
 
     summary = {}
 
+    EXCLUDED_PER_CLIENT_METRICS = [
+        "per client y_pred_prob",
+        "per client y_true",
+        "per client shap_feature_names",
+        "per client shap_base_value",
+        "per client shap_values",
+        "per client y_pred",
+    ]
+
     for metric in metrics_per_run[0]:
+
+        # Skip raw per-client data
+        if metric in EXCLUDED_PER_CLIENT_METRICS:
+            continue
+
         values = [m[metric] for m in metrics_per_run]
 
-        # Keep only valid numeric values
-        valid_values = [
-            v for v in values
-            if isinstance(v, (int, float)) and not math.isnan(v)
-        ]
+        # ============================================================
+        # PER-CLIENT METRICS
+        # Mean/std for EACH CLIENT across seeds
+        # ============================================================
+        if metric.startswith("per client "):
 
-        if len(valid_values) == 0:
-            summary[metric] = {
-                "mean": float("nan"),
-                "std": float("nan"),
-            }
-        elif len(valid_values) == 1:
-            summary[metric] = {
-                "mean": valid_values[0],
-                "std": float("nan"),
-            }
+            num_clients = max(
+                len(seed_values)
+                for seed_values in values
+                if isinstance(seed_values, list)
+            )
+
+            client_summary = {}
+
+            for client_idx in range(num_clients):
+
+                client_values = []
+                for seed_values in values:
+                    if not isinstance(seed_values, list):
+                        continue
+
+                    if client_idx >= len(seed_values):
+                        continue
+
+                    value = seed_values[client_idx]
+
+                    if value is None:
+                        continue
+
+                    if isinstance(value, (int, float)) and not math.isnan(value):
+                        client_values.append(float(value))
+
+                if len(client_values) == 0:
+                    client_summary[f"client_{client_idx}"] = {
+                        "mean": float("nan"),
+                        "std": float("nan"),
+                        "raw_values": [],
+                    }
+
+                elif len(client_values) == 1:
+                    client_summary[f"client_{client_idx}"] = {
+                        "mean": client_values[0],
+                        "std": float("nan"),
+                        "raw_values": client_values,
+                    }
+
+                else:
+                    client_summary[f"client_{client_idx}"] = {
+                        "mean": statistics.mean(client_values),
+                        "std": statistics.stdev(client_values),
+                        "raw_values": client_values,
+                    }
+
+            summary[metric] = client_summary
+
+        # ============================================================
+        # NORMAL METRICS
+        # ============================================================
         else:
-            summary[metric] = {
-                "mean": statistics.mean(valid_values),
-                "std": statistics.stdev(valid_values),
-            }
+            valid_values = [
+                v for v in values
+                if isinstance(v, (int, float)) and not math.isnan(v)
+            ]
+
+            if len(valid_values) == 0:
+                summary[metric] = {
+                    "mean": float("nan"),
+                    "std": float("nan"),
+                    "raw_values": [],
+                }
+            elif len(valid_values) == 1:
+                summary[metric] = {
+                    "mean": valid_values[0],
+                    "std": float("nan"),
+                    "raw_values": valid_values,
+                }
+            else:
+                summary[metric] = {
+                    "mean": statistics.mean(valid_values),
+                    "std": statistics.stdev(valid_values),
+                    "raw_values": valid_values,
+                }
 
     experiment = {
         "timestamp": datetime.now().isoformat(),
@@ -213,29 +295,29 @@ def save_experiment_summary(config):
     print(f" [✔] Summary appended to {summary_file}")
 
     #rename the pdf file according to the configuration 
-    src = os.path.join(
-    config["sandbox_path"],
-    "federated_summary_report.pdf",
-    )
+    #src = os.path.join(
+    #config["sandbox_path"],
+    #"federated_summary_report.pdf",
+    #)
 
-    dst = os.path.join(
-    config["sandbox_path"],
-    f"{experiment_name}_summary.pdf",
-    )
+    #dst = os.path.join(
+    #config["sandbox_path"],
+    #f"{experiment_name}_summary.pdf",
+    #)
 
-    if os.path.exists(src):
-        shutil.move(src, dst)
-        print(f" [✔] PDF renamed to {os.path.basename(dst)}")
-    else:
-        print(" [!] federated_summary_report.pdf not found")
+    #if os.path.exists(src):
+    #    shutil.move(src, dst)
+    #    print(f" [✔] PDF renamed to {os.path.basename(dst)}")
+    #else:
+    #    print(" [!] federated_summary_report.pdf not found")
 
     return experiment
 
-def trigger_training(seed):
+def trigger_training(seed, run_dir):
 
 
     # Restart Flower before starting a new experiment
-    restart_flower_server(seed)
+    restart_flower_server(seed, run_dir)
 
     # Wait until Flower is accepting connections before launching clients
     if not wait_for_flower(SERVER_IP, 4433):
@@ -302,13 +384,21 @@ if __name__ == "__main__":
 
         seed = EXPERIMENT["base_seed"] + run
 
+        run_dir = os.path.join(
+        EXPERIMENT_DIR,
+        f"run_{run + 1:02d}_seed_{seed}"
+        )
+
+        os.makedirs(run_dir, exist_ok=True)
+
         print("\n" + "=" * 60)
         print(f" [*] Starting experiment {run + 1}/{EXPERIMENT['num_runs']} (seed={seed})")
+        print(f" [*] Run directory: {run_dir}")
         print("=" * 60)
 
         clean_rabbit_queues()
 
-        trigger_training(seed)
+        trigger_training(seed, run_dir)
 
         print(" [*] Waiting for Flower experiment to finish...")
 

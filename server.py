@@ -148,10 +148,16 @@ if __name__ == "__main__":
 
     final_results[last_round_key] = {}
 
-    # Helper to safely extract floats from potentially nested structures
+    # Helper to safely extract floats from scalar values
     def extract_float(val):
-        if isinstance(val, (list, np.ndarray)):
-            return float(val[0])
+        if isinstance(val, np.ndarray):
+            val = val.tolist()
+
+        if isinstance(val, list):
+            if len(val) == 1:
+                return float(val[0])
+            raise ValueError(f"Expected scalar value, got list: {val}")
+
         return float(val)
 
     # 3. CENTER (Baseline): Dynamically take the FIRST entry found in FIT
@@ -162,7 +168,57 @@ if __name__ == "__main__":
 
     # 4. DISTRIB (Federated): Dynamically take the LAST entry found in EVALUATE
     for m, values in eval_metrics.items():
-        if m in ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]:
+
+        #print("\n" + "=" * 80)
+        #print(f"METRIC NAME: {m}")
+        #print(f"ALL VALUES: {values}")
+        #print(f"NUMBER OF ENTRIES: {len(values)}")
+
+        #if values:
+            #print(f"FIRST ENTRY: {values[0]}")
+            #print(f"LAST ENTRY:  {values[-1]}")
+            #print(f"LAST ROUND:  {values[-1][0]}")
+            #print(f"LAST RAW VALUE: {values[-1][1]}")
+            #print(f"LAST RAW VALUE TYPE: {type(values[-1][1])}")
+
+        PER_CLIENT_SCALAR_METRICS = [
+            "accuracy",
+            "balanced_accuracy",
+            "f1",
+            "precision",
+            "recall",
+            "specificity",
+        ]
+
+        #print("-" * 80)
+
+        if m.startswith("per client "):
+            #print(">>> PER CLIENT METRIC", flush=True)
+
+            value = values[-1][1]
+
+            #print(f">>> PER CLIENT METRIC: {m}", flush=True)
+            #print(f">>> RAW VALUE TYPE: {type(value)}", flush=True)
+
+            metric_name = m.replace("per client ", "", 1)
+
+            # Only convert the six scalar per-client metrics
+            if metric_name in PER_CLIENT_SCALAR_METRICS:
+
+                if isinstance(value, np.ndarray):
+                    value = value.tolist()
+
+                value = [
+                    float(v) if v is not None else None
+                    for v in value
+                ]
+
+                #print(f">>> CLIENT VALUES: {value}", flush=True)
+
+            #  SAVE ALL CLIENT VALUES
+            final_results[last_round_key][m] = value
+
+        elif m in PER_CLIENT_SCALAR_METRICS:
             # values[-1] is the very last tuple (round_Y, value) found
             final_results[last_round_key][f"DISTRIB_{m}"] = extract_float(values[-1][1])
         elif "difference" in m: 
