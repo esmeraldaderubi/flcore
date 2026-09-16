@@ -27,6 +27,13 @@ import os
 import yaml
 import json
 import numpy as np
+import os
+import json
+import math
+import statistics
+import shutil
+from datetime import datetime
+from orchestrator_server_multiple_runs import save_experiment_summary
 
 # ==========================================
 # 1. Initialization
@@ -35,17 +42,41 @@ config_path = "config.yaml"
 DEFAULT_SEED = 42  # Your fixed baseline seed 
 TOTAL_RUNS = 5
 N_FEATURES = 0
+starting_seed = DEFAULT_SEED 
 
 # Load original settings
 with open(config_path, "r") as f:
     original_config = yaml.safe_load(f)
 
 
-RESULTS_DIR = original_config.get("SANDBOX_PATH", "./sandbox")
-starting_seed = DEFAULT_SEED 
+# Create the new folder
+#RESULTS_DIR = original_config.get("SANDBOX_PATH", "./sandbox")
+RESULTS_DIR = "./sandbox"
 
+experiment_name = (
+    f"{original_config['model']}_"
+    f"{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+)
 
+RESULTS_DIR = os.path.join(
+    RESULTS_DIR,
+    experiment_name
+)
 os.makedirs(RESULTS_DIR, exist_ok=True)
+
+experiment_config = dict(original_config)
+
+experiment_config["base_seed"] = DEFAULT_SEED
+experiment_config["num_runs"] = TOTAL_RUNS
+experiment_config["n_features"] = N_FEATURES
+experiment_config["experiment_name"] = experiment_name
+experiment_config["sandbox_path"] = RESULTS_DIR
+
+with open(
+    os.path.join(RESULTS_DIR, "config_experiment.json"),
+    "w"
+) as f:
+    json.dump(experiment_config, f, indent=4)
 
 # ==========================================
 # 2. Execution Loop (Modify & Restore)
@@ -53,12 +84,20 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 try:
     for run_idx in range(TOTAL_RUNS):
         current_seed = starting_seed + run_idx
+
+        run_dir = os.path.join(
+            RESULTS_DIR,
+            f"run_{run_idx + 1:02d}_seed_{current_seed}"
+        )
+
+        os.makedirs(run_dir, exist_ok=True)
         
         # --- Update Seed in File ---
         with open(config_path, "r") as f:
             temp_config = yaml.safe_load(f)
         temp_config["seed"] = current_seed
         temp_config["internal_fs"] = N_FEATURES
+        temp_config["SANDBOX_PATH"] = run_dir
         with open(config_path, "w") as f:
             yaml.dump(temp_config, f)
         
@@ -100,6 +139,10 @@ finally:
         yaml.dump(final_restore, f)
     print(f"\n[CLEANUP] Config file restored to original seed: {starting_seed}")
 
+# ============================================================
+# ALL RUNS COMPLETED → CREATE FINAL SUMMARY
+# ============================================================
+experiment = save_experiment_summary(experiment_config)
 # ==========================================
 # 3. Dynamic Aggregation (CENTER vs DISTRIB)
 # ==========================================
@@ -121,7 +164,12 @@ stats = {k: [] for k in all_keys}
 
 for run_idx in range(TOTAL_RUNS):
     seed = starting_seed + run_idx
-    path = os.path.join(RESULTS_DIR, f"results_seed_{seed}.json")
+    #path = os.path.join(RESULTS_DIR, f"results_seed_{seed}.json")
+    path = os.path.join(
+    RESULTS_DIR,
+    f"run_{run_idx + 1:02d}_seed_{seed}",
+    f"results_seed_{seed}.json"
+    )
     
     if os.path.exists(path):
         with open(path, "r") as f:

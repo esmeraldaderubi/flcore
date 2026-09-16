@@ -7,6 +7,7 @@ import sys
 import statistics
 from datetime import datetime
 import math
+import numpy as np
 
 # --- CONFIGURATION ---
 TARGET_NODES = ["Node_1", "Node_2", "Node_3", "Node_4"]  # Add "Node_1", "Node_2", "Node_3", "Node_4" here later
@@ -185,6 +186,7 @@ def save_experiment_summary(config):
         "per client shap_base_value",
         "per client shap_values",
         "per client y_pred",
+        "per client client_name",
     ]
 
     for metric in metrics_per_run[0]:
@@ -224,7 +226,7 @@ def save_experiment_summary(config):
                     if value is None:
                         continue
 
-                    if isinstance(value, (int, float)) and not math.isnan(value):
+                    if isinstance(value, (int, float)) and not math.isnan(value) and math.isfinite(value):
                         client_values.append(float(value))
 
                 if len(client_values) == 0:
@@ -244,7 +246,7 @@ def save_experiment_summary(config):
                 else:
                     client_summary[f"client_{client_idx}"] = {
                         "mean": statistics.mean(client_values),
-                        "std": statistics.stdev(client_values),
+                        "std": np.std(client_values),
                         "raw_values": client_values,
                     }
 
@@ -274,7 +276,7 @@ def save_experiment_summary(config):
             else:
                 summary[metric] = {
                     "mean": statistics.mean(valid_values),
-                    "std": statistics.stdev(valid_values),
+                    "std": np.std(valid_values),
                     "raw_values": valid_values,
                 }
 
@@ -352,7 +354,7 @@ def trigger_training(seed, run_dir):
                 # 3. UNBUFFERED LOGS (-u): Forces logs to show up immediately
                 "esmeraldaruiz/flcore:latest python3 -u client.py " 
                 f"--dataset {EXPERIMENT['dataset']} --model {EXPERIMENT['model']} --balanced_rf {EXPERIMENT['balanced_rf']} --aggregator_rf {EXPERIMENT['aggregator_rf']} "
-                f"--num_rounds {EXPERIMENT['num_rounds']} --seed {seed}  --fairness_attribs {EXPERIMENT["fairness_attribs"]} "
+                f"--num_rounds {EXPERIMENT['num_rounds']} --seed {seed}  --fairness_attribs {EXPERIMENT['fairness_attribs']} "
             )
         }
 
