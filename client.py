@@ -19,13 +19,22 @@ if __name__ == "__main__":
     #with open(config_path, "r") as f:
     #    config = yaml.safe_load(f)
 
+    if len(sys.argv) == 3 and sys.argv[2].endswith((".yaml", ".yml")):
+        # Configuration file mode
+        config_path = sys.argv[2]
 
-    #Instead of using the config.yaml use the parameters
-    parser = get_parser(isserver=False)
-    args = parser.parse_args()
-    ##validate_model_specific_args(args)
-    config = generate_config_dict(args,False)
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
 
+        print('The configuration comes from config file')
+
+    else:
+        #Instead of using the config.yaml use the parameters
+        parser = get_parser(isserver=False)
+        args = parser.parse_args()
+        ##validate_model_specific_args(args)
+        config = generate_config_dict(args,False)
+        print('The configuration comes from the parameters')
 
 
 
@@ -44,6 +53,10 @@ if __name__ == "__main__":
         #As a table of features we will select the first file of the data path (the second is the descriptor)
         file_featsselected = 0
         print("Client id:" + node_name)
+        #due to some bugs from FEM-CLIENT HARDCODE the path
+        #Temporary solution
+        #config["data_path"] = data_path
+        config["data_path"] = "/flcore/dataset/" 
         
     else:
         data_path = config["data_path"]
@@ -56,12 +69,9 @@ if __name__ == "__main__":
         #In debug we can have many dataset files of features (one for each center) so we need to choose (only in debug)
         file_featsselected = int(input('Choose the first (0), second (1) file of features and so on (only in debug):'))
         print('File position of features simulating the center %s \n' % (file_featsselected))
-        
+        config["data_path"] = data_path
 
-    #due to some bugs from FEM-CLIENT HARDCODE the path
-    #Temporary solution
-    #config["data_path"] = data_path
-    config["data_path"] = "/flcore/dataset/" 
+
     #The table of features selected
     first_file_selected = file_featsselected
 
@@ -72,12 +82,13 @@ if __name__ == "__main__":
 
     if config["production_mode"]:
         client = get_model_client(config, data,  f"{config['name_client']}")
+        from flcore._patches import patch_flwr_channel
+        execution_id = config['execution_id']
+        patch_flwr_channel(execution_id, node_name, root_certificate)
+
     else: ##in debug
         client = get_model_client(config, data,  f"{config['name_client']}"+str(file_featsselected))
 
-    from flcore._patches import patch_flwr_channel
-    execution_id = config['execution_id']
-    patch_flwr_channel(execution_id, node_name, root_certificate)
 
     if isinstance(client, fl.client.NumPyClient):
         fl.client.start_numpy_client(

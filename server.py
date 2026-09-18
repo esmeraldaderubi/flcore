@@ -70,16 +70,24 @@ if __name__ == "__main__":
 
     #with open(config_path, "r") as f:
     #    config = yaml.safe_load(f)
+    if len(sys.argv) == 2 and sys.argv[1].endswith((".yaml", ".yml")):
+        # Configuration file mode
+        config_path = sys.argv[1]
 
-    #Instead of using the config.yaml use the parameters
-    config_path = "config.yaml"
-    parser = get_parser(isserver=True)
-    args = parser.parse_args()
-    ##validate_model_specific_args(args)
-    config = generate_config_dict(args,True)
+        ### Read the config file
 
-    #Check the config file
-    check_config(config)
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+    else:
+        #Instead of using the config.yaml use the parameters
+        config_path = "config.yaml"
+        parser = get_parser(isserver=True)
+        args = parser.parse_args()
+        ##validate_model_specific_args(args)
+        config = generate_config_dict(args,True)
+
+        #Check the config file
+        check_config(config)
 
 
 
@@ -103,11 +111,15 @@ if __name__ == "__main__":
         node_cert = Path(certificate_path / f"rmq-{node_name}-{env}-cert.pem").read_bytes()
         node_key = Path(certificate_path / f"rmq-{node_name}-{env}-key.pem").read_bytes()
         certificates = (flwr_cert, node_cert, node_key)
+        #due to some bugs from FEM-CLIENT HARDCODE the path
+        #Temporary solution
+        experiment_dir = "./sandbox"
     else:
         data_path = config["data_path"]
         central_ip = "LOCALHOST"
         central_port = config["local_port"]
         certificates = None
+        experiment_dir = config["SANDBOX_PATH"]
 
     # Create experiment directory
     #experiment_dir = Path(os.path.join(config["experiment"]["log_path"], config["experiment"]["name"]))
@@ -115,9 +127,7 @@ if __name__ == "__main__":
     #from dotenv import load_dotenv
     #load_dotenv()
     #experiment_dir = os.getenv("SANDBOX_PATH")
-    #due to some bugs from FEM-CLIENT HARDCODE the path
-    #Temporary solution
-    experiment_dir = "./sandbox"
+
 
 
     # Checkpoint directory for saving the model
@@ -136,14 +146,16 @@ if __name__ == "__main__":
 
     server, strategy = get_model_server_and_strategy(config)
     strategy.experiment_dir = experiment_dir
-    import logging
-    logger = logging.getLogger(__name__)
 
-    central_ip, central_port, experiment_dir, certificates = _resolve_environment(config)
-    config["experiment_dir"] = experiment_dir
+    if config["production_mode"]:
+        import logging
+        logger = logging.getLogger(__name__)
 
-    if os.getenv("FLOWER_CENTRAL_SERVER_IP") is not None:
-        patch_server_cid(logger)
+        central_ip, central_port, experiment_dir, certificates = _resolve_environment(config)
+        config["experiment_dir"] = experiment_dir
+
+        if os.getenv("FLOWER_CENTRAL_SERVER_IP") is not None:
+            patch_server_cid(logger)
 
     # Start Flower server for three rounds of federated learning
     history = fl.server.start_server(
@@ -188,10 +200,16 @@ if __name__ == "__main__":
 
     final_results[last_round_key] = {}
 
-    # Helper to safely extract floats from potentially nested structures
+    # Helper to safely extract floats from scalar values
     def extract_float(val):
-        if isinstance(val, (list, np.ndarray)):
-            return float(val[0])
+        if isinstance(val, np.ndarray):
+            val = val.tolist()
+
+        if isinstance(val, list):
+            if len(val) == 1:
+                return float(val[0])
+            raise ValueError(f"Expected scalar value, got list: {val}")
+
         return float(val)
 
     # 3. CENTER (Baseline): Dynamically take the FIRST entry found in FIT
@@ -202,7 +220,44 @@ if __name__ == "__main__":
 
     # 4. DISTRIB (Federated): Dynamically take the LAST entry found in EVALUATE
     for m, values in eval_metrics.items():
-        if m in ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]:
+
+        PER_CLIENT_SCALAR_METRICS = [
+            "accuracy",
+            "balanced_accuracy",
+            "f1",
+            "precision",
+            "recall",
+            "specificity",
+        ]
+
+
+        if m.startswith("per client "):
+            #print(">>> PER CLIENT METRIC", flush=True)
+
+            value = values[-1][1]
+
+            #print(f">>> PER CLIENT METRIC: {m}", flush=True)
+            #print(f">>> RAW VALUE TYPE: {type(value)}", flush=True)
+
+            metric_name = m.replace("per client ", "", 1)
+
+            # Only convert the six scalar per-client metrics
+            if metric_name in PER_CLIENT_SCALAR_METRICS:
+
+                if isinstance(value, np.ndarray):
+                    value = value.tolist()
+
+                value = [
+                    float(v) if v is not None else None
+                    for v in value
+                ]
+
+                #print(f">>> CLIENT VALUES: {value}", flush=True)
+
+            #  SAVE ALL CLIENT VALUES
+            final_results[last_round_key][m] = value
+
+        elif m in PER_CLIENT_SCALAR_METRICS:
             # values[-1] is the very last tuple (round_Y, value) found
             final_results[last_round_key][f"DISTRIB_{m}"] = extract_float(values[-1][1])
         elif "difference" in m: 

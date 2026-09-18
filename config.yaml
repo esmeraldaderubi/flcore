@@ -1,14 +1,16 @@
 DATA_PATH: ./dataset
 FLOWER_SSL_CACERT: ./certificates
-SANDBOX_PATH: ./sandbox
+SANDBOX_PATH: ./sandbox\random_forest_20260918_134001\run_05_seed_46
 data_file: 3362-2045-1944.parquet
 data_path: dataset/
 dataset: youthgems_format
+drop: []
 drop_fairness_attribs: 1
 dropout:
   percentage_drop: 50
 dropout_method: None
 enabled_fairness: 1
+execution_id: unknown
 fairness_attribs:
 - Sex
 - Ethnicity
