@@ -21,6 +21,7 @@ from flwr.common import (
 )
 import time
 import flcore.featureselection as fs
+from flcore.mitigation import run_postmitigation, run_postmitigation_with_metrics
 
 # Define Flower client
 class MnistClient(fl.client.Client):
@@ -52,6 +53,9 @@ class MnistClient(fl.client.Client):
             print("Existing fairness attributes in the tabular data: ", self.fairness_attribs)
             print("The priviledged value for all the fairness attributes is: ", self.value_privileged_attrib)
             print("The dropping of the attributes in the training is enabled or not (1 drops and 0 does not): ", config["drop_fairness_attribs"])
+            # Post-mitigation configuration
+            self.postmitigation_enabled = config.get("postmitigation", {}).get("enabled", False)
+            self.postmitigation_methods = config.get("postmitigation", {}).get("methods", [])
 
 
 
@@ -135,6 +139,11 @@ class MnistClient(fl.client.Client):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             train_idx, val_idx = next(self.splits_nested)
+            # -------------------------------------------------------------
+            # SAVE VALIDATION DATA FOR POST-PROCESSING
+            # -------------------------------------------------------------
+            self.validation_idx = val_idx
+            ###############################################################
             X_train_2 = self.X_train.iloc[train_idx, :]
             X_val = self.X_train.iloc[val_idx,:]
             y_train_2 = self.y_train.iloc[train_idx]
@@ -238,23 +247,51 @@ class MnistClient(fl.client.Client):
         #We save the variables for inference
         self.model = save_pipeline_inference(self.model,self.pipeline,self.X_train,self.selected_features_names)
         y_pred_prob = self.model.predict_proba(self.X_test[self.selected_features_names])
+        y_test_score = y_pred_prob[:, 1]
         loss = log_loss(self.y_test, y_pred_prob)
         # accuracy,specificity,sensitivity,balanced_accuracy, precision, F1_score = \
         # measurements_metrics(self.model,self.X_test, self.y_test)
         y_pred = self.model.predict(self.X_test[self.selected_features_names])
-        metrics = calculate_metrics(self.y_test, y_pred)
-        # print(f"Accuracy client in evaluate:  {accuracy}")
-        # print(f"Sensitivity client in evaluate:  {sensitivity}")
-        # print(f"Specificity client in evaluate:  {specificity}")
-        # print(f"Balanced_accuracy in evaluate:  {balanced_accuracy}")
-        # print(f"precision in evaluate:  {precision}")
-        # print(f"F1_score in evaluate:  {F1_score}")
+
+
+        if not self.postmitigation_enabled or not self.enabled_fairness:
+            metrics = calculate_metrics(self.y_test, y_pred)
+            # print(f"Accuracy client in evaluate:  {accuracy}")
+            # print(f"Sensitivity client in evaluate:  {sensitivity}")
+            # print(f"Specificity client in evaluate:  {specificity}")
+            # print(f"Balanced_accuracy in evaluate:  {balanced_accuracy}")
+            # print(f"precision in evaluate:  {precision}")
+            # print(f"F1_score in evaluate:  {F1_score}")
+
+            #visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test[self.selected_features_names],self.client_id )
+            #if self.enabled_fairness:
+            #    getFairnessResults(metrics,self.y_test.name, y_pred,self.fairness_attribs,self.value_privileged_attrib,\
+            #            pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
+        else:
+            metrics = calculate_metrics(self.y_test, y_pred)
+            postmitigated_metrics = run_postmitigation_with_metrics(
+                model=self.model,
+                X_train=self.X_train,
+                y_train=self.y_train,
+                validation_idx=self.validation_idx,
+                selected_features_names=self.selected_features_names,
+                fairness_columns_train_values=self.fairness_columns_train_values,
+                fairness_columns_test_values=self.fairness_columns_test_values,
+                y_test=self.y_test,
+                y_pred_original=y_pred,
+                y_test_score=y_test_score,
+                fairness_attribs=self.fairness_attribs,
+                value_privileged_attrib=self.value_privileged_attrib,
+                methods=self.postmitigation_methods,
+            )
+            # Add the post-mitigation metrics without replacing
+            # the original metrics.
+            metrics.update(postmitigated_metrics)
 
         visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test[self.selected_features_names],self.client_id )
         if self.enabled_fairness:
             getFairnessResults(metrics,self.y_test.name, y_pred,self.fairness_attribs,self.value_privileged_attrib,\
-                    pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
-
+                        pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
         # Serialize to send it to the server
         #params = get_model_parameters(model)
         #parameters_updated = serialize_RF(params)

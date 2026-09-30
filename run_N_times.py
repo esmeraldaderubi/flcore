@@ -214,9 +214,19 @@ print("\n[ FAIRNESS AUDIT METRICS ]")
 for f in fairness_metrics:
     for g in groups:
         key = f"{f}_{g}"
-        if stats[key]:
-            print(f"{key.upper():<40} : {np.mean(stats[key]):.4f} ± {np.std(stats[key]):.4f}")
 
+        if key in stats:
+            values = stats[key]
+
+            if values:
+                print(
+                    f"{key.upper():<40} : "
+                    f"{np.mean(values):.4f} ± {np.std(values):.4f}"
+                )
+            else:
+                print(
+                    f"{key.upper():<40} : NaN ± NaN"
+                )
 # ==========================================
 # 5. MANUAL SENSITIVITY CHECK (CENTER Baseline)
 # ==========================================

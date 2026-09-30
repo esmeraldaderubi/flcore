@@ -226,7 +226,7 @@ def save_experiment_summary(config):
                     if value is None:
                         continue
 
-                    if isinstance(value, (int, float)) and not math.isnan(value) and math.isfinite(value):
+                    if isinstance(value, (int, float)) : #and not math.isnan(value) and math.isfinite(value):
                         client_values.append(float(value))
 
                 if len(client_values) == 0:
@@ -245,8 +245,8 @@ def save_experiment_summary(config):
 
                 else:
                     client_summary[f"client_{client_idx}"] = {
-                        "mean": statistics.mean(client_values),
-                        "std": np.std(client_values),
+                        "mean": np.nanmean(client_values),
+                        "std": np.nanstd(client_values),
                         "raw_values": client_values,
                     }
 
@@ -275,8 +275,8 @@ def save_experiment_summary(config):
                 }
             else:
                 summary[metric] = {
-                    "mean": statistics.mean(valid_values),
-                    "std": np.std(valid_values),
+                    "mean": np.nanmean(valid_values),
+                    "std": np.nanstd(valid_values),
                     "raw_values": valid_values,
                 }
 
