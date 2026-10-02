@@ -565,6 +565,10 @@ def fit_postmitigations(
                     f"eqodds, calibrated_eqodds, reject_option."
                 )
         except Exception as e:
+            print(
+                f"\nWARNING: Post-mitigation method "
+                f"'{method}' could not be fitted."
+            )
             print("WARNING: Post-mitigation method could not be fitted.")
 
             for attribute in fairness_attribs:

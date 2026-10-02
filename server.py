@@ -2,7 +2,7 @@ import warnings
 import os
 import sys
 from pathlib import Path
-
+import json
 import flwr as fl
 import numpy
 import yaml
@@ -124,7 +124,35 @@ if __name__ == "__main__":
     # =================================================================
     # ORCHESTRATOR COMPLIANCE
     # =================================================================
-    import json
+
+    SCALAR_METRICS = [
+        "accuracy",
+        "balanced_accuracy",
+        "f1",
+        "precision",
+        "recall",
+        "specificity",
+    ]
+
+    POSTMITIGATION_METHODS = [
+        "reject_option",
+        "calibrated_eqodds",
+        "eqodds",
+    ]
+
+    POSTMITIGATED_SCALAR_METRICS = [
+        f"POSTMITIGATED_{method}_{metric}"
+        for method in POSTMITIGATION_METHODS
+        for metric in SCALAR_METRICS
+    ]
+
+    FAIRNESS_METRIC_BASES = [
+        "statistical_parity_difference",
+        "equal_opportunity_difference",
+    ]
+
+
+   
     # 1. Extract configuration values dynamically
     current_seed = config.get("seed", 0) 
     sandbox_dir = config.get("SANDBOX_PATH", "./sandbox")
@@ -162,7 +190,7 @@ if __name__ == "__main__":
 
     # 3. CENTER (Baseline): Dynamically take the FIRST entry found in FIT
     for m, values in fit_metrics.items():
-        if m in ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]:
+        if m in SCALAR_METRICS :#["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]:
             # values[0] is the very first tuple (round_X, value) found
             final_results[last_round_key][f"CENTER_{m}"] = extract_float(values[0][1])
 
@@ -181,14 +209,7 @@ if __name__ == "__main__":
             #print(f"LAST RAW VALUE: {values[-1][1]}")
             #print(f"LAST RAW VALUE TYPE: {type(values[-1][1])}")
 
-        PER_CLIENT_SCALAR_METRICS = [
-            "accuracy",
-            "balanced_accuracy",
-            "f1",
-            "precision",
-            "recall",
-            "specificity",
-        ]
+
 
         #print("-" * 80)
 
@@ -203,7 +224,7 @@ if __name__ == "__main__":
             metric_name = m.replace("per client ", "", 1)
 
             # Only convert the six scalar per-client metrics
-            if metric_name in PER_CLIENT_SCALAR_METRICS:
+            if metric_name in SCALAR_METRICS:
 
                 if isinstance(value, np.ndarray):
                     value = value.tolist()
@@ -218,11 +239,22 @@ if __name__ == "__main__":
             #  SAVE ALL CLIENT VALUES
             final_results[last_round_key][m] = value
 
-        elif m in PER_CLIENT_SCALAR_METRICS:
+        elif m in SCALAR_METRICS: #PER_CLIENT_SCALAR_METRICS:
             # values[-1] is the very last tuple (round_Y, value) found
             final_results[last_round_key][f"DISTRIB_{m}"] = extract_float(values[-1][1])
-        elif "difference" in m: 
+        elif any(
+            m.startswith(f"{metric}_")
+            for metric in FAIRNESS_METRIC_BASES
+        ):
+            final_results[last_round_key][m] = extract_float(values[-1][1])
+        elif m in POSTMITIGATED_SCALAR_METRICS: #elif "difference" in m: 
             # Capture fairness metrics from the final evaluation
+            final_results[last_round_key][m] = extract_float(values[-1][1])
+        elif any(
+            m.startswith(f"POSTMITIGATED_{method}_{metric}_")
+            for method in POSTMITIGATION_METHODS
+            for metric in FAIRNESS_METRIC_BASES
+        ):
             final_results[last_round_key][m] = extract_float(values[-1][1])
 
     # 5. Save and Hard Exit to ensure orchestrator unblocks

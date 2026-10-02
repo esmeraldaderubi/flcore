@@ -72,7 +72,7 @@ def metrics_aggregation_fn(distributed_metrics):
             metrics['per client ' + kn] = deserialized  
         else:
             results = [ evaluate_res[kn] for _, evaluate_res in distributed_metrics]
-            metrics[kn] = np.mean(results)
+            metrics[kn] = np.nanmean(results)
             metrics['per client ' + kn] = results
             #print(f"Metric {kn} in aggregation evaluate: {metrics[kn]}\n")
 

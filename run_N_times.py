@@ -145,20 +145,40 @@ finally:
 experiment = save_experiment_summary(experiment_config)
 # ==========================================
 # 3. Dynamic Aggregation (CENTER vs DISTRIB)
+# DONE FOR DEBUGGING AND CLEARITY
 # ==========================================
+from io import StringIO
+import sys
+
+summary_output = StringIO()
+original_stdout = sys.stdout
+sys.stdout = summary_output
+
 print("\n" + "="*50)
 print(" AGGREGATED EXPERIMENT RESULTS (Mean ± SD)")
 print("="*50)
 
 base_metrics = ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]
 fairness_metrics = ["equal_opportunity_difference", "statistical_parity_difference"]
-groups = ["Sex", "Ethnicity"]
+postmitigation_methods = ["eqodds", "calibrated_eqodds", "reject_option"]
+
+
+#groups = ["Sex", "poverty_sweepsHistory"]
+groups = original_config["fairness_attribs"]
 
 all_keys = []
 for m in base_metrics: 
     all_keys.extend([f"CENTER_{m}", f"DISTRIB_{m}"])
 for f in fairness_metrics: 
     all_keys.extend([f"{f}_{g}" for g in groups])
+for method in postmitigation_methods:
+    for m in base_metrics:
+        all_keys.append(f"POSTMITIGATED_{method}_{m}")
+    for f in fairness_metrics:
+        all_keys.extend([
+            f"POSTMITIGATED_{method}_{f}_{g}"
+            for g in groups
+        ])    
 
 stats = {k: [] for k in all_keys}
 
@@ -194,8 +214,12 @@ for run_idx in range(TOTAL_RUNS):
 # ==========================================
 # 4. Final Categorized Output
 # ==========================================
-print(original_config["model"])
-print(original_config["random_forest"]["aggregator_rf"])
+#print(original_config["model"])
+#print(original_config["random_forest"]["aggregator_rf"])
+model_name = original_config["model"]
+print(f"\n[{model_name.upper()} CONFIGURATION]")
+for key, value in original_config[model_name].items():
+    print(f"{key}: {value}")
 print("\n")
 
 print("\n[ CENTER (BASELINE) ]")
@@ -227,6 +251,45 @@ for f in fairness_metrics:
                 print(
                     f"{key.upper():<40} : NaN ± NaN"
                 )
+postmitigation_methods = ["eqodds", "calibrated_eqodds", "reject_option"]
+
+for method in postmitigation_methods:
+    print(f"\n  --- {method.upper()} ---")
+
+    # Post-mitigation scalar metrics
+    for m in base_metrics:
+        key = f"POSTMITIGATED_{method}_{m}"
+
+        if key in stats:
+            values = stats[key]
+
+            if values:
+                print(
+                    f"{m.upper():<25} : "
+                    f"{np.mean(values):.4f} ± {np.std(values):.4f}"
+                )
+            else:
+                print(
+                    f"{m.upper():<25} : NaN ± NaN"
+                )
+
+    # Post-mitigation fairness metrics
+    for f in fairness_metrics:
+        for g in groups:
+            key = f"POSTMITIGATED_{method}_{f}_{g}"
+
+            if key in stats:
+                values = stats[key]
+
+                if values:
+                    print(
+                        f"{f.upper()}_{g:<10} : "
+                        f"{np.mean(values):.4f} ± {np.std(values):.4f}"
+                    )
+                else:
+                    print(
+                        f"{f.upper()}_{g:<10} : NaN ± NaN"
+                    )
 # ==========================================
 # 5. MANUAL SENSITIVITY CHECK (CENTER Baseline)
 # ==========================================
@@ -244,3 +307,23 @@ if center_target in stats and stats[center_target]:
     print(f"*** Gap (Std Dev):   {center_std:.4f} ***")
     print(f"*** Baseline Score:  {center_score:.4f} (lambda={tuning_lambda}) ***")
     print("*" * 63 + "\n")
+
+# Get the complete output
+summary_text = summary_output.getvalue()
+
+# Restore normal screen output
+sys.stdout = original_stdout
+
+# Print the captured output to the screen
+print(summary_text)
+
+# Save exactly the same output to file
+summary_path = os.path.join(
+    RESULTS_DIR,
+    "experiment_summary_abbreviated.txt"
+)
+
+with open(summary_path, "w", encoding="utf-8") as f:
+    f.write(summary_text)
+
+print(f"Summary saved to: {summary_path}")
