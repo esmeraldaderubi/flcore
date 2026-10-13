@@ -36,8 +36,20 @@ class MnistClient(fl.client.Client):
         #If fairness is defined enable fairness save the features of X_test 
         #as we need to compute the metrics and drop them from X_train and X_test
         self.enabled_fairness = config["enabled_fairness"]
-        if config.get("fairness_attribs") is not None:
-            self.enabled_fairness = True
+        self.postmitigation_enabled = config["postmitigation"]["enabled"]
+        self.fairness_attribs = config["fairness_attribs"]
+        if(self.fairness_attribs in (None, "None", [])):
+            self.enabled_fairness = False
+            self.postmitigation_enabled = False
+     
+        
+        print("DEBUG: config =", config)
+        print("DEBUG: fairness_attribs =", repr(config.get("fairness_attribs")))
+        #if config.get("fairness_attribs") is not None:
+        if self.enabled_fairness == True:
+            print("fairness_attribs")
+            print(config.get("fairness_attribs"))
+            #self.enabled_fairness = True
             fairness_attribs_names = config["fairness_attribs"]
             self.value_privileged_attrib = config["value_privileged_attrib"]
             self.fairness_attribs =  [col for col in fairness_attribs_names if col in self.X_test.columns]
@@ -254,7 +266,7 @@ class MnistClient(fl.client.Client):
         y_pred = self.model.predict(self.X_test[self.selected_features_names])
 
 
-        if not self.postmitigation_enabled or not self.enabled_fairness:
+        if not self.enabled_fairness :
             metrics = calculate_metrics(self.y_test, y_pred)
             # print(f"Accuracy client in evaluate:  {accuracy}")
             # print(f"Sensitivity client in evaluate:  {sensitivity}")
@@ -267,7 +279,7 @@ class MnistClient(fl.client.Client):
             #if self.enabled_fairness:
             #    getFairnessResults(metrics,self.y_test.name, y_pred,self.fairness_attribs,self.value_privileged_attrib,\
             #            pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
-        else:
+        elif self.postmitigation_enabled:
             metrics = calculate_metrics(self.y_test, y_pred)
             postmitigated_metrics = run_postmitigation_with_metrics(
                 model=self.model,
@@ -289,7 +301,9 @@ class MnistClient(fl.client.Client):
             metrics.update(postmitigated_metrics)
 
         visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test[self.selected_features_names],self.client_id )
-        if self.enabled_fairness:
+        if self.enabled_fairness :
+            print('self.enabled_fairness')
+            print(self.enabled_fairness)
             getFairnessResults(metrics,self.y_test.name, y_pred,self.fairness_attribs,self.value_privileged_attrib,\
                         pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
         # Serialize to send it to the server

@@ -117,7 +117,7 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
     with open(experiment_dir / "history.json", "w") as f:
         json.dump(output_file, f,sort_keys=False,  indent=4)
 
-    generate_report_history(experiment_dir / "history.json", experiment_dir, True,None)
+    generate_report_history(experiment_dir / "history.json", experiment_dir, False,None)
 
     print('The history has been saved')
     return history

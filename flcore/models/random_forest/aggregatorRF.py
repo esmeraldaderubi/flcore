@@ -1202,8 +1202,8 @@ def aggregateRFwithAdaptiveDiversitySizeCenterProbs(rfs, bal_RF, smoothing_metho
 
     return [rfa], rfa.estimators_, weights_classifiers
 
-def aggregateRFwithAdaptiveDiversitySizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithDiversityPareto(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off)
+def aggregateRFwithAdaptiveDiversitySizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed, smoothedWeights_baseline_type,beta_fairness_trade_off):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithAdaptiveDiversitySizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type,beta_fairness_trade_off)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)
@@ -1406,8 +1406,9 @@ def aggregateRFwithAdaptiveDiversitySizeCenterProbsv2(
 
 
 
-def aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithDiversityPareto(rfs,bal_RF,smoothing_method,smoothing_strenght,smoothedWeights_baseline_type,beta_fairness_trade_off)
+def aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type,beta_fairness_trade_off):
+    
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithAdaptiveDiversitySizeCenterProbsv2(rfs,bal_RF,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type,beta_fairness_trade_off)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)

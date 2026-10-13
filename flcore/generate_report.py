@@ -305,91 +305,91 @@ def generate_report_history(
             pdf.cell(0, 10, os.path.basename(img).replace("_", " ").title(), 0, 1, "C")
             pdf.image(img, x=20, y=30, w=170)
 
-    # Add a table of aggregated metrics
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
-    pdf.multi_cell(0, 8, "Aggregated Performance Metrics per Round", align="C")
-    pdf.ln(4)
-
-    # --- Abbreviations for metric headers ---
-    header_abbrev = {
-        "accuracy": "Acc",
-        "balanced_accuracy": "BalAcc",
-        "f1": "F1",
-        "precision": "Prec",
-        "recall": "Rec",
-        "specificity": "Spec",
-        "statistical_parity_difference_": "SPD",
-        "disparate_impact_": "DI",
-        "equal_opportunity_difference_": "EOD",
-        "fairutility_": "FairU"
-    }
-
-    # ---- Build main metrics table (non-fairness) ----
-    metric_headers = ["Round"] + [header_abbrev.get(k, k) for k in metric_keys]
-
-    pdf.set_font("Arial", "B", 9)
-    page_width = pdf.w - 20
-    col_width = page_width / len(metric_headers)
-    row_height = 7
-
-    # Draw main header
-    for h in metric_headers:
-        pdf.cell(col_width, row_height, h, border=1, align="C")
-    pdf.ln(row_height)
-
-    # Draw metric rows
-    pdf.set_font("Arial", "", 9)
-    for i, rnd in enumerate(rounds):
-        pdf.cell(col_width, row_height, str(rnd), border=1, align="C")
-        for k in metric_keys:
-            val = aggregated_metrics[k][i]
-            text = f"{val:.3f}" if not np.isnan(val) else "-"
-            pdf.cell(col_width, row_height, text, border=1, align="C")
-        pdf.ln(row_height)
-
-    # ---- Separate page for fairness metrics ----
-    if fairness_keys:
-        #pdf.add_page()
+        # Add a table of aggregated metrics
+        pdf.add_page()
         pdf.set_font("Arial", "B", 14)
-        pdf.multi_cell(0, 8, "Aggregated Fairness Metrics per Round", align="C")
+        pdf.multi_cell(0, 8, "Aggregated Performance Metrics per Round", align="C")
         pdf.ln(4)
 
-        # Build abbreviated fairness headers (e.g., EOD-Sex, SPD-Ethn)
-        fairness_headers = ["Round"]
-        for fk in sorted(fairness_keys):
-            abbrev = next((short for prefix, short in header_abbrev.items() if fk.startswith(prefix)), None)
+        # --- Abbreviations for metric headers ---
+        header_abbrev = {
+            "accuracy": "Acc",
+            "balanced_accuracy": "BalAcc",
+            "f1": "F1",
+            "precision": "Prec",
+            "recall": "Rec",
+            "specificity": "Spec",
+            "statistical_parity_difference_": "SPD",
+            "disparate_impact_": "DI",
+            "equal_opportunity_difference_": "EOD",
+            "fairutility_": "FairU"
+        }
 
-            # Extract protected attribute (e.g., sex / ethnicity)
-            attr = fk.split("_")[-1].capitalize()
-            attr = attr[:4]  # shorten if another attribute
+        # ---- Build main metrics table (non-fairness) ----
+        metric_headers = ["Round"] + [header_abbrev.get(k, k) for k in metric_keys]
 
-            fairness_headers.append(f"{abbrev}-{attr}" if abbrev else fk)
-
-        # Layout for fairness table
         pdf.set_font("Arial", "B", 9)
         page_width = pdf.w - 20
-        col_width = page_width / len(fairness_headers)
+        col_width = page_width / len(metric_headers)
         row_height = 7
 
-        # Draw fairness header
-        for h in fairness_headers:
+        # Draw main header
+        for h in metric_headers:
             pdf.cell(col_width, row_height, h, border=1, align="C")
         pdf.ln(row_height)
 
-        # Draw fairness rows
+        # Draw metric rows
         pdf.set_font("Arial", "", 9)
         for i, rnd in enumerate(rounds):
             pdf.cell(col_width, row_height, str(rnd), border=1, align="C")
-            for fk in sorted(fairness_keys):
-                val = aggregated_metrics[fk][i]
+            for k in metric_keys:
+                val = aggregated_metrics[k][i]
                 text = f"{val:.3f}" if not np.isnan(val) else "-"
                 pdf.cell(col_width, row_height, text, border=1, align="C")
             pdf.ln(row_height)
 
-    # ---- Save the final PDF ----
-    pdf.output(pdf_path)
-    print(f"PDF report generated: {pdf_path}")
+        # ---- Separate page for fairness metrics ----
+        if fairness_keys:
+            #pdf.add_page()
+            pdf.set_font("Arial", "B", 14)
+            pdf.multi_cell(0, 8, "Aggregated Fairness Metrics per Round", align="C")
+            pdf.ln(4)
+
+            # Build abbreviated fairness headers (e.g., EOD-Sex, SPD-Ethn)
+            fairness_headers = ["Round"]
+            for fk in sorted(fairness_keys):
+                abbrev = next((short for prefix, short in header_abbrev.items() if fk.startswith(prefix)), None)
+
+                # Extract protected attribute (e.g., sex / ethnicity)
+                attr = fk.split("_")[-1].capitalize()
+                attr = attr[:4]  # shorten if another attribute
+
+                fairness_headers.append(f"{abbrev}-{attr}" if abbrev else fk)
+
+            # Layout for fairness table
+            pdf.set_font("Arial", "B", 9)
+            page_width = pdf.w - 20
+            col_width = page_width / len(fairness_headers)
+            row_height = 7
+
+            # Draw fairness header
+            for h in fairness_headers:
+                pdf.cell(col_width, row_height, h, border=1, align="C")
+            pdf.ln(row_height)
+
+            # Draw fairness rows
+            pdf.set_font("Arial", "", 9)
+            for i, rnd in enumerate(rounds):
+                pdf.cell(col_width, row_height, str(rnd), border=1, align="C")
+                for fk in sorted(fairness_keys):
+                    val = aggregated_metrics[fk][i]
+                    text = f"{val:.3f}" if not np.isnan(val) else "-"
+                    pdf.cell(col_width, row_height, text, border=1, align="C")
+                pdf.ln(row_height)
+
+        # ---- Save the final PDF ----
+        pdf.output(pdf_path)
+        print(f"PDF report generated: {pdf_path}")
 
 
 if __name__ == "__main__":

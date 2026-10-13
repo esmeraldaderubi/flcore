@@ -288,10 +288,10 @@ class FedCustom(fl.server.strategy.FedAvg):
                         aggregateRFwithDiversityPareto_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type)
                 case "AdaptiveDiversitySizeCenterProbs":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = \
-                        aggregateRFwithAdaptiveDiversitySizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                        aggregateRFwithAdaptiveDiversitySizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght, self.seed, self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
                 case "AdaptiveDiversitySizeCenterProbsv2":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = \
-                        aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+                        aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght, self.seed, self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
                 case "FairnessUtilityQuota":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = \
                         aggregateRFwithFairnessUtilityQuota_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
