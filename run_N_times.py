@@ -34,19 +34,67 @@ import statistics
 import shutil
 from datetime import datetime
 from orchestrator_server_multiple_runs import save_experiment_summary
+from scipy import stats as scipy_stats
 
 # ==========================================
 # 1. Initialization
 # ==========================================
 config_path = "config.yaml"
 DEFAULT_SEED = 42  # Your fixed baseline seed 
-TOTAL_RUNS = 5
+TOTAL_RUNS = 10
 N_FEATURES = 0
 starting_seed = DEFAULT_SEED 
 
 # Load original settings
 with open(config_path, "r") as f:
     original_config = yaml.safe_load(f)
+
+# ==========================================
+# 95% CONFIDENCE INTERVALS FOR THE MEAN
+# ==========================================
+# These are t-based confidence intervals across repeated runs.
+# With very few runs, intervals will be wide and should be interpreted cautiously.
+
+def calculate_summary_ci(values, confidence=0.95):
+    """Calculate n, mean, sample SD, and a two-sided t-based CI for the mean."""
+    arr = np.asarray(values, dtype=float)
+    arr = arr[np.isfinite(arr)]
+    n = len(arr)
+
+    if n == 0:
+        return None
+
+    mean = float(np.mean(arr))
+
+    if n < 2:
+        return {
+            "n": n,
+            "mean": mean,
+            "sd": np.nan,
+            "ci_low": np.nan,
+            "ci_high": np.nan,
+        }
+
+    # Sample standard deviation (ddof=1)
+    sd = float(np.std(arr, ddof=1))
+
+    # Standard error of the mean
+    standard_error = sd / np.sqrt(n)
+
+    # Critical value from Student's t-distribution
+    critical_value = scipy_stats.t.ppf(
+        (1.0 + confidence) / 2.0,
+        df=n - 1
+    )
+
+    return {
+        "n": n,
+        "mean": mean,
+        "sd": sd,
+        "ci_low": mean - critical_value * standard_error,
+        "ci_high": mean + critical_value * standard_error,
+    }
+
 
 
 # Create the new folder
@@ -307,6 +355,34 @@ if center_target in stats and stats[center_target]:
     print(f"*** Gap (Std Dev):   {center_std:.4f} ***")
     print(f"*** Baseline Score:  {center_score:.4f} (lambda={tuning_lambda}) ***")
     print("*" * 63 + "\n")
+
+# Section 6: confidence intervals
+print("\n" + "=" * 78)
+print(" METRIC MEANS WITH 95% CONFIDENCE INTERVALS")
+print("=" * 78)
+print("CI = t-based confidence interval for the mean across runs.")
+print("These are individual mean CIs, not tests comparing two aggregators.\n")
+
+for key, values in stats.items():
+    result = calculate_summary_ci(values)
+
+    if result is None:
+        continue
+
+    if result["n"] < 2:
+        print(
+            f"{key:<52} n={result['n']:>2} | "
+            f"mean={result['mean']:.4f} | "
+            f"95% CI unavailable (n < 2)"
+        )
+    else:
+        print(
+            f"{key:<52} n={result['n']:>2} | "
+            f"mean={result['mean']:.4f} | "
+            f"SD={result['sd']:.4f} | "
+            f"95% CI=[{result['ci_low']:.4f}, {result['ci_high']:.4f}]"
+        )
+
 
 # Get the complete output
 summary_text = summary_output.getvalue()

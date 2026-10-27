@@ -183,6 +183,7 @@ class MnistClient(fl.client.Client):
                     f"Num_trees={len(self.model.estimators_)}")
             else:
                 print(f"MANUAL_CHECK: Client={self.client_id}  | "
+                f"Bal_Acc={metrics['balanced_accuracy']:.4f} |"
                 f"Num_trees={len(self.model.estimators_)}")
 
             elapsed_time = (time.time() - start_time)
@@ -266,21 +267,22 @@ class MnistClient(fl.client.Client):
         y_pred = self.model.predict(self.X_test[self.selected_features_names])
 
 
-        if not self.enabled_fairness :
-            metrics = calculate_metrics(self.y_test, y_pred)
-            # print(f"Accuracy client in evaluate:  {accuracy}")
-            # print(f"Sensitivity client in evaluate:  {sensitivity}")
-            # print(f"Specificity client in evaluate:  {specificity}")
-            # print(f"Balanced_accuracy in evaluate:  {balanced_accuracy}")
-            # print(f"precision in evaluate:  {precision}")
-            # print(f"F1_score in evaluate:  {F1_score}")
+        
+        metrics = calculate_metrics(self.y_test, y_pred)
+        # print(f"Accuracy client in evaluate:  {accuracy}")
+        # print(f"Sensitivity client in evaluate:  {sensitivity}")
+        # print(f"Specificity client in evaluate:  {specificity}")
+        # print(f"Balanced_accuracy in evaluate:  {balanced_accuracy}")
+        # print(f"precision in evaluate:  {precision}")
+        # print(f"F1_score in evaluate:  {F1_score}")
 
-            #visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test[self.selected_features_names],self.client_id )
-            #if self.enabled_fairness:
-            #    getFairnessResults(metrics,self.y_test.name, y_pred,self.fairness_attribs,self.value_privileged_attrib,\
-            #            pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
-        elif self.postmitigation_enabled:
-            metrics = calculate_metrics(self.y_test, y_pred)
+        #visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test[self.selected_features_names],self.client_id )
+        #if self.enabled_fairness:
+        #    getFairnessResults(metrics,self.y_test.name, y_pred,self.fairness_attribs,self.value_privileged_attrib,\
+        #            pd.concat([self.y_test, self.fairness_columns_test_values], axis=1))
+
+        if self.postmitigation_enabled:
+            #metrics = calculate_metrics(self.y_test, y_pred)
             postmitigated_metrics = run_postmitigation_with_metrics(
                 model=self.model,
                 X_train=self.X_train,

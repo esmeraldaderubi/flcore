@@ -550,7 +550,7 @@ def aggregateRFwithPerformance(rfs, bal_RF, smoothing_method, smoothing_strength
         
         # Merit = Weighted combination of Balanced Accuracy and Equity (1 - |EOD|)
         dt_merit = np.array([
-            alpha * tree.balanced_accuracy_ + (1 - alpha) * (1 - np.abs(tree.EODfairness_score_)) 
+            alpha * tree.accuracy_ + (1 - alpha) * (1 - np.abs(tree.EODfairness_score_)) 
             for tree in estimators
         ]) 
 
@@ -717,7 +717,7 @@ def aggregateRFwithHardRankPerformance(rfs, bal_RF, smoothing_method, smoothing_
         # Unified Merit Formula (alpha=0.75)
         alpha = beta_fairness_trade_off
         equity = np.array([1.0 - abs(tree.EODfairness_score_) for tree in estimators])
-        accuracy = np.array([tree.balanced_accuracy_ for tree in estimators])
+        accuracy = np.array([tree.accuracy_ for tree in estimators])
         
         # Local Merit Distribution
         dt_scores = (alpha * accuracy) + ((1 - alpha) * equity)

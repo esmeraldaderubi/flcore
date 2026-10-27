@@ -294,8 +294,9 @@ class FedCustom(fl.server.strategy.FedAvg):
                         aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght, self.seed, self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
                 case "FairnessUtilityQuota":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = \
-                        aggregateRFwithFairnessUtilityQuota_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
-                
+                        aggregateRFwithFairnessUtilityQuota_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed, self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
+       
+   
         #create the structure for the inference as the aggregated does not have fit so
         #you need to create the structure as the aggregated classifier is empty
         aggregation_result = create_structure_inference(aggregation_result,weights_results,self.selected_features_names)

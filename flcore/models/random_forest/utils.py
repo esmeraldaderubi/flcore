@@ -133,6 +133,8 @@ def add_fairness_metrics_to_model(metrics, model,fairness_attribs,value_privileg
 
 
         model.balanced_accuracy_ = metrics["balanced_accuracy"]
+
+        model.accuracy_ = metrics["accuracy"]
         
         #metrics["eod_avg"] = eod_avg
         #metrics["average_equal_opportunity_difference"].update({f"equal_opportunity_difference_{feature_protected }": metric_fairness.get(f"equal_opportunity_difference_{feature_protected}", None)     for feature_protected in self.fairness_attribs })
@@ -163,7 +165,8 @@ def add_performance_metrics_to_Trees_from_RF(metrics, model,X_val,y_val):
 
     #Sort the estimators by accuracy
     #Just in case we want to order it to simulate other aggregations
-    model.estimators_.sort(key=lambda tree: tree.balanced_accuracy_)    
+    #NOT NEEDED ANY SORTING. INTEGRATED INTO THE AGGREGATORS. 
+    #model.estimators_.sort(key=lambda tree: tree.balanced_accuracy_)    
     return model
 
 #def set_initial_params_server(model: RandomForestClassifier):
