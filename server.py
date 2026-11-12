@@ -33,7 +33,10 @@ def check_config(config):
          assert (config['weighted_random_forest']['levelOfDetail']== 'DecisionTree' or \
             config['weighted_random_forest']['levelOfDetail']== 'RandomForest'), 'the levels of detail for weighted RF are not correct: DecisionTree and RandomForest '
         
-
+    if config['task_type'] == "regression" and config['model'] == "random_forest":
+        assert config['random_forest']['aggregator_rf'] in ['all', 'random', 'randomviaprobs'], \
+        'the regression with random forest only accepts the following aggregators: all, random, randomviaprobs'
+      
 if __name__ == "__main__":
 
     #if len(sys.argv) == 2:
@@ -47,6 +50,10 @@ if __name__ == "__main__":
 
         ### Read the config file
 
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+    elif len(sys.argv) == 1: #for debug only
+        config_path = "config.yaml"
         with open(config_path, "r") as f:
             config = yaml.safe_load(f)
     else:
@@ -119,13 +126,13 @@ if __name__ == "__main__":
     # joblib.dump(model, filename)
     # Save the history as a yaml file
     #print(history)
-    results = history_to_dict(history.metrics_distributed_fit, history.metrics_distributed,experiment_dir,config["model"],config["dataset"],config["num_clients"])
+    results = history_to_dict(history.metrics_distributed_fit, history.metrics_distributed,experiment_dir,config["model"],config["dataset"],config["num_clients"],config["task_type"])
     
     # =================================================================
     # ORCHESTRATOR COMPLIANCE
     # =================================================================
 
-    SCALAR_METRICS = [
+    CLASSIFICATION_SCALAR_METRICS = [
         "accuracy",
         "balanced_accuracy",
         "f1",
@@ -133,6 +140,20 @@ if __name__ == "__main__":
         "recall",
         "specificity",
     ]
+
+    # Regression metrics
+    REGRESSION_SCALAR_METRICS = [
+        "mae",
+        "mse",
+        "rmse",
+        "r2",
+    ]
+
+    # Both types of metrics
+    SCALAR_METRICS = (
+        CLASSIFICATION_SCALAR_METRICS
+        + REGRESSION_SCALAR_METRICS
+    )
 
     POSTMITIGATION_METHODS = [
         "reject_option",

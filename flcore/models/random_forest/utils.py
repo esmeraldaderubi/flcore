@@ -12,7 +12,7 @@ from typing import Optional, Tuple, List
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.pipeline import FunctionTransformer, Pipeline
 
@@ -37,12 +37,16 @@ NDArrays = List[NDArray]
 from typing import cast
 
 
-def get_model(bal_RF,seed):
-    if(bal_RF == True):
-        model = BalancedRandomForestClassifier(n_estimators=100,random_state=seed)
+def get_model(bal_RF,seed,task_type):
+    if task_type in ["binary", "multioutput"]:
+        if(bal_RF == True):
+            model = BalancedRandomForestClassifier(n_estimators=100,random_state=seed)
+        else:
+            model = RandomForestClassifier(n_estimators=100,class_weight= "balanced",random_state=seed)
+    elif task_type == "regression":
+            model = RandomForestRegressor(n_estimators=100,random_state=seed)
     else:
-        model = RandomForestClassifier(n_estimators=100,class_weight= "balanced",random_state=seed)
-    
+        raise ValueError(f"Unknown task type: {task_type}")
     return model
 
 def get_model_parameters(model: RandomForestClassifier) -> RFRegParams:
@@ -67,13 +71,21 @@ def set_model_params(
 #as the aggregated model does not have a fitted pipeline
 #and we need some initializations as standard scaler (e.g., mean and std)
 #We assume that there will not be much differences among clients (discussed already with the group)
-def create_structure_inference(aggregation_result,weights_results,selected_features_names):
+def create_structure_inference(aggregation_result,weights_results,selected_features_names,task_type):
     aggregation_result[0].pipeline_processing_ = weights_results[0][0][0].pipeline_processing_
     aggregation_result[0].selected_features_names_   = selected_features_names
-    aggregation_result[0].n_classes_ = weights_results[0][0][0].n_classes_
-    aggregation_result[0].classes_ = weights_results[0][0][0].classes_
+    #aggregation_result[0].n_classes_ = weights_results[0][0][0].n_classes_
+    #aggregation_result[0].classes_ = weights_results[0][0][0].classes_
     aggregation_result[0].n_features_in_ = weights_results[0][0][0].n_features_in_
     aggregation_result[0].n_outputs_ = weights_results[0][0][0].n_outputs_
+
+    # ==========================================
+    # CLASSIFICATION
+    # ==========================================
+    if task_type in ["binary", "multioutput"]:
+        aggregation_result[0].n_classes_ = weights_results[0][0][0].n_classes_
+        aggregation_result[0].classes_ = weights_results[0][0][0].classes_
+
 
     return aggregation_result
 

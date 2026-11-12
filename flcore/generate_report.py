@@ -12,13 +12,191 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc, confusion_matrix, ConfusionMatrixDisplay
 from fpdf import FPDF
+import time
+import subprocess
+import shutil
+import sys
+import statistics
+from datetime import datetime
+import math
+import numpy as np
+
+
+def save_experiment_summary(config):
+    """
+    Computes the mean and standard deviation of the metrics from the
+    final federated round across multiple runs and appends the results
+    to experiment_summary.jsonl.
+    """
+
+    metrics_per_run = []
+
+    for run in range(config["num_runs"]):
+        seed = config["base_seed"] + run
+        run_dir = filename = os.path.join(
+            config["sandbox_path"],
+            f"run_{run + 1:02d}_seed_{seed}"
+        )
+        filename = os.path.join(
+            run_dir,
+            f"results_seed_{seed}.json",
+        )
+
+        with open(filename, "r") as f:
+            results = json.load(f)
+
+        last_round = max(results.keys(), key=int)
+        metrics_per_run.append(results[last_round])
+
+    summary = {}
+
+    EXCLUDED_PER_CLIENT_METRICS = [
+        "per client y_pred_prob",
+        "per client y_true",
+        "per client shap_feature_names",
+        "per client shap_base_value",
+        "per client shap_values",
+        "per client y_pred",
+        "per client client_name",
+    ]
+
+    for metric in metrics_per_run[0]:
+
+        # Skip raw per-client data
+        if metric in EXCLUDED_PER_CLIENT_METRICS:
+            continue
+
+        values = [m[metric] for m in metrics_per_run]
+
+        # ============================================================
+        # PER-CLIENT METRICS
+        # Mean/std for EACH CLIENT across seeds
+        # ============================================================
+        if metric.startswith("per client "):
+
+            num_clients = max(
+                len(seed_values)
+                for seed_values in values
+                if isinstance(seed_values, list)
+            )
+
+            client_summary = {}
+
+            for client_idx in range(num_clients):
+
+                client_values = []
+                for seed_values in values:
+                    if not isinstance(seed_values, list):
+                        continue
+
+                    if client_idx >= len(seed_values):
+                        continue
+
+                    value = seed_values[client_idx]
+
+                    if value is None:
+                        continue
+
+                    if isinstance(value, (int, float)) : #and not math.isnan(value) and math.isfinite(value):
+                        client_values.append(float(value))
+
+                if len(client_values) == 0:
+                    client_summary[f"client_{client_idx}"] = {
+                        "mean": float("nan"),
+                        "std": float("nan"),
+                        "raw_values": [],
+                    }
+
+                elif len(client_values) == 1:
+                    client_summary[f"client_{client_idx}"] = {
+                        "mean": client_values[0],
+                        "std": float("nan"),
+                        "raw_values": client_values,
+                    }
+
+                else:
+                    client_summary[f"client_{client_idx}"] = {
+                        "mean": np.nanmean(client_values),
+                        "std": np.nanstd(client_values),
+                        "raw_values": client_values,
+                    }
+
+            summary[metric] = client_summary
+
+        # ============================================================
+        # NORMAL METRICS
+        # ============================================================
+        else:
+            valid_values = [
+                v for v in values
+                if isinstance(v, (int, float)) and not math.isnan(v)
+            ]
+
+            if len(valid_values) == 0:
+                summary[metric] = {
+                    "mean": float("nan"),
+                    "std": float("nan"),
+                    "raw_values": [],
+                }
+            elif len(valid_values) == 1:
+                summary[metric] = {
+                    "mean": valid_values[0],
+                    "std": float("nan"),
+                    "raw_values": valid_values,
+                }
+            else:
+                summary[metric] = {
+                    "mean": np.nanmean(valid_values),
+                    "std": np.nanstd(valid_values),
+                    "raw_values": valid_values,
+                }
+
+    experiment = {
+        "timestamp": datetime.now().isoformat(),
+        "config": config,
+        "metrics": summary,
+    }
+
+    summary_file = os.path.join(
+        config["sandbox_path"],
+        "experiment_summary.json",
+    )
+   
+    with open(summary_file, "w") as f:
+        json.dump(experiment, f, indent=4)
+
+    print(f" [✔] Summary appended to {summary_file}")
+
+    #rename the pdf file according to the configuration 
+    #src = os.path.join(
+    #config["sandbox_path"],
+    #"federated_summary_report.pdf",
+    #)
+
+    #dst = os.path.join(
+    #config["sandbox_path"],
+    #f"{experiment_name}_summary.pdf",
+    #)
+
+    #if os.path.exists(src):
+    #    shutil.move(src, dst)
+    #    print(f" [✔] PDF renamed to {os.path.basename(dst)}")
+    #else:
+    #    print(" [!] federated_summary_report.pdf not found")
+
+    return experiment
+
+
+
+
 
 #rounds_to_plot = [1, 2, 3]
 def generate_report_history(
     history_path= "sandbox/history.json",
     output_dir="sandbox",
     generate_pdf=True,
-    rounds_to_plot=None
+    rounds_to_plot=None,
+    task_type = "binary"
 ):
     """Generate per-client, performance, fairness, and SHAP plots from federated history.json."""
     with open(history_path, "r") as f:
@@ -96,7 +274,7 @@ def generate_report_history(
         y_prob_0 = flatten(per_client_0.get("y_pred_prob", []))
         
         # Safety check: ensure arrays are populated AND have matching lengths
-        if len(y_true_0) > 0 and len(y_true_0) == len(y_pred_0):
+        if len(y_true_0) > 0 and len(y_true_0) == len(y_pred_0) and len(y_true_0) == len(y_prob_0):
             roc_path_0 = os.path.join(round_folder_0, "Centralized_Baseline_roc.png")
             cm_path_0 = os.path.join(round_folder_0, "Centralized_Baseline_confusion.png")
             
@@ -127,8 +305,9 @@ def generate_report_history(
             roc_path = os.path.join(round_folder, f"{client}_roc.png")
             cm_path = os.path.join(round_folder, f"{client}_confusion.png")
 
-            plot_roc(y_true, y_prob, f"ROC Curve - {client} (Round {rnd})", roc_path)
-            plot_confusion(y_true, y_pred, f"Confusion Matrix - {client} (Round {rnd})", cm_path)
+            if task_type=="binary":
+                plot_roc(y_true, y_prob, f"ROC Curve - {client} (Round {rnd})", roc_path)
+                plot_confusion(y_true, y_pred, f"Confusion Matrix - {client} (Round {rnd})", cm_path)
 
             pdf_plots.extend([roc_path, cm_path])
 
@@ -265,7 +444,7 @@ def generate_report_history(
                 y_prob_last_client = per_client_last.get("y_pred_prob", [])[i] if i < len(per_client_last.get("y_pred_prob", [])) else []
                 
                 # Plot the overlay if both exist
-                if len(y_true_0_client) > 0 and len(y_true_last_client) > 0:
+                if len(y_true_0_client) > 0 and len(y_true_last_client) > 0 and task_type=="binary":
                     plt.figure(figsize=(8, 6))
                     
                     # Plot Centralized (Round 0)

@@ -22,7 +22,9 @@ import numpy as np
 import shap
 from sklearn.metrics import (
     accuracy_score,
+    mean_absolute_error,
     precision_score,
+    r2_score,
     recall_score,
     f1_score,
     confusion_matrix,
@@ -51,8 +53,40 @@ def calculate_metrics(y_true, y_pred, task_type="binary"):
             "f1": f1_score(y_true, y_pred, zero_division=0),
             "balanced_accuracy": balanced_accuracy_score(y_true, y_pred),
         }
-    elif task_type.lower() == "reg":
-        return {"mse": mean_squared_error(y_true, y_pred)}
+    elif task_type == "multioutput":
+        if y_true.ndim != 2 or y_pred.ndim != 2:
+            raise ValueError(
+                "Multi-output classification requires 2D arrays."
+            )
+ 
+        if y_true.shape != y_pred.shape:
+            raise ValueError("y_true and y_pred must have the same shape.")
+
+        return {
+            "accuracy": accuracy_score(y_true, y_pred),
+            "precision": precision_score(
+                y_true, y_pred, average="macro", zero_division=0
+            ),
+            "recall": recall_score(
+                y_true, y_pred, average="macro", zero_division=0
+            ),
+            "f1": f1_score(
+                y_true, y_pred, average="macro", zero_division=0
+            ),
+            "balanced_accuracy": np.mean([
+                balanced_accuracy_score(y_true[:, i], y_pred[:, i])
+                for i in range(y_true.shape[1])
+            ]),
+        }
+    elif task_type.lower() == "regression":
+        mse = mean_squared_error(y_true, y_pred)
+
+        return {
+            "mae": mean_absolute_error(y_true, y_pred),
+            "mse": mse,
+            "rmse": np.sqrt(mse),
+            "r2": r2_score(y_true, y_pred),
+        }
     else:
         raise ValueError(f"Unknown task type: {task_type}")
 
@@ -81,21 +115,124 @@ def metrics_aggregation_fn(distributed_metrics):
     return metrics
 
 
+##simulate the centralized training results to compare after the ensambled of the server in fit in client
+#def fit_metrics_server_report(metrics,model,X_test,y_test,elapsed_time,client_id):
+#    metrics["running_time"] = elapsed_time
+#    #To create the visualization plots in the server to simulate the centralized 
+#    y_pred_prob = model.predict_proba(X_test)
+#    metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,1].tolist())  
+#    metrics["y_true"] = json.dumps(y_test.tolist())
+#    metrics["client_name"] = json.dumps(client_id)
+
 #simulate the centralized training results to compare after the ensambled of the server in fit in client
-def fit_metrics_server_report(metrics,model,X_test,y_test,elapsed_time,client_id):
+def fit_metrics_server_report(metrics,model,X_test,y_test,elapsed_time,client_id, task_type="binary"):
     metrics["running_time"] = elapsed_time
-    #To create the visualization plots in the server to simulate the centralized 
-    y_pred_prob = model.predict_proba(X_test)
-    metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,1].tolist())  
-    metrics["y_true"] = json.dumps(y_test.tolist())
+     #To create the visualization plots in the server to simulate the centralized 
+    y_true = np.asarray(y_test)
+    task_type = task_type.lower()
+
+    if task_type == "binary":
+        y_pred_prob = model.predict_proba(X_test)
+        # Probability of the positive class
+        metrics["y_pred_prob"] = json.dumps(
+            y_pred_prob[:, 1].tolist()
+        )
+
+    elif task_type == "multioutput":
+        # Multi-output classification
+        y_pred = model.predict(X_test)
+        if hasattr(model, "predict_proba"):
+            y_pred_prob = model.predict_proba(X_test)
+            # RandomForestClassifier returns a list of arrays:
+            # one array per output, with probabilities for each class.
+            if isinstance(y_pred_prob, list):
+                y_pred_prob = [
+                    probs.tolist() for probs in y_pred_prob
+                ]
+            metrics["y_pred_prob"] = json.dumps(y_pred_prob)
+        else:
+            metrics["y_pred_prob"] = json.dumps(
+                y_pred.tolist()
+            )
+    elif task_type == "regression":
+        # Regression: predictions are continuous values
+        y_pred = model.predict(X_test)
+        metrics["y_pred"] = json.dumps(y_pred.tolist())
+
+    else:
+        raise ValueError(f"Unknown task type: {task_type}")
+
+    metrics["y_true"] = json.dumps(y_true.tolist())
     metrics["client_name"] = json.dumps(client_id)
 
+    return metrics
 
 
-#add new metrics for the report of the server in evaluate in client
-def visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,y_test,model,X_test,client_id ):
-    #To create the visualization plots in the server
-    metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,1].tolist())  
+##add new metrics for the report of the server in evaluate in client
+#def visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,y_test,model,X_test,client_id ):
+#    #To create the visualization plots in the server
+#    metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,1].tolist())  
+#    metrics["y_pred"] = json.dumps(y_pred.tolist())  
+#    metrics["y_true"] = json.dumps(y_test.tolist())
+#    metrics["client_name"] = json.dumps(client_id)
+#    
+#    # ---- SHAP values ----
+#    explainer = shap.TreeExplainer(model)
+#    shap_values = explainer.shap_values(X_test)
+#
+#    if isinstance(shap_values, list) and len(shap_values) == 2:
+#        shap_vals = shap_values[1]  # For binary classification
+#    else:
+#        shap_vals = shap_values
+#
+#    # Compute mean SHAP values per feature
+#    mean_shap_values = np.mean(shap_vals, axis=0).tolist()
+#
+#    # Feature names
+#    feature_names = X_test.columns.tolist()
+#
+#    # SHAP base value (expected value of model output)
+#    base_value = (
+#        explainer.expected_value[1]
+#        if isinstance(explainer.expected_value, (list, np.ndarray))
+#        else explainer.expected_value
+#    )
+#
+#    # Store mean SHAP values and metadata
+#    metrics["shap_values"] = json.dumps(mean_shap_values)  # Mean per feature
+#    metrics["shap_feature_names"] = json.dumps(feature_names)
+#    metrics["shap_base_value"] = json.dumps([float(base_value)])
+
+
+def visualization_distributed_metrics_server_report(
+    metrics, y_pred_prob, y_pred, y_test, model, X_test, client_id,
+    task_type
+):
+    # ---- Predictions for server visualizations ----
+
+    # Binary classification
+    if task_type == "binary":
+        metrics["y_pred_prob"] = json.dumps(y_pred_prob[:,1].tolist())  
+
+    # Multi-output classification
+    elif task_type == "multioutput":
+        # predict_proba may return a list of arrays
+        if isinstance(y_pred_prob, list):
+            probabilities = [
+                p[:, 1].tolist() if p.ndim == 2 and p.shape[1] > 1
+                else p.ravel().tolist()
+                for p in y_pred_prob
+            ]
+        else:
+            probabilities = np.asarray(y_pred_prob).tolist()
+
+        metrics["y_pred_prob"] = json.dumps(probabilities)
+
+
+    # Regression
+    elif task_type == "regression":
+        metrics["y_pred_prob"] = json.dumps(None)
+
     metrics["y_pred"] = json.dumps(y_pred.tolist())  
     metrics["y_true"] = json.dumps(y_test.tolist())
     metrics["client_name"] = json.dumps(client_id)
@@ -104,10 +241,20 @@ def visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,y
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(X_test)
 
-    if isinstance(shap_values, list) and len(shap_values) == 2:
-        shap_vals = shap_values[1]  # For binary classification
-    else:
-        shap_vals = shap_values
+    if task_type == "binary":
+        if isinstance(shap_values, list) and len(shap_values) == 2:
+            shap_vals = shap_values[1]
+        else:
+            shap_vals = np.asarray(shap_values)
+
+    elif task_type == "multioutput":
+        if isinstance(shap_values, list):
+            shap_vals = np.stack(shap_values, axis=-1)
+        else:
+            shap_vals = np.asarray(shap_values)
+
+    else:  # Regression
+        shap_vals = np.asarray(shap_values)
 
     # Compute mean SHAP values per feature
     mean_shap_values = np.mean(shap_vals, axis=0).tolist()
@@ -115,12 +262,15 @@ def visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,y
     # Feature names
     feature_names = X_test.columns.tolist()
 
-    # SHAP base value (expected value of model output)
-    base_value = (
-        explainer.expected_value[1]
-        if isinstance(explainer.expected_value, (list, np.ndarray))
-        else explainer.expected_value
-    )
+    # SHAP base value  (expected value of model output)
+    expected_value = np.asarray(explainer.expected_value)
+
+    if task_type == "binary" and expected_value.size > 1:
+        base_value = float(expected_value.reshape(-1)[1])
+    elif expected_value.size == 1:
+        base_value = float(expected_value.reshape(-1)[0])
+    else:
+        base_value = expected_value.tolist()
 
     # Store mean SHAP values and metadata
     metrics["shap_values"] = json.dumps(mean_shap_values)  # Mean per feature

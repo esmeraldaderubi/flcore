@@ -3,7 +3,7 @@ import warnings
 import flwr as fl
 import numpy as np
 import pandas as pd
-from sklearn.metrics import log_loss
+from sklearn.metrics import log_loss, mean_squared_error
 import flcore.datasets as datasets
 from flcore.results import save_pipeline_inference
 from flcore.serialization_funs import serialize_RF, deserialize_RF
@@ -42,7 +42,13 @@ class MnistClient(fl.client.Client):
             self.enabled_fairness = False
             self.postmitigation_enabled = False
      
-        
+
+        self.task_type = config["task_type"]
+        #We disable fairness if we have regression task
+        if(self.task_type == "regression"):
+            self.enabled_fairness = False
+            self.postmitigation_enabled = False
+
         print("DEBUG: config =", config)
         print("DEBUG: fairness_attribs =", repr(config.get("fairness_attribs")))
         #if config.get("fairness_attribs") is not None:
@@ -80,10 +86,10 @@ class MnistClient(fl.client.Client):
             self.enabled_fs = False
             self.selected_features_names = self.X_train.columns
 
-        self.splits_nested  = datasets.split_partitions(n_folds_out,0.2, self.seed, self.X_train, self.y_train)
+        self.splits_nested  = datasets.split_partitions(n_folds_out,0.2, self.seed, self.X_train, self.y_train, self.task_type)
         print("The outcome is: ", self.y_test.name)
         self.bal_RF = config['random_forest']['balanced_rf']
-        self.model = utils.get_model(self.bal_RF,self.seed) 
+        self.model = utils.get_model(self.bal_RF,self.seed,self.task_type) 
         # Setting initial parameters, akin to model.compile for keras models
         #utils.set_initial_params_client(self.model,self.X_train, self.y_train)
 
@@ -163,7 +169,7 @@ class MnistClient(fl.client.Client):
             #To implement the center dropout, we need the execution time
             start_time = time.time()
             #restart the model otherwise the estimators grows every aggregation
-            self.model = utils.get_model(self.bal_RF,self.seed) 
+            self.model = utils.get_model(self.bal_RF,self.seed,self.task_type) 
             self.model.fit(X_train_2[self.selected_features_names], y_train_2)
             #We save the variables for inference
             self.model = save_pipeline_inference(self.model,self.pipeline,X_train_2,self.selected_features_names)
@@ -174,20 +180,34 @@ class MnistClient(fl.client.Client):
             # accuracy,specificity,sensitivity,balanced_accuracy, precision, F1_score = \
             # measurements_metrics(self.model,X_val, y_val)
             y_pred = self.model.predict(X_val[self.selected_features_names])
-            metrics = calculate_metrics(y_val, y_pred)
+            metrics = calculate_metrics(y_val, y_pred,self.task_type)
+
+            if self.task_type == "regression":
+                metric_name = "MSE"
+                metric_value = metrics["mse"]
+
+            elif self.task_type  == "multioutput":
+                metric_name = "Bal_Acc"
+                metric_value = metrics["balanced_accuracy"]
+
+            else:  # binary classification
+                metric_name = "Bal_Acc"
+                metric_value = metrics["balanced_accuracy"]
     
             if ins.config['server_round']==1:
                 print(f"MANUAL_CHECK: Client={self.client_id} with VALIDATION DATA | "
                     f"Num_Features={len(self.selected_features_names)} | "
-                    f"Bal_Acc={metrics['balanced_accuracy']:.4f} |"
+                    f"{metric_name}={metric_value:.4f} | "
+                    #f"Bal_Acc={metrics['balanced_accuracy']:.4f} |"
                     f"Num_trees={len(self.model.estimators_)}")
             else:
                 print(f"MANUAL_CHECK: Client={self.client_id}  | "
-                f"Bal_Acc={metrics['balanced_accuracy']:.4f} |"
+                f"{metric_name}={metric_value:.4f} | "
+                #f"Bal_Acc={metrics['balanced_accuracy']:.4f} |"
                 f"Num_trees={len(self.model.estimators_)}")
 
             elapsed_time = (time.time() - start_time)
-            fit_metrics_server_report(metrics,self.model,self.X_test[self.selected_features_names],self.y_test,elapsed_time,self.client_id)
+            fit_metrics_server_report(metrics,self.model,self.X_test[self.selected_features_names],self.y_test,elapsed_time,self.client_id,self.task_type)
             ####for the new smoothing weight metric, we need to include the fairness information
             if self.enabled_fairness:
                 self.model = utils.add_fairness_metrics_to_model(metrics, self.model, \
@@ -259,16 +279,51 @@ class MnistClient(fl.client.Client):
         #self.model.selected_features_names_ = self.selected_features_names
         #We save the variables for inference
         self.model = save_pipeline_inference(self.model,self.pipeline,self.X_train,self.selected_features_names)
-        y_pred_prob = self.model.predict_proba(self.X_test[self.selected_features_names])
-        y_test_score = y_pred_prob[:, 1]
-        loss = log_loss(self.y_test, y_pred_prob)
-        # accuracy,specificity,sensitivity,balanced_accuracy, precision, F1_score = \
-        # measurements_metrics(self.model,self.X_test, self.y_test)
-        y_pred = self.model.predict(self.X_test[self.selected_features_names])
 
 
         
-        metrics = calculate_metrics(self.y_test, y_pred)
+        #y_pred_prob = self.model.predict_proba(self.X_test[self.selected_features_names])
+        #y_test_score = y_pred_prob[:, 1]
+        #loss = log_loss(self.y_test, y_pred_prob)
+        ## accuracy,specificity,sensitivity,balanced_accuracy, precision, F1_score = \
+        ## measurements_metrics(self.model,self.X_test, self.y_test)
+        #y_pred = self.model.predict(self.X_test[self.selected_features_names])
+
+
+
+        y_pred_prob = None
+        y_test_score = None
+
+        if self.task_type == "regression":
+            # Regression: predict continuous values
+            y_pred = self.model.predict(self.X_test[self.selected_features_names])
+            # Regression loss
+            loss = mean_squared_error(self.y_test, y_pred)
+
+        elif self.task_type == "multioutput":
+            # Multi-output classification
+            y_pred = self.model.predict(self.X_test[self.selected_features_names])
+            y_pred_prob = self.model.predict_proba(self.X_test[self.selected_features_names])
+
+            loss = np.mean([
+                log_loss(self.y_test[:, i], y_pred_prob[i])
+                for i in range(len(y_pred_prob))
+            ])
+
+            y_test_score = [
+                probs[:, 1] if probs.shape[1] > 1 else probs[:, 0]
+                for probs in y_pred_prob
+            ]
+
+        else:
+            # Binary classification
+            y_pred_prob = self.model.predict_proba(self.X_test[self.selected_features_names])
+            y_test_score = y_pred_prob[:, 1]
+            loss = log_loss(self.y_test, y_pred_prob)
+            y_pred = self.model.predict(self.X_test[self.selected_features_names])
+
+        
+        metrics = calculate_metrics(self.y_test, y_pred,self.task_type)
         # print(f"Accuracy client in evaluate:  {accuracy}")
         # print(f"Sensitivity client in evaluate:  {sensitivity}")
         # print(f"Specificity client in evaluate:  {specificity}")
@@ -302,7 +357,7 @@ class MnistClient(fl.client.Client):
             # the original metrics.
             metrics.update(postmitigated_metrics)
 
-        visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test[self.selected_features_names],self.client_id )
+        visualization_distributed_metrics_server_report(metrics,y_pred_prob,y_pred,self.y_test,self.model,self.X_test[self.selected_features_names],self.client_id, self.task_type )
         if self.enabled_fairness :
             print('self.enabled_fairness')
             print(self.enabled_fairness)

@@ -221,7 +221,7 @@ class FedCustom(fl.server.strategy.FedAvg):
             save_local_models(weights_results, self.experiment_dir,client_ids)
             match self.aggregator_rf:
                 case "randomviaprobs":
-                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type)
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type, self.task_type)
                 case "all":
                     aggregation_result,self.server_estimators = aggregateRF(weights_results,self.bal_RF)
                 case "randomviaprobswithTradeoffMetrics":
@@ -268,7 +268,7 @@ class FedCustom(fl.server.strategy.FedAvg):
         else:
             match self.aggregator_rf:
                 case "randomviaprobs":
-                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type)
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithSizeCenterProbs_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type, self.task_type)
                 case "all":
                     aggregation_result,self.server_estimators = aggregateRF_withprevious(weights_results,self.server_estimators,self.bal_RF)
                 case "randomviaprobswithTradeoffMetrics":
@@ -299,7 +299,7 @@ class FedCustom(fl.server.strategy.FedAvg):
    
         #create the structure for the inference as the aggregated does not have fit so
         #you need to create the structure as the aggregated classifier is empty
-        aggregation_result = create_structure_inference(aggregation_result,weights_results,self.selected_features_names)
+        aggregation_result = create_structure_inference(aggregation_result,weights_results,self.selected_features_names,self.task_type)
 
         #Save the model after each aggregation. As we do not have pipeline here as it is the ensambled of clients we will get the first balanced random forest pipeline
         #of the first client, as we need the pre-processing to know the parameters (e.g., std, mean) so we need to

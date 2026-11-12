@@ -31,7 +31,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+*.json
+*.yaml
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -190,6 +191,8 @@ certificates/server.pem
 *.pem
 *.srl
 *.csr
+*.json
+*.yaml
 certificates/ca.crt
 # Ignorar la carpeta de certificados completa
 certificates/
@@ -198,3 +201,4 @@ certificates/
 *.crt
 *.key
 *.pem
+dataset/dataset_description.json

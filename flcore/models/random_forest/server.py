@@ -66,7 +66,7 @@ def get_server_and_strategy(config):
     strategy.seed = config['seed']
     strategy.smoothedWeights_baseline_type = config['random_forest']['smoothedWeights_baseline_type']
     strategy.beta_fairness_trade_off = config['random_forest']['beta_fairness_trade_off']
- 
+    strategy.task_type = config['task_type']
     
     #If feature selection is enabled turn on the flag
     #Increase the number of rounds as we will use round 1 renamed as round 0 for feature selection and

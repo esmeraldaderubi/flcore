@@ -44,7 +44,7 @@ def safe_round(val, digits=4):
 
 # This function converts Flower's distributed metrics format into a clean dictionary
 # grouped by round number, with separate entries for global and per-client metrics.
-def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,model, dataset, num_clients):
+def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,model, dataset, num_clients, task_type):
     history = {}
 
     # Simulate centralized training by copying round 1 metrics into in metrics_distributed_fit into round 0
@@ -117,7 +117,7 @@ def history_to_dict(metrics_centralized_type,metrics_distributed,experiment_dir,
     with open(experiment_dir / "history.json", "w") as f:
         json.dump(output_file, f,sort_keys=False,  indent=4)
 
-    generate_report_history(experiment_dir / "history.json", experiment_dir, False,None)
+    generate_report_history(experiment_dir / "history.json", experiment_dir, False,None,task_type)
 
     print('The history has been saved')
     return history

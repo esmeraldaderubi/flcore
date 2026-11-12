@@ -172,6 +172,8 @@ def load_generic_dataset(config,center_id=0)-> Dataset:
     else:
         drops = code_ids + [code_outcome]
 
+
+    print("Drops:", drops)
     # Keep only columns that exist
     drops = [c for c in drops if c in data.columns]
 
@@ -200,8 +202,15 @@ def load_generic_dataset(config,center_id=0)-> Dataset:
 
 
     # Split the data
-    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=config["seed"])
-    train_index, test_index = next(sss.split(X_data, y_data))
+    #sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=config["seed"])
+    #train_index, test_index = next(sss.split(X_data, y_data))
+
+    if config.get("task_type") == "regression":
+        train_index, test_index = train_test_split( np.arange(len(X_data)), test_size=0.2, random_state=config["seed"])
+    else:
+        sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=config["seed"])
+        train_index, test_index = next(sss.split(X_data, y_data))
+
     X_test = X_data.iloc[test_index, :]
     X_train = X_data.iloc[train_index, :]
     y_test, y_train = y_data.iloc[test_index], y_data.iloc[train_index]
@@ -249,7 +258,15 @@ def get_stratifiedPartitions(n_splits,test_size, random_state):
     sss = StratifiedShuffleSplit(n_splits=n_splits,test_size=test_size, random_state=random_state)
     return sss
 
-def split_partitions(n_splits,test_size, random_state,X_data, y_data):
-    sss = get_stratifiedPartitions(n_splits,test_size, random_state)
-    splits_nested = (sss.split(X_data, y_data))
+def split_partitions(n_splits,test_size, random_state,X_data, y_data, task_type):
+    #sss = get_stratifiedPartitions(n_splits,test_size, random_state)
+    #splits_nested = (sss.split(X_data, y_data))
+    if task_type == "regression":
+        splitter = KFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+        splits_nested = splitter.split(X_data)
+
+    else:
+        splitter = get_stratifiedPartitions(n_splits, test_size, random_state)
+        splits_nested = splitter.split(X_data, y_data)
+
     return splits_nested

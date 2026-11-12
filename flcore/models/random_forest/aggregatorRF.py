@@ -181,8 +181,8 @@ def aggregateRFwithSizeCenterProbs_old(rfs,bal_RF,smoothing_method,smoothing_str
 # [1] Linardos et al., "Center Dropout: A Simple Method for Speed and Fairness in      #
 #     Federated Learning", FeTS Challenge 2021.                                        #
 ########################################################################################
-def aggregateRFwithSizeCenterProbs(rfs, bal_RF, smoothing_method, smoothing_strenght, seed,smoothedWeights_baseline_type):
-    rfa = get_model(bal_RF, rfs[0][0][0].random_state)
+def aggregateRFwithSizeCenterProbs(rfs, bal_RF, smoothing_method, smoothing_strenght, seed,smoothedWeights_baseline_type,task_type):
+    rfa = get_model(bal_RF, rfs[0][0][0].random_state,task_type)
     target_total_trees = int(len(rfs[0][0][0].estimators_))
     number_Clients = len(rfs)
     
@@ -244,8 +244,8 @@ def aggregateRFwithSizeCenterProbs(rfs, bal_RF, smoothing_method, smoothing_stre
     return [rfa], rfa.estimators_, weights_classifiers
 
 
-def aggregateRFwithSizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type):
-    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type)
+def aggregateRFwithSizeCenterProbs_withprevious(rfs,bal_RF,previous_estimators,previous_estimator_weights,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type,task_type):
+    [rfa],rfa.estimators_,weights_selectedTrees = aggregateRFwithSizeCenterProbs(rfs,bal_RF,smoothing_method,smoothing_strenght,seed,smoothedWeights_baseline_type,task_type)
 
     rfa.estimators_= np.concatenate(((previous_estimators), (rfa.estimators_)))
     rfa.estimators_=np.array(rfa.estimators_)

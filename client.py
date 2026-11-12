@@ -19,7 +19,10 @@ if __name__ == "__main__":
             config = yaml.safe_load(f)
 
         print('The configuration comes from config file')
-
+    elif len(sys.argv) == 1: #for debug only
+        config_path = "config.yaml"
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
     else:
         ##Instead of using the config.yaml use the parameters
         parser = get_parser(isserver=False)

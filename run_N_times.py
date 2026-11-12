@@ -33,7 +33,8 @@ import math
 import statistics
 import shutil
 from datetime import datetime
-from orchestrator_server_multiple_runs import save_experiment_summary
+#from orchestrator_server_multiple_runs import save_experiment_summary
+from flcore.generate_report import save_experiment_summary
 from scipy import stats as scipy_stats
 
 # ==========================================
@@ -42,7 +43,7 @@ from scipy import stats as scipy_stats
 config_path = "config.yaml"
 DEFAULT_SEED = 42  # Your fixed baseline seed 
 TOTAL_RUNS = 10
-N_FEATURES = 0
+#N_FEATURES = 0
 starting_seed = DEFAULT_SEED 
 
 # Load original settings
@@ -116,7 +117,7 @@ experiment_config = dict(original_config)
 
 experiment_config["base_seed"] = DEFAULT_SEED
 experiment_config["num_runs"] = TOTAL_RUNS
-experiment_config["n_features"] = N_FEATURES
+#experiment_config["n_features"] = N_FEATURES
 experiment_config["experiment_name"] = experiment_name
 experiment_config["sandbox_path"] = RESULTS_DIR
 
@@ -144,7 +145,7 @@ try:
         with open(config_path, "r") as f:
             temp_config = yaml.safe_load(f)
         temp_config["seed"] = current_seed
-        temp_config["internal_fs"] = N_FEATURES
+        #temp_config["internal_fs"] = N_FEATURES
         temp_config["SANDBOX_PATH"] = run_dir
         with open(config_path, "w") as f:
             yaml.dump(temp_config, f)
@@ -206,13 +207,23 @@ print("\n" + "="*50)
 print(" AGGREGATED EXPERIMENT RESULTS (Mean ± SD)")
 print("="*50)
 
-base_metrics = ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]
-fairness_metrics = ["equal_opportunity_difference", "statistical_parity_difference"]
-postmitigation_methods = ["eqodds", "calibrated_eqodds", "reject_option"]
+#base_metrics = ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]
+#fairness_metrics = ["equal_opportunity_difference", "statistical_parity_difference"]
+#postmitigation_methods = ["eqodds", "calibrated_eqodds", "reject_option"]
+if original_config["task_type"] == "regression":
+    base_metrics = ["mae", "mse", "r2"]
+    fairness_metrics = []
+    postmitigation_methods = []
+    groups = []
+
+else:
+    base_metrics = ["accuracy", "balanced_accuracy", "f1", "precision", "recall", "specificity"]
+    fairness_metrics = ["equal_opportunity_difference", "statistical_parity_difference"]
+    postmitigation_methods = ["eqodds", "calibrated_eqodds", "reject_option"]
 
 
-#groups = ["Sex", "poverty_sweepsHistory"]
-groups = original_config["fairness_attribs"]
+    #groups = ["Sex", "poverty_sweepsHistory"]
+    groups = original_config["fairness_attribs"]
 
 all_keys = []
 for m in base_metrics: 
@@ -266,6 +277,7 @@ for run_idx in range(TOTAL_RUNS):
 #print(original_config["random_forest"]["aggregator_rf"])
 model_name = original_config["model"]
 print(f"\n[{model_name.upper()} CONFIGURATION]")
+print(f"\nNum. Features ( if 0 it is disabled) {temp_config['internal_fs']}]")
 for key, value in original_config[model_name].items():
     print(f"{key}: {value}")
 print("\n")
@@ -341,7 +353,10 @@ for method in postmitigation_methods:
 # ==========================================
 # 5. MANUAL SENSITIVITY CHECK (CENTER Baseline)
 # ==========================================
-center_target = "CENTER_balanced_accuracy"
+if original_config["task_type"] == "regression":
+    center_target = "CENTER_r2"
+else: 
+    center_target = "CENTER_balanced_accuracy"
 
 if center_target in stats and stats[center_target]:
     center_mean = np.mean(stats[center_target])
@@ -350,7 +365,7 @@ if center_target in stats and stats[center_target]:
     center_score = center_mean - (tuning_lambda * center_std)
 
     print("\n" + "*" * 63)
-    print(f"*** BASELINE SENSITIVITY CHECK (N={N_FEATURES} Features) ***")
+    print(f"*** BASELINE SENSITIVITY CHECK (N={original_config['internal_fs']} Features) ***")
     print(f"*** Mean Bal_Acc:    {center_mean:.4f} ***")
     print(f"*** Gap (Std Dev):   {center_std:.4f} ***")
     print(f"*** Baseline Score:  {center_score:.4f} (lambda={tuning_lambda}) ***")
