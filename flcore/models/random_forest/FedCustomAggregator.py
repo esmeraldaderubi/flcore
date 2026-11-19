@@ -23,7 +23,7 @@ from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 import flwr as fl
 from flcore.featureselection import federated_top_features
-from flcore.models.random_forest.aggregatorRF import aggregateRF, aggregateRF_withprevious, aggregateRFwithFairnessTrafeoffProbs, aggregateRFwithFairnessTrafeoffProbs_withprevious, aggregateRFwithHardRankPerformance, aggregateRFwithHardRankPerformance_withprevious, aggregateRFwithPerformance, aggregateRFwithPerformance_withprevious, aggregateRFwithSizeCenterProbs, aggregateRFwithSizeCenterProbs_withprevious, aggregateRFwithDiversityPareto_withprevious, aggregateRFwithParetoQuota_withprevious,aggregateRFwithDiversityPareto,aggregateRFwithParetoQuota
+from flcore.models.random_forest.aggregatorRF import aggregateRF, aggregateRF_withprevious, aggregateRFwithFairnessTrafeoffProbs, aggregateRFwithFairnessTrafeoffProbs_withprevious, aggregateRFwithHardRankPerformance, aggregateRFwithHardRankPerformance_withprevious, aggregateRFwithPerformance, aggregateRFwithPerformance_withprevious, aggregateRFwithRegressionPerformance, aggregateRFwithRegressionPerformance_withprevious, aggregateRFwithSizeCenterProbs, aggregateRFwithSizeCenterProbs_withprevious, aggregateRFwithDiversityPareto_withprevious, aggregateRFwithParetoQuota_withprevious,aggregateRFwithDiversityPareto,aggregateRFwithParetoQuota
 from flcore.models.random_forest.aggregatorRF import aggregateRFwithAdaptiveDiversitySizeCenterProbs, aggregateRFwithAdaptiveDiversitySizeCenterProbs_withprevious,aggregateRFwithAdaptiveDiversitySizeCenterProbsv2, aggregateRFwithAdaptiveDiversitySizeCenterProbsv2_withprevious,aggregateRFwithFairnessUtilityQuota,aggregateRFwithFairnessUtilityQuota_withprevious
 
 from flcore.serialization_funs import serialize_RF, deserialize_RF
@@ -240,7 +240,9 @@ class FedCustom(fl.server.strategy.FedAvg):
                     aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithAdaptiveDiversitySizeCenterProbsv2(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
                 case "FairnessUtilityQuota":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithFairnessUtilityQuota(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.seed,self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
-          
+                case "sortedTradeoffMetricsforRegression":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = aggregateRFwithRegressionPerformance(weights_results,self.bal_RF,self.smoothing_method,self.smoothing_strenght,self.smoothedWeights_baseline_type)
+
             # >>> MANUAL CHECK BLOCK (ROUND 1 ONLY) <<<
             # This calculates the global mean of the clients' local performance
             # We use this to select the number of features 
@@ -295,8 +297,10 @@ class FedCustom(fl.server.strategy.FedAvg):
                 case "FairnessUtilityQuota":
                     aggregation_result,self.server_estimators,self.server_estimators_weights = \
                         aggregateRFwithFairnessUtilityQuota_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght,self.seed, self.smoothedWeights_baseline_type,self.beta_fairness_trade_off)
-       
-   
+                case "sortedTradeoffMetricsforRegression":
+                    aggregation_result,self.server_estimators,self.server_estimators_weights = \
+                           aggregateRFwithRegressionPerformance_withprevious(weights_results,self.bal_RF,self.server_estimators,self.server_estimators_weights,self.smoothing_method,self.smoothing_strenght, self.smoothedWeights_baseline_type)
+                 
         #create the structure for the inference as the aggregated does not have fit so
         #you need to create the structure as the aggregated classifier is empty
         aggregation_result = create_structure_inference(aggregation_result,weights_results,self.selected_features_names,self.task_type)

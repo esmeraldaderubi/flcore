@@ -168,12 +168,18 @@ def add_fairness_metrics_to_Trees_from_RF(metrics, model,fairness_attribs,value_
 
 
 #Funtion created for the new method by Esmeralda Ruiz for fairness weight aggregation
-def add_performance_metrics_to_Trees_from_RF(metrics, model,X_val,y_val):
+def add_performance_metrics_to_Trees_from_RF(metrics, model,X_val,y_val,task_type="binary"):
     #we obtain the performance metrics for each tree and we add it
     for tree in model.estimators_:
         y_pred = tree.predict(X_val)
-        metrics = calculate_metrics(y_val, y_pred)
-        tree.balanced_accuracy_ = metrics["balanced_accuracy"]
+        metrics = calculate_metrics(y_val, y_pred,task_type)
+        if task_type == "regression":
+            tree.r2_ = metrics["r2"]
+            tree.mse_ = metrics["mse"]
+            tree.mae_ = metrics["mae"]
+        else: 
+            tree.balanced_accuracy_ = metrics["balanced_accuracy"]
+        #tree.balanced_accuracy_ = metrics["balanced_accuracy"]
 
     #Sort the estimators by accuracy
     #Just in case we want to order it to simulate other aggregations

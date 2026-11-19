@@ -1539,3 +1539,150 @@ def aggregateRFwithFairnessUtilityQuota_withprevious(rfs, bal_RF, previous_estim
         combined_weights /= np.sum(combined_weights)
 
     return [rfa], rfa.estimators_, combined_weights
+
+
+
+
+
+
+
+########################################################################################
+# AGGREGATOR: sortedRegressionMetrics
+# Adapted from sortedTradeoffMetrics for regression
+# Implemented by Esmeralda Ruiz Pujadas
+#
+# Trees are selected exclusively according to their regression performance (R2).
+# Client quotas are determined using smoothed weights.
+# Within each client, the trees with the highest R2 are selected.
+#
+# If smoothing is disabled, equal voting is used by default.
+# No fairness metrics are considered.
+########################################################################################
+
+def aggregateRFwithRegressionPerformance(
+    rfs,
+    bal_RF,
+    smoothing_method,
+    smoothing_strength,
+    smoothedWeights_baseline_type
+):
+    """
+    Regression Merit-Based Selection.
+
+    Determines client quotas first, then selects the trees
+    with the highest R2 from each client's local random forest.
+    """
+
+    rfa = get_model(
+        bal_RF,
+        rfs[0][0][0].random_state,
+        "regression"
+    )
+
+    target_total = int(len(rfs[0][0][0].estimators_))
+    num_clients = len(rfs)
+
+    # 1. Macro-Level: Determine Tree Quotas
+    weights_centers = np.array(
+        computeSmoothedWeights(
+            rfs,
+            smoothing_method,
+            smoothing_strength,
+            smoothedWeights_baseline_type
+        )
+    )
+
+    # Largest Remainder Method
+    N_float = weights_centers * target_total
+    N = np.floor(N_float).astype(int)
+
+    missing = target_total - np.sum(N)
+
+    if missing > 0:
+        remainder = N_float - N
+        indices = np.argsort(remainder)[::-1]
+
+        for i in range(int(missing)):
+            N[indices[i]] += 1
+
+    list_classifiers = []
+    weights_classifiers = []
+
+    # 2. Micro-Level: Regression Performance-Based Selection
+    for i in range(num_clients):
+
+        estimators = np.array(rfs[i][0][0].estimators_)
+
+        # R2: Higher values indicate better regression performance.
+        r2_scores = np.array([
+            tree.r2_ for tree in estimators
+        ], dtype=float)
+
+        # Rank trees within each client's local forest.
+        sorted_indices = np.argsort(-r2_scores)
+
+        # Select the top N[i] trees.
+        selected_indices = sorted_indices[:N[i]]
+
+        list_classifiers.extend(estimators[selected_indices])
+        weights_classifiers.extend(r2_scores[selected_indices])
+
+    # 3. Final Calibration and Trimming
+    list_classifiers = np.array(list_classifiers)
+    weights_classifiers = np.array(weights_classifiers)
+
+    if len(list_classifiers) > target_total:
+        global_top_idx = np.argsort(-weights_classifiers)[:target_total]
+
+        list_classifiers = list_classifiers[global_top_idx]
+        weights_classifiers = weights_classifiers[global_top_idx]
+
+    # Normalize final R2 weights.
+    # Shift scores to avoid negative weights when R2 < 0.
+    shifted_weights = weights_classifiers - np.min(weights_classifiers)
+
+    if shifted_weights.sum() > 0:
+        weights_classifiers = shifted_weights / shifted_weights.sum()
+    else:
+        weights_classifiers = np.ones(len(list_classifiers)) / len(list_classifiers)
+
+    rfa.estimators_ = list_classifiers
+    rfa.n_estimators = len(list_classifiers)
+
+    return [rfa], rfa.estimators_, weights_classifiers
+
+
+def aggregateRFwithRegressionPerformance_withprevious(
+    rfs,
+    bal_RF,
+    previous_estimators,
+    previous_estimator_weights,
+    smoothing_method,
+    smoothing_strength,
+    smoothedWeights_baseline_type
+):
+
+    [rfa], rfa.estimators_, weights_selectedTrees = (
+        aggregateRFwithRegressionPerformance(
+            rfs,
+            bal_RF,
+            smoothing_method,
+            smoothing_strength,
+            smoothedWeights_baseline_type
+        )
+    )
+
+    rfa.estimators_ = np.concatenate((
+        previous_estimators,
+        rfa.estimators_
+    ))
+
+    rfa.estimators_ = np.array(rfa.estimators_)
+    rfa.n_estimators = len(rfa.estimators_)
+
+    weights_selectedTrees = np.concatenate((
+        previous_estimator_weights,
+        weights_selectedTrees
+    ))
+
+    return [rfa], rfa.estimators_, weights_selectedTrees

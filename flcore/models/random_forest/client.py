@@ -218,6 +218,11 @@ class MnistClient(fl.client.Client):
                                                                      X_val[self.selected_features_names], y_val,val_idx)
                 
                 self.model = utils.add_performance_metrics_to_Trees_from_RF(metrics, self.model,X_val[self.selected_features_names], y_val)
+
+            #used for the new aggregator
+            if self.task_type == "regression":
+                self.model = utils.add_performance_metrics_to_Trees_from_RF(metrics, self.model,X_val[self.selected_features_names], y_val, self.task_type)
+                
             ###end for the new weight metric
 
             print(f"num_client {self.client_id} has an elapsed time {elapsed_time}")
